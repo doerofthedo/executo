@@ -1,0 +1,17 @@
+/public/assets/*
+!/public/assets/.gitkeep
+
+/backend/vendor/
+/backend/.env
+/backend/storage/
+/backend/bootstrap/cache/*
+!/backend/bootstrap/cache/.gitkeep
+/backend/.phpunit.result.cache
+
+/frontend/node_modules/
+/frontend/dist/
+
+/.idea/
+/.vscode/
+/.DS_Store
+/.codex

@@ -1,0 +1,52 @@
+{
+    "name": "executo/backend",
+    "type": "project",
+    "description": "Executo Laravel API backend scaffold.",
+    "license": "proprietary",
+    "require": {
+        "php": "^8.5",
+        "laravel/framework": "^13.5",
+        "laravel/sanctum": "^4.3",
+        "spatie/laravel-activitylog": "^5.0",
+        "spatie/laravel-data": "^4.22",
+        "spatie/laravel-permission": "^7.3",
+        "pragmarx/google2fa-laravel": "3.0",
+        "bacon/bacon-qr-code": "^3.1"
+    },
+    "require-dev": {
+        "larastan/larastan": "^3.9",
+        "pestphp/pest": "^4.6",
+        "pestphp/pest-plugin-laravel": "^4.1",
+        "timacdonald/log-fake": "^2.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "@php artisan package:discover --ansi"
+        ],
+        "test": [
+            "@php artisan test"
+        ],
+        "analyse": [
+            "./vendor/bin/phpstan analyse"
+        ]
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}

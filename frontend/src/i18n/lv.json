@@ -1,0 +1,25 @@
+{
+    "app": {
+        "name": "Executo"
+    },
+    "navigation": {
+        "dashboard": "Pārskats",
+        "customers": "Klienti",
+        "debts": "Parādi",
+        "settings": "Iestatījumi"
+    },
+    "dashboard": {
+        "eyebrow": "Tiesu izpildītāju darba panelis",
+        "title": "Pārvaldiet klientus, lietas un maksājumus vienotā plūsmā",
+        "subtitle": "Sākotnējais karkass sagatavo autentifikācijas, apgabalu un parādu moduļus tālākai ieviešanai.",
+        "primary_action": "Atvērt apgabalu sarakstu",
+        "secondary_action": "Skatīt API stāvokli",
+        "stats_districts": "Apgabali",
+        "stats_customers": "Klienti",
+        "stats_debts": "Parādi"
+    },
+    "auth": {
+        "welcome_title": "Droša piekļuve Executo",
+        "welcome_body": "Sesiju autentifikācija, API atslēgas un MFA tiks ieviestas šajā modulī."
+    }
+}

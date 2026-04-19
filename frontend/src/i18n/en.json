@@ -1,0 +1,25 @@
+{
+    "app": {
+        "name": "Executo"
+    },
+    "navigation": {
+        "dashboard": "Dashboard",
+        "customers": "Customers",
+        "debts": "Debts",
+        "settings": "Settings"
+    },
+    "dashboard": {
+        "eyebrow": "Bailiff operations workspace",
+        "title": "Manage customers, cases, and payments in one workflow",
+        "subtitle": "This initial scaffold prepares the authentication, district, and debt modules for the next implementation phase.",
+        "primary_action": "Open district list",
+        "secondary_action": "View API status",
+        "stats_districts": "Districts",
+        "stats_customers": "Customers",
+        "stats_debts": "Debts"
+    },
+    "auth": {
+        "welcome_title": "Secure access to Executo",
+        "welcome_body": "Session auth, API keys, and MFA will be implemented in this module."
+    }
+}

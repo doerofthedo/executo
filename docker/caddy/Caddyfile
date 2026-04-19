@@ -1,0 +1,15 @@
+{
+    auto_https off
+}
+
+http://executo.local {
+    reverse_proxy /vite-hmr/* node:5173
+    reverse_proxy /api/* app:80
+
+    handle /mailpit* {
+        uri strip_prefix /mailpit
+        reverse_proxy mailpit:8025
+    }
+
+    reverse_proxy * node:5173
+}

@@ -1,0 +1,117 @@
+name: executo
+
+services:
+  db:
+    image: mariadb:12
+    container_name: executo-db
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: executo
+      MARIADB_USER: executo
+      MARIADB_PASSWORD: secret
+      MARIADB_ROOT_PASSWORD: root
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - executo
+
+  backend:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: executo-backend
+    working_dir: /var/www/html/backend
+    restart: unless-stopped
+    volumes:
+      - .:/var/www/html
+    env_file:
+      - backend/.env
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      REDIS_HOST: redis
+      MAIL_HOST: mailpit
+      MAIL_PORT: 1025
+    command: [ "/usr/local/bin/start-php" ]
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "php", "-r", "echo 'ok';" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    networks:
+      - executo
+
+  caddy:
+    image: caddy:alpine
+    container_name: executo-caddy
+    depends_on:
+      - backend
+      - node
+      - mailpit
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./public:/srv/public:ro
+      - ./docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    networks:
+      - executo
+
+  node:
+    image: node:25-alpine
+    container_name: executo-node
+    user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
+    working_dir: /srv/frontend
+    command: [ "/usr/local/bin/start-node" ]
+    volumes:
+      - ./:/srv
+    environment:
+      NODE_ENV: development
+    networks:
+      - executo
+
+  redis:
+    image: redis:8-alpine
+    container_name: executo-redis
+    restart: unless-stopped
+    networks:
+      - executo
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  mailpit:
+    image: axllent/mailpit:v1.21
+    container_name: executo-mailpit
+    restart: unless-stopped
+    networks:
+      - executo
+
+volumes:
+  db-data:
+    name: executo-db-data
+  caddy-data:
+    name: executo-caddy-data
+  caddy-config:
+    name: executo-caddy-config
+
+networks:
+  executo:
+    driver: bridge
+    name: executo-network
