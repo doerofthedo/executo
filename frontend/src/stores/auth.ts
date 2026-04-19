@@ -14,8 +14,10 @@ export const useAuthStore = defineStore('auth', {
     }),
     actions: {
         async signIn(input: LoginInput): Promise<void> {
-            await login(input);
-            this.user = await fetchCurrentUser();
+            const session = await login(input);
+
+            this.token = session.token;
+            this.user = session.user;
         },
         async loadCurrentUser(): Promise<void> {
             this.user = await fetchCurrentUser();

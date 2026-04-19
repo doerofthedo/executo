@@ -20,6 +20,15 @@
     },
     "auth": {
         "welcome_title": "Droša piekļuve Executo",
-        "welcome_body": "Sesiju autentifikācija, API atslēgas un MFA tiks ieviestas šajā modulī."
+        "welcome_body": "Pierakstieties ar savu lietotājvārdu vai e-pastu, lai turpinātu darbu sistēmā.",
+        "form": {
+            "login_label": "Lietotājvārds vai e-pasts",
+            "login_placeholder": "admin",
+            "password_label": "Parole",
+            "password_placeholder": "Ievadiet paroli",
+            "submit": "Pieslēgties",
+            "submitting": "Pieslēdzas...",
+            "invalid_credentials": "Nepareizs lietotājvārds vai parole."
+        }
     }
 }

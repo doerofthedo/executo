@@ -9,7 +9,7 @@ declare(strict_types=1);
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Executo</title>
-        @vite('frontend/src/main.ts')
+        @vite('frontend/src/entries/app.ts')
     </head>
     <body class="min-h-screen bg-stone-950 text-stone-50 antialiased">
         <div id="app"></div>

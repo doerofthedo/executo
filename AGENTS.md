@@ -166,10 +166,18 @@ backend/app/
 - TypeScript is preferred for all new files (`.vue` with `<script setup lang="ts">`).
 - No `any` types. Use `unknown` and narrow, or define a proper interface.
 - All components use `<script setup>` — no `defineComponent()` wrappers.
+- Frontend builds must produce separate authenticated and unauthenticated bundles.
+- Use dedicated Vite entry files for each shell:
+  - `frontend/src/entries/app.ts` for authenticated application assets
+  - `frontend/src/entries/auth.ts` for unauthenticated authentication assets
+- Auth-only styles and code must not be bundled into the authenticated entry by default.
+- App-only styles and code must not be bundled into the unauthenticated entry by default.
+- The production build output in `public/assets/` must contain distinct JS and CSS files for both entries.
 
 ### Directory Reference
 ```
 frontend/src/
+├── entries/      ← dedicated Vite entry files for authenticated and unauthenticated shells
 ├── api/          ← typed axios client + per-domain API functions
 ├── components/
 │   ├── domain/   ← feature-specific components
@@ -204,6 +212,7 @@ frontend/src/
 - Tailwind CSS 4 utility classes only. No custom CSS files except for global resets.
 - No inline `style=""` attributes unless dynamically computed (e.g. width from JS).
 - Icons use Remixicon classes only.
+- Global shared styles may live in a shared stylesheet, but auth-only and app-only styles must be split by entry.
 
 ### i18n
 - Use `$t('key')` in templates and `const { t } = useI18n()` in `<script setup>`.
@@ -224,7 +233,7 @@ docker/
 ├── docker-compose.yml
 ├── caddy/
 │   └── Caddyfile          ← reverse proxy config for all services
-├── php/                   ← Dockerfile for php8.5-apache + xdebug
+├── php/                   ← Dockerfile for php8.5-apache
 └── node/                  ← Dockerfile for node:22-alpine
 ```
 

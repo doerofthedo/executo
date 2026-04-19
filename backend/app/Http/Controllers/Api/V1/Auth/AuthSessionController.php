@@ -10,7 +10,7 @@ use App\Http\Resources\Auth\CurrentUserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 final class AuthSessionController extends Controller
@@ -26,28 +26,23 @@ final class AuthSessionController extends Controller
             ->where('email', $login)
             ->first();
 
-        if ($user === null || ! Auth::attempt([
-            'email' => $user->email,
-            'password' => $credentials['password'],
-        ])) {
+        if ($user === null || ! Hash::check($credentials['password'], $user->password)) {
             throw ValidationException::withMessages([
                 'login' => ['The provided credentials are invalid.'],
             ]);
         }
 
-        $request->session()->regenerate();
+        $token = $user->createToken('spa')->plainTextToken;
 
-        return (new CurrentUserResource($request->user()))
-            ->response()
-            ->setStatusCode(200);
+        return response()->json([
+            'token' => $token,
+            'user' => (new CurrentUserResource($user))->resolve($request),
+        ]);
     }
 
     public function destroy(Request $request): JsonResponse
     {
-        Auth::guard('web')->logout();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        $request->user()?->currentAccessToken()?->delete();
 
         return response()->json([], 204);
     }

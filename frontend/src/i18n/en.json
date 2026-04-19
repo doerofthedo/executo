@@ -20,6 +20,15 @@
     },
     "auth": {
         "welcome_title": "Secure access to Executo",
-        "welcome_body": "Session auth, API keys, and MFA will be implemented in this module."
+        "welcome_body": "Sign in with your username or email address to continue into the application.",
+        "form": {
+            "login_label": "Username or email",
+            "login_placeholder": "admin",
+            "password_label": "Password",
+            "password_placeholder": "Enter your password",
+            "submit": "Sign in",
+            "submitting": "Signing in...",
+            "invalid_credentials": "Invalid username or password."
+        }
     }
 }

@@ -14,8 +14,15 @@ export interface CurrentUser {
     name: string | null;
 }
 
-export async function login(input: LoginInput): Promise<void> {
-    await apiClient.post('/auth/login', input);
+export interface AuthSessionResponse {
+    token: string;
+    user: CurrentUser;
+}
+
+export async function login(input: LoginInput): Promise<AuthSessionResponse> {
+    const response = await apiClient.post<AuthSessionResponse>('/auth/login', input);
+
+    return response.data;
 }
 
 export async function logout(): Promise<void> {

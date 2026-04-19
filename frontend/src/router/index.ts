@@ -7,7 +7,16 @@ export const router = createRouter({
     routes: [
         {
             path: '/',
+            redirect: { name: 'login' },
+        },
+        {
+            path: '/dashboard',
             name: 'dashboard',
+            component: DashboardPage,
+        },
+        {
+            path: '/districts/:district',
+            name: 'district',
             component: DashboardPage,
         },
         {

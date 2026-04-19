@@ -1,19 +1,17 @@
 SHELL := /bin/bash
 
 # Variables — edit here if container/service names change
-COMPOSE        = HOST_UID=$(HOST_UID) HOST_GID=$(HOST_GID) docker compose -f docker-compose.yml
-PHP            = $(COMPOSE) exec app php
-ARTISAN        = $(PHP) backend/artisan
-COMPOSER       = $(COMPOSE) exec app composer
+COMPOSE        = docker compose -f docker-compose.yml
+PHP            = $(COMPOSE) exec backend php
+ARTISAN        = $(PHP) artisan
+COMPOSER       = $(COMPOSE) exec backend composer
 NPM            = $(COMPOSE) exec node npm
 HOST_UID       := $(shell id -u)
 HOST_GID       := $(shell id -g)
-APP_RUN        = $(COMPOSE) run --rm --no-deps --user $(HOST_UID):$(HOST_GID) backend
-NODE_RUN       = $(COMPOSE) run --rm --no-deps --user $(HOST_UID):$(HOST_GID) node
 
 .DEFAULT_GOAL := help
 
-.PHONY: help dev stop down restart logs logs-app assets-dev assets-build assets-clean migrate migrate-fresh migrate-fresh-seed seed rollback cache-clear cache-build queue-work tinker test test-coverage analyse lint security composer-install composer-update npm-install npm-update clean reset
+.PHONY: help dev init-dev build rebuild stop down restart logs logs-app assets-dev assets-build assets-clean migrate migrate-fresh migrate-fresh-seed seed rollback cache-clear cache-build queue-work tinker test test-coverage analyse lint security composer-install composer-update npm-install npm-update clean reset
 
 define run-artisan-if-installed
 	@if [ -f backend/vendor/autoload.php ]; then \
@@ -33,22 +31,51 @@ help: ## Show this help
 ##@ Development
 
 dev: ## Start all containers and watch logs
-	@if [ ! -f backend/vendor/autoload.php ]; then \
-		echo "Installing backend dependencies..."; \
-		$(APP_RUN) composer install -d backend; \
+	@if [[ ! -f backend/vendor/autoload.php ]]; then \
+		echo "[lexrate] Missing backend/vendor/. Installing PHP dependencies..."; \
+		composer install --working-dir=backend --no-interaction --no-scripts; \
 	fi
-	@if [ ! -d frontend/node_modules ] || [ ! -f frontend/node_modules/vite/bin/vite.js ]; then \
-		echo "Installing frontend dependencies..."; \
-		$(NODE_RUN) npm install; \
+	@if [[ ! -d frontend/node_modules ]]; then \
+		echo "[lexrate] Missing frontend/node_modules/. Installing JS dependencies..."; \
+		npm install --prefix frontend; \
 	fi
-	@if ! $(NODE_RUN) sh -lc "cd /srv/frontend && node -e \"require('rollup')\"" >/dev/null 2>&1; then \
-		echo "Reinstalling frontend dependencies because the host node_modules tree is inconsistent..."; \
-		rm -rf frontend/node_modules frontend/package-lock.json; \
-		$(NODE_RUN) npm install; \
-	fi
+	@echo "[lexrate] Starting dev containers..."
+	@$(COMPOSE) up -d
+	@echo "[lexrate] Dev stack is up."
 	@echo "→ App:     http://executo.local"
 	@echo "→ Mailpit: http://executo.local/mailpit"
-	$(COMPOSE) up --build
+	@echo "[lexrate] Attaching to container logs. Press Ctrl+C to stop log tailing."
+	@$(COMPOSE) logs --tail=100 -f
+
+init-dev: ## Prepare local dependencies, migrate, seed, and run checks
+	@if [[ ! -f backend/vendor/autoload.php ]]; then \
+		echo "[lexrate] Missing backend/vendor/. Installing PHP dependencies..."; \
+		composer install --working-dir=backend --no-interaction --no-scripts; \
+	fi
+	@if [[ ! -d frontend/node_modules ]]; then \
+		echo "[lexrate] Missing frontend/node_modules/. Installing JS dependencies..."; \
+		npm install --prefix frontend; \
+	fi
+	@echo "[lexrate] Building and starting dev containers..."
+	@$(COMPOSE) up --build -d
+	@if ! grep -q '^APP_KEY=base64:' $(ENV); then \
+		echo "[lexrate] Generating Laravel APP_KEY..."; \
+		$(COMPOSE) exec -T backend php artisan key:generate --force; \
+	fi
+	@echo "[lexrate] Running Laravel package discovery..."
+	@$(COMPOSE) exec -T backend php artisan package:discover --ansi
+	@echo "[lexrate] Running Laravel migrations..."
+	@$(COMPOSE) exec -T backend php artisan migrate --force
+	@echo "[lexrate] Seeding sample data..."
+	@$(COMPOSE) exec -T backend php artisan db:seed --force
+	@echo "[lexrate] Running test suite..."
+	@$(MAKE) test
+
+build: ## Build Docker images only
+	$(COMPOSE) build
+
+rebuild: ## Rebuild Docker images and then start containers
+	$(COMPOSE) up --build -d
 
 stop: ## Stop all containers
 	$(COMPOSE) stop
@@ -60,10 +87,10 @@ restart: ## Restart all containers
 	$(COMPOSE) restart
 
 logs: ## Tail logs from all containers
-	$(COMPOSE) logs -f
+	$(COMPOSE) logs --tail=100 -f
 
 logs-app: ## Tail logs from PHP container only
-	$(COMPOSE) logs -f app
+	$(COMPOSE) logs --tail=100 -f backend
 
 ##@ Assets
 
@@ -116,13 +143,13 @@ tinker: ## Open Laravel Tinker REPL
 ##@ Code Quality
 
 test: ## Run full test suite (Pest)
-	$(PHP) backend/vendor/bin/pest
+	$(PHP) vendor/bin/pest
 
 test-coverage: ## Run tests with coverage report
-	$(PHP) backend/vendor/bin/pest --coverage --min=80
+	$(PHP) vendor/bin/pest --coverage --min=80
 
 analyse: ## Run PHPStan static analysis (level 8)
-	$(PHP) backend/vendor/bin/phpstan analyse
+	$(PHP) vendor/bin/phpstan analyse
 
 lint: ## Run all quality checks (PHPStan + tests)
 	$(MAKE) analyse
@@ -130,17 +157,26 @@ lint: ## Run all quality checks (PHPStan + tests)
 
 ##@ Dependencies
 
-composer-install: ## Install PHP dependencies
-	$(APP_RUN) composer install -d backend
-
 composer-update: ## Update PHP dependencies
-	$(APP_RUN) composer update -d backend
+	@if ! command -v composer >/dev/null 2>&1; then \
+		echo "composer is required on the host for this target."; \
+		exit 1; \
+	fi
+	cd backend && composer update
 
 npm-install: ## Install JS dependencies
-	$(NODE_RUN) npm install
+	@if ! command -v npm >/dev/null 2>&1; then \
+		echo "npm is required on the host for this target."; \
+		exit 1; \
+	fi
+	cd frontend && npm install
 
 npm-update: ## Update JS dependencies
-	$(NODE_RUN) npm update
+	@if ! command -v npm >/dev/null 2>&1; then \
+		echo "npm is required on the host for this target."; \
+		exit 1; \
+	fi
+	cd frontend && npm update
 
 ##@ Cleanup
 

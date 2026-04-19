@@ -1,3 +1,6 @@
+@source "../**/*.{vue,ts}";
+@source "../../backend/resources/views/**/*.blade.php";
+
 @import "tailwindcss";
 
 :root {

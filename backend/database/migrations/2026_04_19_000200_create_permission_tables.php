@@ -83,8 +83,12 @@ return new class extends Migration
             $table->primary([$pivotPermission, $pivotRole], 'role_has_permissions_permission_id_role_id_primary');
         });
 
-        Cache::store(config('permission.cache.store') !== 'default' ? config('permission.cache.store') : null)
-            ->forget((string) config('permission.cache.key'));
+        try {
+            Cache::store(config('permission.cache.store') !== 'default' ? config('permission.cache.store') : null)
+                ->forget((string) config('permission.cache.key'));
+        } catch (\Throwable) {
+            // Cache store bootstrapping should not block schema creation during first install.
+        }
     }
 
     public function down(): void

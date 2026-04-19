@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Api\V1\DistrictController;
 use App\Http\Controllers\Api\V1\Auth\AuthSessionController;
 use App\Http\Controllers\Api\V1\Auth\CurrentUserController;
 use Illuminate\Support\Facades\Route;
@@ -18,4 +19,7 @@ Route::middleware(['auth:sanctum'])->group(static function (): void {
 
     Route::post('/auth/logout', [AuthSessionController::class, 'destroy'])
         ->name('api.v1.auth.logout');
+
+    Route::get('/districts', [DistrictController::class, 'index'])
+        ->name('api.v1.districts.index');
 });
