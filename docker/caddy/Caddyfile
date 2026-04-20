@@ -8,7 +8,12 @@ executo.local:80 {
         format console
     }
 
-    log_skip /favicon.ico /favicon.svg /robots.txt /vite-hmr* /@vite* /assets/*
+    log_skip /favicon.ico
+    log_skip /favicon.svg
+    log_skip /robots.txt
+    log_skip /vite-hmr*
+    log_skip /@vite*
+    log_skip /assets/*
 
     handle /api/* {
         reverse_proxy backend:80 {

@@ -41,8 +41,8 @@ fi
 
 # ── Permissions ──────────────────────────────────────────────────────────────
 
-chown -R www-data:www-data storage bootstrap/cache
-chmod -R 775 storage bootstrap/cache
+mkdir -p storage/logs bootstrap/cache
+chmod -R 0777 storage bootstrap/cache
 
 echo "INFO: Starting Apache..."
 exec apache2-foreground

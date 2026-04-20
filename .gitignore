@@ -11,7 +11,7 @@
 /.idea/
 /.vscode/
 /.DS_Store
-/.codex
 
 /data/export.json
 /old/*
+/.codex

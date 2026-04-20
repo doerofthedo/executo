@@ -176,7 +176,19 @@ composer-update: ## Update PHP dependencies
 		echo "composer is required on the host for this target."; \
 		exit 1; \
 	fi
-	cd backend && composer update
+	@if ! command -v php >/dev/null 2>&1; then \
+		echo "php is required on the host for this target."; \
+		exit 1; \
+	fi
+	@mkdir -p backend/storage/logs backend/bootstrap/cache
+	@if [ ! -w backend/storage ] || [ ! -w backend/storage/logs ] || [ ! -w backend/bootstrap/cache ]; then \
+		echo "[executo] Backend writable paths are not writable on the host."; \
+		echo "[executo] Run once: sudo chown -R $$(id -u):$$(id -g) backend/storage backend/bootstrap/cache"; \
+		exit 1; \
+	fi
+	cd backend && composer update --no-scripts
+	@echo "[executo] Running Laravel package discovery on the host..."
+	cd backend && APP_ENV=local APP_DEBUG=true CACHE_STORE=array SESSION_DRIVER=array QUEUE_CONNECTION=sync DB_CONNECTION=sqlite DB_DATABASE=':memory:' REDIS_HOST=127.0.0.1 php artisan package:discover --ansi
 
 npm-install: ## Install JS dependencies
 	@if ! command -v npm >/dev/null 2>&1; then \
