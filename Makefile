@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-# Variables — edit here if container/service names change
+# Variables -- edit here if container/service names change
 COMPOSE        = docker compose -f docker-compose.yml
 PHP            = $(COMPOSE) exec backend php
 ARTISAN        = $(PHP) artisan
@@ -21,6 +21,30 @@ define run-artisan-if-installed
 	fi
 endef
 
+define run-artisan-if-view-configured
+	@if [ ! -f backend/vendor/autoload.php ]; then \
+		echo "Skipping '$(1)' because backend dependencies are not installed yet."; \
+	elif [ ! -f backend/config/view.php ]; then \
+		echo "Skipping '$(1)' because backend/config/view.php is not present in this scaffold."; \
+	else \
+		$(ARTISAN) $(1); \
+	fi
+endef
+
+define ensure-host-composer
+	@if [[ ! -f backend/vendor/autoload.php || ! -f backend/vendor/mockery/mockery/library/Mockery.php || ! -x backend/vendor/bin/pest ]]; then \
+		echo "[executo] Backend dependencies are incomplete. Installing PHP dependencies..."; \
+		composer install --working-dir=backend --no-interaction --no-scripts; \
+	fi
+endef
+
+define ensure-host-npm
+	@if [[ ! -d frontend/node_modules ]]; then \
+		echo "[executo] Missing frontend/node_modules/. Installing JS dependencies..."; \
+		npm install --prefix frontend; \
+	fi
+endef
+
 ##@ Help
 
 help: ## Show this help
@@ -30,46 +54,32 @@ help: ## Show this help
 
 ##@ Development
 
-dev: ## Start all containers and watch logs
-	@if [[ ! -f backend/vendor/autoload.php ]]; then \
-		echo "[lexrate] Missing backend/vendor/. Installing PHP dependencies..."; \
-		composer install --working-dir=backend --no-interaction --no-scripts; \
-	fi
-	@if [[ ! -d frontend/node_modules ]]; then \
-		echo "[lexrate] Missing frontend/node_modules/. Installing JS dependencies..."; \
-		npm install --prefix frontend; \
-	fi
-	@echo "[lexrate] Starting dev containers..."
-	@$(COMPOSE) up -d
-	@echo "[lexrate] Dev stack is up."
+dev: ## Bootstrap everything: dependencies, assets, containers, migrations, seed, tests, logs
+	$(call ensure-host-composer)
+	$(call ensure-host-npm)
+	@echo "[executo] Building frontend assets..."
+	@$(MAKE) assets-build
+	@echo "[executo] Building and starting dev containers..."
+	@$(COMPOSE) up --build -d
+	@echo "[executo] Running Laravel package discovery..."
+	@$(COMPOSE) exec -T backend php artisan package:discover --ansi
+	@echo "[executo] Running database migrations..."
+	@$(COMPOSE) exec -T backend php artisan migrate --force
+	@echo "[executo] Running database seeders..."
+	@$(COMPOSE) exec -T backend php artisan db:seed --force
+	@echo "[executo] Running test suite..."
+	@$(MAKE) test
+	@echo "[executo] Restoring application database state after tests..."
+	@$(COMPOSE) exec -T backend php artisan migrate --force
+	@$(COMPOSE) exec -T backend php artisan db:seed --force
+	@echo "[executo] Dev stack is up."
 	@echo "→ App:     http://executo.local"
 	@echo "→ Mailpit: http://executo.local/mailpit"
-	@echo "[lexrate] Attaching to container logs. Press Ctrl+C to stop log tailing."
+	@echo "[executo] Attaching to container logs. Press Ctrl+C to stop log tailing."
 	@$(COMPOSE) logs --tail=100 -f
 
 init-dev: ## Prepare local dependencies, migrate, seed, and run checks
-	@if [[ ! -f backend/vendor/autoload.php ]]; then \
-		echo "[lexrate] Missing backend/vendor/. Installing PHP dependencies..."; \
-		composer install --working-dir=backend --no-interaction --no-scripts; \
-	fi
-	@if [[ ! -d frontend/node_modules ]]; then \
-		echo "[lexrate] Missing frontend/node_modules/. Installing JS dependencies..."; \
-		npm install --prefix frontend; \
-	fi
-	@echo "[lexrate] Building and starting dev containers..."
-	@$(COMPOSE) up --build -d
-	@if ! grep -q '^APP_KEY=base64:' $(ENV); then \
-		echo "[lexrate] Generating Laravel APP_KEY..."; \
-		$(COMPOSE) exec -T backend php artisan key:generate --force; \
-	fi
-	@echo "[lexrate] Running Laravel package discovery..."
-	@$(COMPOSE) exec -T backend php artisan package:discover --ansi
-	@echo "[lexrate] Running Laravel migrations..."
-	@$(COMPOSE) exec -T backend php artisan migrate --force
-	@echo "[lexrate] Seeding sample data..."
-	@$(COMPOSE) exec -T backend php artisan db:seed --force
-	@echo "[lexrate] Running test suite..."
-	@$(MAKE) test
+	@$(MAKE) dev
 
 build: ## Build Docker images only
 	$(COMPOSE) build
@@ -98,7 +108,11 @@ assets-dev: ## Start Vite dev server (HMR) — alias for npm run dev inside node
 	$(NPM) run dev
 
 assets-build: ## Build and compile frontend assets to public/assets/
-	$(NPM) run build
+	@if ! command -v npm >/dev/null 2>&1; then \
+		echo "npm is required on the host for this target."; \
+		exit 1; \
+	fi
+	cd frontend && npm run build
 
 assets-clean: ## Remove compiled assets from public/assets/
 	rm -rf public/assets/*
@@ -127,12 +141,12 @@ cache-clear: ## Clear all Laravel caches
 	$(call run-artisan-if-installed,cache:clear)
 	$(call run-artisan-if-installed,config:clear)
 	$(call run-artisan-if-installed,route:clear)
-	$(call run-artisan-if-installed,view:clear)
+	$(call run-artisan-if-view-configured,view:clear)
 
 cache-build: ## Rebuild all Laravel caches (for production-like testing)
 	$(call run-artisan-if-installed,config:cache)
 	$(call run-artisan-if-installed,route:cache)
-	$(call run-artisan-if-installed,view:cache)
+	$(call run-artisan-if-view-configured,view:cache)
 
 queue-work: ## Start queue worker
 	$(call run-artisan-if-installed,queue:work --tries=3)
@@ -180,9 +194,8 @@ npm-update: ## Update JS dependencies
 
 ##@ Cleanup
 
-clean: ## Remove compiled assets and Laravel caches
-	$(MAKE) assets-clean
-	$(MAKE) cache-clear
+clean: ## ⚠ Stop and remove containers, volumes, orphans, and networks
+	$(COMPOSE) down --volumes --remove-orphans
 
 reset: ## ⚠ Full reset — down, remove volumes, rebuild, migrate fresh, seed
 	@bash -c 'read -p "This will destroy ALL data and volumes. Continue? [y/N] " c; [[ $$c == y ]]'

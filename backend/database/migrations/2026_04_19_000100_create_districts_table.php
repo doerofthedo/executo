@@ -14,8 +14,14 @@ return new class extends Migration
             $table->id();
             $table->char('ulid', 26)->unique();
             $table->unsignedSmallInteger('number')->unique();
+            $table->string('bailiff_name')->nullable();
+            $table->string('bailiff_surname')->nullable();
+            $table->string('court')->nullable();
+            $table->string('address')->nullable();
+            $table->boolean('disabled')->default(false);
             $table->foreignId('owner_id')->constrained('users')->restrictOnDelete();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

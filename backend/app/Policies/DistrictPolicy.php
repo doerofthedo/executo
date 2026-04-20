@@ -18,4 +18,14 @@ final class DistrictPolicy
     {
         return $user->can('district.district.view');
     }
+
+    public function create(User $user): bool
+    {
+        return $user->can('district.district.manage');
+    }
+
+    public function update(User $user, District $district): bool
+    {
+        return $user->can('district.district.manage');
+    }
 }

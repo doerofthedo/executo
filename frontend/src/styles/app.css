@@ -1,20 +1,5 @@
-@source "../**/*.{vue,ts}";
-@source "../../backend/resources/views/**/*.blade.php";
-
-@import "tailwindcss";
-
-:root {
-    color-scheme: dark;
-}
-
 body {
-    margin: 0;
-    font-family: "Manrope", "Segoe UI", sans-serif;
     background:
         radial-gradient(circle at top, rgba(217, 119, 6, 0.24), transparent 35%),
         linear-gradient(160deg, #0c0a09 0%, #1c1917 100%);
-}
-
-* {
-    box-sizing: border-box;
 }

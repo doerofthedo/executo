@@ -1,0 +1,1306 @@
+{
+  "districts": [
+    {
+      "district_number": 2,
+      "district_name": "2. iecirknis",
+      "district_slug": "2-iecirknis",
+      "district_type": "real",
+      "court": "Kurzemes apgabaltiesa",
+      "email": "ieva.leve@lzti.lv",
+      "address": "Jelgavas iela 2, Saldus, LV-3801 (2.stāvs, ieeja no pagalma puses)",
+      "admin": {
+        "first_name": "Ieva",
+        "last_name": "Leve",
+        "email": "ieva.leve@lzti.lv"
+      }
+    },
+    {
+      "district_number": 5,
+      "district_name": "5. iecirknis",
+      "district_slug": "5-iecirknis",
+      "district_type": "real",
+      "court": "Kurzemes apgabaltiesa",
+      "email": "agnese.bike@lzti.lv",
+      "address": "Kūrmājas prospekts 11, 2.stāvs, Liepāja, LV-3401",
+      "admin": {
+        "first_name": "Agnese",
+        "last_name": "Biķe",
+        "email": "agnese.bike@lzti.lv"
+      }
+    },
+    {
+      "district_number": 6,
+      "district_name": "6. iecirknis",
+      "district_slug": "6-iecirknis",
+      "district_type": "real",
+      "court": "Kurzemes apgabaltiesa",
+      "email": "dace.cgojeva@lzti.lv",
+      "address": "Lielā iela 1, Talsi, LV-3201",
+      "admin": {
+        "first_name": "Dace",
+        "last_name": "Cgojeva",
+        "email": "dace.cgojeva@lzti.lv"
+      }
+    },
+    {
+      "district_number": 8,
+      "district_name": "8. iecirknis",
+      "district_slug": "8-iecirknis",
+      "district_type": "real",
+      "court": "Kurzemes apgabaltiesa",
+      "email": "juris.kalnins@lzti.lv",
+      "address": "Bāriņu iela 13-NT2, Liepāja, LV-3401",
+      "admin": {
+        "first_name": "Juris",
+        "last_name": "Kalniņš",
+        "email": "juris.kalnins@lzti.lv"
+      }
+    },
+    {
+      "district_number": 9,
+      "district_name": "9. iecirknis",
+      "district_slug": "9-iecirknis",
+      "district_type": "real",
+      "court": "Kurzemes apgabaltiesa",
+      "email": "normunds.korics@lzti.lv",
+      "address": "Lielā iela 9, 2.stāvs, 3.kabinets, Saldus, LV-3801",
+      "admin": {
+        "first_name": "Normunds",
+        "last_name": "Korics",
+        "email": "normunds.korics@lzti.lv"
+      }
+    },
+    {
+      "district_number": 11,
+      "district_name": "11. iecirknis",
+      "district_slug": "11-iecirknis",
+      "district_type": "real",
+      "court": "Kurzemes apgabaltiesa",
+      "email": "edgars.cgojevs@lzti.lv",
+      "address": "Kuldīgas iela 47-8, Ventspils, LV-3601",
+      "admin": {
+        "first_name": "Edgars",
+        "last_name": "Cgojevs",
+        "email": "edgars.cgojevs@lzti.lv"
+      }
+    },
+    {
+      "district_number": 12,
+      "district_name": "12. iecirknis",
+      "district_slug": "12-iecirknis",
+      "district_type": "real",
+      "court": "Kurzemes apgabaltiesa",
+      "email": "ilona.kalnina@lzti.lv",
+      "address": "Lielais prospekts 54-2, Ventspils, LV-3601",
+      "admin": {
+        "first_name": "Ilona",
+        "last_name": "Kalniņa",
+        "email": "ilona.kalnina@lzti.lv"
+      }
+    },
+    {
+      "district_number": 13,
+      "district_name": "13. iecirknis",
+      "district_slug": "13-iecirknis",
+      "district_type": "real",
+      "court": "Kurzemes apgabaltiesa",
+      "email": "sanija.sproge@lzti.lv",
+      "address": "Ūdens iela 15, Ventspils, LV-3601",
+      "admin": {
+        "first_name": "Sanija",
+        "last_name": "Sproģe",
+        "email": "sanija.sproge@lzti.lv"
+      }
+    },
+    {
+      "district_number": 14,
+      "district_name": "14. iecirknis",
+      "district_slug": "14-iecirknis",
+      "district_type": "real",
+      "court": "Kurzemes apgabaltiesa",
+      "email": "ivetta.kalugina@lzti.lv",
+      "address": "Ūdens iela 15, Ventspils, LV-3601",
+      "admin": {
+        "first_name": "Ivetta",
+        "last_name": "Kalugina",
+        "email": "ivetta.kalugina@lzti.lv"
+      }
+    },
+    {
+      "district_number": 15,
+      "district_name": "15. iecirknis",
+      "district_slug": "15-iecirknis",
+      "district_type": "real",
+      "court": "Kurzemes apgabaltiesa",
+      "email": "sanija.sproge@lzti.lv",
+      "address": "Ūdens iela 15, Ventspils, LV-3601",
+      "admin": {
+        "first_name": "Sanija",
+        "last_name": "Sproģe",
+        "email": "sanija.sproge@lzti.lv"
+      }
+    },
+    {
+      "district_number": 16,
+      "district_name": "16. iecirknis",
+      "district_slug": "16-iecirknis",
+      "district_type": "real",
+      "court": "Latgales apgabaltiesa",
+      "email": "anita.kalnina@lzti.lv",
+      "address": "Bērzpils iela 2, Balvi, LV-4501",
+      "admin": {
+        "first_name": "Anita",
+        "last_name": "Kalniņa",
+        "email": "anita.kalnina@lzti.lv"
+      }
+    },
+    {
+      "district_number": 18,
+      "district_name": "18. iecirknis",
+      "district_slug": "18-iecirknis",
+      "district_type": "real",
+      "court": "Latgales apgabaltiesa",
+      "email": "julija.joffe@lzti.lv",
+      "address": "Lāčplēša iela 81, 2.telpa, Daugavpils, LV-5401",
+      "admin": {
+        "first_name": "Jūlija",
+        "last_name": "Joffe",
+        "email": "julija.joffe@lzti.lv"
+      }
+    },
+    {
+      "district_number": 19,
+      "district_name": "19. iecirknis",
+      "district_slug": "19-iecirknis",
+      "district_type": "real",
+      "court": "Latgales apgabaltiesa",
+      "email": "ingars.osipovs@lzti.lv",
+      "address": "Raiņa bulvāris 3-2.kab., Preiļi, LV-5301",
+      "admin": {
+        "first_name": "Ingars",
+        "last_name": "Osipovs",
+        "email": "ingars.osipovs@lzti.lv"
+      }
+    },
+    {
+      "district_number": 20,
+      "district_name": "20. iecirknis",
+      "district_slug": "20-iecirknis",
+      "district_type": "real",
+      "court": "Latgales apgabaltiesa",
+      "email": "valentina.nikolajeva@lzti.lv",
+      "address": "Imantas iela 3/5, Daugavpils, LV-5401",
+      "admin": {
+        "first_name": "Valentīna",
+        "last_name": "Nikolajeva",
+        "email": "valentina.nikolajeva@lzti.lv"
+      }
+    },
+    {
+      "district_number": 21,
+      "district_name": "21. iecirknis",
+      "district_slug": "21-iecirknis",
+      "district_type": "real",
+      "court": "Latgales apgabaltiesa",
+      "email": "tatjana.skrauca@lzti.lv",
+      "address": "Latgales iela 87, 1.stāvs, Rēzekne, LV-4601",
+      "admin": {
+        "first_name": "Tatjana",
+        "last_name": "Skrauča",
+        "email": "tatjana.skrauca@lzti.lv"
+      }
+    },
+    {
+      "district_number": 24,
+      "district_name": "24. iecirknis",
+      "district_slug": "24-iecirknis",
+      "district_type": "real",
+      "court": "Latgales apgabaltiesa",
+      "email": "kristine.meldere@lzti.lv",
+      "address": "Rēzeknes iela 33a, Krāslava, LV-5601",
+      "admin": {
+        "first_name": "Kristīne",
+        "last_name": "Meldere",
+        "email": "kristine.meldere@lzti.lv"
+      }
+    },
+    {
+      "district_number": 27,
+      "district_name": "27. iecirknis",
+      "district_slug": "27-iecirknis",
+      "district_type": "real",
+      "court": "Latgales apgabaltiesa",
+      "email": "zanna.osipova@lzti.lv",
+      "address": "Raiņa bulvāris 3-1.kab., Preiļi, LV-5301",
+      "admin": {
+        "first_name": "Žanna",
+        "last_name": "Osipova",
+        "email": "zanna.osipova@lzti.lv"
+      }
+    },
+    {
+      "district_number": 28,
+      "district_name": "28. iecirknis",
+      "district_slug": "28-iecirknis",
+      "district_type": "real",
+      "court": "Latgales apgabaltiesa",
+      "email": "alina.zake@lzti.lv",
+      "address": "Atbrīvošanas aleja 93a, Rēzekne, LV-4601",
+      "admin": {
+        "first_name": "Alīna",
+        "last_name": "Zaķe",
+        "email": "alina.zake@lzti.lv"
+      }
+    },
+    {
+      "district_number": 29,
+      "district_name": "29. iecirknis",
+      "district_slug": "29-iecirknis",
+      "district_type": "real",
+      "court": "Latgales apgabaltiesa",
+      "email": "lilija.solovjova@lzti.lv",
+      "address": "Atbrīvošanas aleja 93a, Rēzekne, LV-4601",
+      "admin": {
+        "first_name": "Lilija",
+        "last_name": "Solovjova",
+        "email": "lilija.solovjova@lzti.lv"
+      }
+    },
+    {
+      "district_number": 30,
+      "district_name": "30. iecirknis",
+      "district_slug": "30-iecirknis",
+      "district_type": "real",
+      "court": "Latgales apgabaltiesa",
+      "email": "anita.briska@lzti.lv",
+      "address": "Atbrīvošanas aleja 93a, Rēzekne, LV-4601",
+      "admin": {
+        "first_name": "Anita",
+        "last_name": "Briška",
+        "email": "anita.briska@lzti.lv"
+      }
+    },
+    {
+      "district_number": 31,
+      "district_name": "31. iecirknis",
+      "district_slug": "31-iecirknis",
+      "district_type": "real",
+      "court": "Latgales apgabaltiesa",
+      "email": "gaida.rutkovska@lzti.lv",
+      "address": "Atbrīvošanas aleja 93a, Rēzekne, LV-4601",
+      "admin": {
+        "first_name": "Gaida",
+        "last_name": "Rutkovska",
+        "email": "gaida.rutkovska@lzti.lv"
+      }
+    },
+    {
+      "district_number": 32,
+      "district_name": "32. iecirknis",
+      "district_slug": "32-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "roberts.kucinskis@lzti.lv",
+      "address": "Maiznīcas iela 4-2, Rīga, LV-1001",
+      "admin": {
+        "first_name": "Roberts",
+        "last_name": "Kučinskis",
+        "email": "roberts.kucinskis@lzti.lv"
+      }
+    },
+    {
+      "district_number": 33,
+      "district_name": "33. iecirknis",
+      "district_slug": "33-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "mara.kucinska@lzti.lv",
+      "address": "Maiznīcas iela 4-2, Rīga, LV-1001",
+      "admin": {
+        "first_name": "Māra",
+        "last_name": "Kučinska",
+        "email": "mara.kucinska@lzti.lv"
+      }
+    },
+    {
+      "district_number": 34,
+      "district_name": "34. iecirknis",
+      "district_slug": "34-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "elina.balasanjana@lzti.lv",
+      "address": "Tērbatas iela 88-II, Rīga, LV-1001",
+      "admin": {
+        "first_name": "Elīna",
+        "last_name": "Balasanjana",
+        "email": "elina.balasanjana@lzti.lv"
+      }
+    },
+    {
+      "district_number": 35,
+      "district_name": "35. iecirknis",
+      "district_slug": "35-iecirknis",
+      "district_type": "real",
+      "court": "Zemgales apgabaltiesa",
+      "email": "edgars.mihailovs@lzti.lv",
+      "address": "Atmodas iela 19-240, Jelgava, LV-3007",
+      "admin": {
+        "first_name": "Edgars",
+        "last_name": "Mihailovs",
+        "email": "edgars.mihailovs@lzti.lv"
+      }
+    },
+    {
+      "district_number": 36,
+      "district_name": "36. iecirknis",
+      "district_slug": "36-iecirknis",
+      "district_type": "real",
+      "court": "Zemgales apgabaltiesa",
+      "email": "iveta.kruka@lzti.lv",
+      "address": "Ceriņu iela 14 (2.stāvs), Ogre, Ogres nov., LV-5001",
+      "admin": {
+        "first_name": "Iveta",
+        "last_name": "Kruka",
+        "email": "iveta.kruka@lzti.lv"
+      }
+    },
+    {
+      "district_number": 37,
+      "district_name": "37. iecirknis",
+      "district_slug": "37-iecirknis",
+      "district_type": "real",
+      "court": "Zemgales apgabaltiesa",
+      "email": "gunita.gruzina-vancevica@lzti.lv",
+      "address": "Parka iela 1a-606, Ogre, LV-5001",
+      "admin": {
+        "first_name": "Gunita",
+        "last_name": "Gruziņa-Vanceviča",
+        "email": "gunita.gruzina-vancevica@lzti.lv"
+      }
+    },
+    {
+      "district_number": 40,
+      "district_name": "40. iecirknis",
+      "district_slug": "40-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "janis.strizko@lzti.lv",
+      "address": "Matīsa iela 13-12A, Rīga, LV-1001",
+      "admin": {
+        "first_name": "Jānis",
+        "last_name": "Strižko",
+        "email": "janis.strizko@lzti.lv"
+      }
+    },
+    {
+      "district_number": 42,
+      "district_name": "42. iecirknis",
+      "district_slug": "42-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "helga.rutena@lzti.lv",
+      "address": "Miera iela 36, Rīga, LV-1001",
+      "admin": {
+        "first_name": "Helga",
+        "last_name": "Rūtena",
+        "email": "helga.rutena@lzti.lv"
+      }
+    },
+    {
+      "district_number": 43,
+      "district_name": "43. iecirknis",
+      "district_slug": "43-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "miks.puciriuss@lzti.lv",
+      "address": "Pērses iela 9/11, 5.st., Rīga, LV-1011",
+      "admin": {
+        "first_name": "Miks",
+        "last_name": "Puciriuss",
+        "email": "miks.puciriuss@lzti.lv"
+      }
+    },
+    {
+      "district_number": 44,
+      "district_name": "44. iecirknis",
+      "district_slug": "44-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "rihards.vaivods@lzti.lv",
+      "address": "Lāčplēša iela 75, Rīga, LV-1011",
+      "admin": {
+        "first_name": "Rihards",
+        "last_name": "Vaivods",
+        "email": "rihards.vaivods@lzti.lv"
+      }
+    },
+    {
+      "district_number": 45,
+      "district_name": "45. iecirknis",
+      "district_slug": "45-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "katrina.baltalksne@lzti.lv",
+      "address": "Lāčplēša iela 75, 3.stāvs, Rīga, LV-1011",
+      "admin": {
+        "first_name": "Katrīna",
+        "last_name": "Baltalksne",
+        "email": "katrina.baltalksne@lzti.lv"
+      }
+    },
+    {
+      "district_number": 46,
+      "district_name": "46. iecirknis",
+      "district_slug": "46-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "janis.tunnis@lzti.lv",
+      "address": "Tērbatas iela 53-8, Rīga, LV-1011",
+      "admin": {
+        "first_name": "Jānis",
+        "last_name": "Tunnis",
+        "email": "janis.tunnis@lzti.lv"
+      }
+    },
+    {
+      "district_number": 47,
+      "district_name": "47. iecirknis",
+      "district_slug": "47-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "dana.krumina@lzti.lv",
+      "address": "Pils iela 13A, Sigulda, Siguldas novads, LV-2150",
+      "admin": {
+        "first_name": "Dana",
+        "last_name": "Krūmiņa",
+        "email": "dana.krumina@lzti.lv"
+      }
+    },
+    {
+      "district_number": 50,
+      "district_name": "50. iecirknis",
+      "district_slug": "50-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "kalvis.duritis@lzti.lv",
+      "address": "Tērbatas iela 53-8, Rīga, LV-1011",
+      "admin": {
+        "first_name": "Kalvis",
+        "last_name": "Dūrītis",
+        "email": "kalvis.duritis@lzti.lv"
+      }
+    },
+    {
+      "district_number": 51,
+      "district_name": "51. iecirknis",
+      "district_slug": "51-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "sandis.tomsons@lzti.lv",
+      "address": "Tērbatas iela 42/44-10, Rīga, LV-1011",
+      "admin": {
+        "first_name": "Sandis",
+        "last_name": "Tomsons",
+        "email": "sandis.tomsons@lzti.lv"
+      }
+    },
+    {
+      "district_number": 52,
+      "district_name": "52. iecirknis",
+      "district_slug": "52-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "andrejs.glumovs@lzti.lv",
+      "address": "Pērnavas iela 42, Rīga, LV-1009",
+      "admin": {
+        "first_name": "Andrejs",
+        "last_name": "Glumovs",
+        "email": "andrejs.glumovs@lzti.lv"
+      }
+    },
+    {
+      "district_number": 53,
+      "district_name": "53. iecirknis",
+      "district_slug": "53-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "martins.eglitis@lzti.lv",
+      "address": "Blaumaņa iela 32-4, Rīga, LV-1011",
+      "admin": {
+        "first_name": "Mārtiņš",
+        "last_name": "Eglītis",
+        "email": "martins.eglitis@lzti.lv"
+      }
+    },
+    {
+      "district_number": 54,
+      "district_name": "54. iecirknis",
+      "district_slug": "54-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "ilga.kersteine@lzti.lv",
+      "address": "Uzvaras prospekts 1C, Baloži, Ķekavas novads, LV-2128",
+      "admin": {
+        "first_name": "Ilga",
+        "last_name": "Keršteine",
+        "email": "ilga.kersteine@lzti.lv"
+      }
+    },
+    {
+      "district_number": 55,
+      "district_name": "55. iecirknis",
+      "district_slug": "55-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "sandra.rundele@lzti.lv",
+      "address": "Tērbatas iela 39-2, Rīga, LV-1011",
+      "admin": {
+        "first_name": "Sandra",
+        "last_name": "Rundele",
+        "email": "sandra.rundele@lzti.lv"
+      }
+    },
+    {
+      "district_number": 56,
+      "district_name": "56. iecirknis",
+      "district_slug": "56-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "vita.brence@lzti.lv",
+      "address": "Krišjāņa Barona iela 37, Rīga, LV-1011",
+      "admin": {
+        "first_name": "Vita",
+        "last_name": "Brence",
+        "email": "vita.brence@lzti.lv"
+      }
+    },
+    {
+      "district_number": 57,
+      "district_name": "57. iecirknis",
+      "district_slug": "57-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "ligita.petersone@lzti.lv",
+      "address": "Tērbatas iela 37-3, Rīga, LV-1011",
+      "admin": {
+        "first_name": "Ligita",
+        "last_name": "Pētersone",
+        "email": "ligita.petersone@lzti.lv"
+      }
+    },
+    {
+      "district_number": 58,
+      "district_name": "58. iecirknis",
+      "district_slug": "58-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "janis.stepanovs@lzti.lv",
+      "address": "Skolas iela 9-13, Rīga, LV-1010",
+      "admin": {
+        "first_name": "Jānis",
+        "last_name": "Stepanovs",
+        "email": "janis.stepanovs@lzti.lv"
+      }
+    },
+    {
+      "district_number": 59,
+      "district_name": "59. iecirknis",
+      "district_slug": "59-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "janis.lazdans@lzti.lv",
+      "address": "Skolas iela 9-13, Rīga, LV-1010",
+      "admin": {
+        "first_name": "Jānis",
+        "last_name": "Lazdāns",
+        "email": "janis.lazdans@lzti.lv"
+      }
+    },
+    {
+      "district_number": 60,
+      "district_name": "60. iecirknis",
+      "district_slug": "60-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "sandra.suveizda@lzti.lv",
+      "address": "Lāčplēša iela 14-15, Rīga, LV-1011",
+      "admin": {
+        "first_name": "Sandra",
+        "last_name": "Suveizda",
+        "email": "sandra.suveizda@lzti.lv"
+      }
+    },
+    {
+      "district_number": 61,
+      "district_name": "61. iecirknis",
+      "district_slug": "61-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "inta.kesane@lzti.lv",
+      "address": "Brīvības gatve 262-3, Rīga, LV-1006",
+      "admin": {
+        "first_name": "Inta",
+        "last_name": "Kešāne",
+        "email": "inta.kesane@lzti.lv"
+      }
+    },
+    {
+      "district_number": 62,
+      "district_name": "62. iecirknis",
+      "district_slug": "62-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "evita.eistere@lzti.lv",
+      "address": "Baznīcas iela 39-6, Rīga, LV-1010",
+      "admin": {
+        "first_name": "Evita",
+        "last_name": "Eistere",
+        "email": "evita.eistere@lzti.lv"
+      }
+    },
+    {
+      "district_number": 63,
+      "district_name": "63. iecirknis",
+      "district_slug": "63-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "jolanta.subrovska@lzti.lv",
+      "address": "Gāles iela 27, Siguldas pilsēta, Siguldas novads, LV-2150",
+      "admin": {
+        "first_name": "Jolanta",
+        "last_name": "Šubrovska",
+        "email": "jolanta.subrovska@lzti.lv"
+      }
+    },
+    {
+      "district_number": 64,
+      "district_name": "64. iecirknis",
+      "district_slug": "64-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "agrita.kanepe@lzti.lv",
+      "address": "Tērbatas iela 37-3, Rīgā, LV-1011",
+      "admin": {
+        "first_name": "Agrita",
+        "last_name": "Kaņepe",
+        "email": "agrita.kanepe@lzti.lv"
+      }
+    },
+    {
+      "district_number": 65,
+      "district_name": "65. iecirknis",
+      "district_slug": "65-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "dace.plesa@lzti.lv",
+      "address": "Miera iela 36, Rīga, LV-1001",
+      "admin": {
+        "first_name": "Dace",
+        "last_name": "Pleša",
+        "email": "dace.plesa@lzti.lv"
+      }
+    },
+    {
+      "district_number": 66,
+      "district_name": "66. iecirknis",
+      "district_slug": "66-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "juris.vildaus@lzti.lv",
+      "address": "Avotu iela 40-13, Rīga, LV-1009",
+      "admin": {
+        "first_name": "Juris",
+        "last_name": "Vildaus",
+        "email": "juris.vildaus@lzti.lv"
+      }
+    },
+    {
+      "district_number": 67,
+      "district_name": "67. iecirknis",
+      "district_slug": "67-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "natalja.bekasova@lzti.lv",
+      "address": "Kalnciema iela 39b, Rīga, LV-1046",
+      "admin": {
+        "first_name": "Nataļja",
+        "last_name": "Bekasova",
+        "email": "natalja.bekasova@lzti.lv"
+      }
+    },
+    {
+      "district_number": 68,
+      "district_name": "68. iecirknis",
+      "district_slug": "68-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "aigars.rusins@lzti.lv",
+      "address": "Miera iela 36A, Rīga, LV-1001",
+      "admin": {
+        "first_name": "Aigars",
+        "last_name": "Rušiņš",
+        "email": "aigars.rusins@lzti.lv"
+      }
+    },
+    {
+      "district_number": 69,
+      "district_name": "69. iecirknis",
+      "district_slug": "69-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "aiga.berga@lzti.lv",
+      "address": "Neretas iela 2 k 1-65, Rīga, LV-1004",
+      "admin": {
+        "first_name": "Aiga",
+        "last_name": "Berga",
+        "email": "aiga.berga@lzti.lv"
+      }
+    },
+    {
+      "district_number": 70,
+      "district_name": "70. iecirknis",
+      "district_slug": "70-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "kristine.priedniece@lzti.lv",
+      "address": "Blaumaņa iela 21-10A, Rīga, LV-1011",
+      "admin": {
+        "first_name": "Kristīne",
+        "last_name": "Priedniece",
+        "email": "kristine.priedniece@lzti.lv"
+      }
+    },
+    {
+      "district_number": 71,
+      "district_name": "71. iecirknis",
+      "district_slug": "71-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "oskars.muiznieks@lzti.lv",
+      "address": "Ģertrūdes iela 62A-47, Rīga, LV-1011",
+      "admin": {
+        "first_name": "Oskars",
+        "last_name": "Muižnieks",
+        "email": "oskars.muiznieks@lzti.lv"
+      }
+    },
+    {
+      "district_number": 73,
+      "district_name": "73. iecirknis",
+      "district_slug": "73-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "gunita.spela@lzti.lv",
+      "address": "Kuģu iela 13-46, Rīga, LV-1048",
+      "admin": {
+        "first_name": "Gunita",
+        "last_name": "Špēla",
+        "email": "gunita.spela@lzti.lv"
+      }
+    },
+    {
+      "district_number": 75,
+      "district_name": "75. iecirknis",
+      "district_slug": "75-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "daina.priedniece@lzti.lv",
+      "address": "Ieriķu iela 15 k-1-8, 5. stāvs, Rīga, LV-1084",
+      "admin": {
+        "first_name": "Daina",
+        "last_name": "Priedniece",
+        "email": "daina.priedniece@lzti.lv"
+      }
+    },
+    {
+      "district_number": 77,
+      "district_name": "77. iecirknis",
+      "district_slug": "77-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "marcis.midegs@lzti.lv",
+      "address": "Stabu iela 19-209, Rīga, LV-1011",
+      "admin": {
+        "first_name": "Mārcis",
+        "last_name": "Midegs",
+        "email": "marcis.midegs@lzti.lv"
+      }
+    },
+    {
+      "district_number": 78,
+      "district_name": "78. iecirknis",
+      "district_slug": "78-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "raimonds.mezins@lzti.lv",
+      "address": "Baznīcas iela 37-11, Rīga, LV-1010",
+      "admin": {
+        "first_name": "Raimonds",
+        "last_name": "Mežiņš",
+        "email": "raimonds.mezins@lzti.lv"
+      }
+    },
+    {
+      "district_number": 79,
+      "district_name": "79. iecirknis",
+      "district_slug": "79-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "sandra.paegle@lzti.lv",
+      "address": "Kuģu iela 11-202, Rīga, LV-1048",
+      "admin": {
+        "first_name": "Sandra",
+        "last_name": "Paegle",
+        "email": "sandra.paegle@lzti.lv"
+      }
+    },
+    {
+      "district_number": 80,
+      "district_name": "80. iecirknis",
+      "district_slug": "80-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "baiba.balta@lzti.lv",
+      "address": "Avotu iela 3-10, Rīga, LV-1011",
+      "admin": {
+        "first_name": "Baiba",
+        "last_name": "Baltā",
+        "email": "baiba.balta@lzti.lv"
+      }
+    },
+    {
+      "district_number": 81,
+      "district_name": "81. iecirknis",
+      "district_slug": "81-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "andris.spore@lzti.lv",
+      "address": "Ģertrūdes iela 20-1, Rīga, LV-1011",
+      "admin": {
+        "first_name": "Andris",
+        "last_name": "Spore",
+        "email": "andris.spore@lzti.lv"
+      }
+    },
+    {
+      "district_number": 82,
+      "district_name": "82. iecirknis",
+      "district_slug": "82-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "iluta.broka@lzti.lv",
+      "address": "Blaumaņa iela 38/40 (Ieeja no Pērses ielas), Rīga, LV-1011",
+      "admin": {
+        "first_name": "Iluta",
+        "last_name": "Broka",
+        "email": "iluta.broka@lzti.lv"
+      }
+    },
+    {
+      "district_number": 83,
+      "district_name": "83. iecirknis",
+      "district_slug": "83-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "janis.jonas@lzti.lv",
+      "address": "Matīsa iela 13-12A, Rīgā, LV-1001",
+      "admin": {
+        "first_name": "Jānis",
+        "last_name": "Jonas",
+        "email": "janis.jonas@lzti.lv"
+      }
+    },
+    {
+      "district_number": 84,
+      "district_name": "84. iecirknis",
+      "district_slug": "84-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "ginters.hmelevskis@lzti.lv",
+      "address": "Tērbatas iela 53-4, Rīga, LV-1011",
+      "admin": {
+        "first_name": "Ginters",
+        "last_name": "Hmeļevskis",
+        "email": "ginters.hmelevskis@lzti.lv"
+      }
+    },
+    {
+      "district_number": 86,
+      "district_name": "86. iecirknis",
+      "district_slug": "86-iecirknis",
+      "district_type": "real",
+      "court": "Rīgas apgabaltiesa",
+      "email": "janis.lazdans@lzti.lv",
+      "address": "Skolas iela 9-12, Rīga, LV-1010",
+      "admin": {
+        "first_name": "Jānis",
+        "last_name": "Lazdāns",
+        "email": "janis.lazdans@lzti.lv"
+      }
+    },
+    {
+      "district_number": 87,
+      "district_name": "87. iecirknis",
+      "district_slug": "87-iecirknis",
+      "district_type": "real",
+      "court": "Vidzemes apgabaltiesa",
+      "email": "guna.danga-gara@lzti.lv",
+      "address": "Gaitnieku iela 2A, Gulbene, LV-4401",
+      "admin": {
+        "first_name": "Guna",
+        "last_name": "Danga-Garā",
+        "email": "guna.danga-gara@lzti.lv"
+      }
+    },
+    {
+      "district_number": 89,
+      "district_name": "89. iecirknis",
+      "district_slug": "89-iecirknis",
+      "district_type": "real",
+      "court": "Vidzemes apgabaltiesa",
+      "email": "dita.voronova@lzti.lv",
+      "address": "Jāņa Poruka iela 23, Cēsis, Cēsu novads, LV-4101",
+      "admin": {
+        "first_name": "Dita",
+        "last_name": "Voronova",
+        "email": "dita.voronova@lzti.lv"
+      }
+    },
+    {
+      "district_number": 90,
+      "district_name": "90. iecirknis",
+      "district_slug": "90-iecirknis",
+      "district_type": "real",
+      "court": "Vidzemes apgabaltiesa",
+      "email": "nauris.miglavs@lzti.lv",
+      "address": "Raunas iela 9, Cēsis, LV-4101",
+      "admin": {
+        "first_name": "Nauris",
+        "last_name": "Miglavs",
+        "email": "nauris.miglavs@lzti.lv"
+      }
+    },
+    {
+      "district_number": 91,
+      "district_name": "91. iecirknis",
+      "district_slug": "91-iecirknis",
+      "district_type": "real",
+      "court": "Vidzemes apgabaltiesa",
+      "email": "valija.balta@lzti.lv",
+      "address": "Rīgas iela 28, Gulbene, LV-4401",
+      "admin": {
+        "first_name": "Valija",
+        "last_name": "Baltā",
+        "email": "valija.balta@lzti.lv"
+      }
+    },
+    {
+      "district_number": 92,
+      "district_name": "92. iecirknis",
+      "district_slug": "92-iecirknis",
+      "district_type": "real",
+      "court": "Vidzemes apgabaltiesa",
+      "email": "liga.krima@lzti.lv",
+      "address": "Cēsu iela 22, Limbaži, LV-4001",
+      "admin": {
+        "first_name": "Līga",
+        "last_name": "Krima",
+        "email": "liga.krima@lzti.lv"
+      }
+    },
+    {
+      "district_number": 93,
+      "district_name": "93. iecirknis",
+      "district_slug": "93-iecirknis",
+      "district_type": "real",
+      "court": "Vidzemes apgabaltiesa",
+      "email": "vineta.riseva@lzti.lv",
+      "address": "Rīgas iela 7, Limbaži, LV-4001",
+      "admin": {
+        "first_name": "Vineta",
+        "last_name": "Riseva",
+        "email": "vineta.riseva@lzti.lv"
+      }
+    },
+    {
+      "district_number": 94,
+      "district_name": "94. iecirknis",
+      "district_slug": "94-iecirknis",
+      "district_type": "real",
+      "court": "Vidzemes apgabaltiesa",
+      "email": "svetlana.andzane@lzti.lv",
+      "address": "Poruka iela 2, Madona, LV-4801",
+      "admin": {
+        "first_name": "Svetlana",
+        "last_name": "Andžāne",
+        "email": "svetlana.andzane@lzti.lv"
+      }
+    },
+    {
+      "district_number": 97,
+      "district_name": "97. iecirknis",
+      "district_slug": "97-iecirknis",
+      "district_type": "real",
+      "court": "Vidzemes apgabaltiesa",
+      "email": "ineta.kaktina@lzti.lv",
+      "address": "Linarda Laicena iela 9-113, Valmiera, LV-4201",
+      "admin": {
+        "first_name": "Ineta",
+        "last_name": "Kaktiņa",
+        "email": "ineta.kaktina@lzti.lv"
+      }
+    },
+    {
+      "district_number": 98,
+      "district_name": "98. iecirknis",
+      "district_slug": "98-iecirknis",
+      "district_type": "real",
+      "court": "Vidzemes apgabaltiesa",
+      "email": "zane.filatova@lzti.lv",
+      "address": "Cēsu iela 19, Valmiera, LV-4201",
+      "admin": {
+        "first_name": "Zane",
+        "last_name": "Filatova",
+        "email": "zane.filatova@lzti.lv"
+      }
+    },
+    {
+      "district_number": 99,
+      "district_name": "99. iecirknis",
+      "district_slug": "99-iecirknis",
+      "district_type": "real",
+      "court": "Vidzemes apgabaltiesa",
+      "email": "liga.kavite@lzti.lv",
+      "address": "Zvaigžņu iela 1, Valmiera, LV-4201",
+      "admin": {
+        "first_name": "Līga",
+        "last_name": "Kavīte",
+        "email": "liga.kavite@lzti.lv"
+      }
+    },
+    {
+      "district_number": 100,
+      "district_name": "100. iecirknis",
+      "district_slug": "100-iecirknis",
+      "district_type": "real",
+      "court": "Zemgales apgabaltiesa",
+      "email": "ligita.gulbe@lzti.lv",
+      "address": "Lāčplēša iela 4-318, Aizkraukle, LV-5101",
+      "admin": {
+        "first_name": "Ligita",
+        "last_name": "Gulbe",
+        "email": "ligita.gulbe@lzti.lv"
+      }
+    },
+    {
+      "district_number": 102,
+      "district_name": "102. iecirknis",
+      "district_slug": "102-iecirknis",
+      "district_type": "real",
+      "court": "Zemgales apgabaltiesa",
+      "email": "aelita.meimere@lzti.lv",
+      "address": "Dārza iela 12a, Bauska, LV-3901",
+      "admin": {
+        "first_name": "Aelita",
+        "last_name": "Meimere",
+        "email": "aelita.meimere@lzti.lv"
+      }
+    },
+    {
+      "district_number": 104,
+      "district_name": "104. iecirknis",
+      "district_slug": "104-iecirknis",
+      "district_type": "real",
+      "court": "Zemgales apgabaltiesa",
+      "email": "zane.trasune@lzti.lv",
+      "address": "Pionieru iela 1 k-1, Bauska, LV-3901",
+      "admin": {
+        "first_name": "Zane",
+        "last_name": "Trasūne",
+        "email": "zane.trasune@lzti.lv"
+      }
+    },
+    {
+      "district_number": 106,
+      "district_name": "106. iecirknis",
+      "district_slug": "106-iecirknis",
+      "district_type": "real",
+      "court": "Zemgales apgabaltiesa",
+      "email": "andzela.klage@lzti.lv",
+      "address": "Zaļā iela 44-1, Dobele, LV-3701",
+      "admin": {
+        "first_name": "Andžela",
+        "last_name": "Klaģe",
+        "email": "andzela.klage@lzti.lv"
+      }
+    },
+    {
+      "district_number": 107,
+      "district_name": "107. iecirknis",
+      "district_slug": "107-iecirknis",
+      "district_type": "real",
+      "court": "Zemgales apgabaltiesa",
+      "email": "rudite.slivjuka@lzti.lv",
+      "address": "Atmodas iela 19-255, Jelgava, LV-3007",
+      "admin": {
+        "first_name": "Rudīte",
+        "last_name": "Slivjuka",
+        "email": "rudite.slivjuka@lzti.lv"
+      }
+    },
+    {
+      "district_number": 108,
+      "district_name": "108. iecirknis",
+      "district_slug": "108-iecirknis",
+      "district_type": "real",
+      "court": "Zemgales apgabaltiesa",
+      "email": "sniedze.upite@lzti.lv",
+      "address": "Pulkveža O.Kalpaka iela 16-220, Jelgava, LV-3001",
+      "admin": {
+        "first_name": "Sniedze",
+        "last_name": "Upīte",
+        "email": "sniedze.upite@lzti.lv"
+      }
+    },
+    {
+      "district_number": 109,
+      "district_name": "109. iecirknis",
+      "district_slug": "109-iecirknis",
+      "district_type": "real",
+      "court": "Zemgales apgabaltiesa",
+      "email": "agnese.celherte-ozola@lzti.lv",
+      "address": "Mātera iela 55, Jelgava, LV-3001",
+      "admin": {
+        "first_name": "Agnese",
+        "last_name": "Celherte-Ozola",
+        "email": "agnese.celherte-ozola@lzti.lv"
+      }
+    },
+    {
+      "district_number": 110,
+      "district_name": "110. iecirknis",
+      "district_slug": "110-iecirknis",
+      "district_type": "real",
+      "court": "Zemgales apgabaltiesa",
+      "email": "indra.andrejeva@lzti.lv",
+      "address": "Lielā iela 5/7-501.kab, Jelgava, LV-3001",
+      "admin": {
+        "first_name": "Indra",
+        "last_name": "Andrejeva",
+        "email": "indra.andrejeva@lzti.lv"
+      }
+    },
+    {
+      "district_number": 111,
+      "district_name": "111. iecirknis",
+      "district_slug": "111-iecirknis",
+      "district_type": "real",
+      "court": "Zemgales apgabaltiesa",
+      "email": "juris.snepsts@lzti.lv",
+      "address": "Brīvības iela 2, Brodi, Ābeļu pagasts, Jēkabpils novads, LV-5201",
+      "admin": {
+        "first_name": "Juris",
+        "last_name": "Šņepsts",
+        "email": "juris.snepsts@lzti.lv"
+      }
+    },
+    {
+      "district_number": 113,
+      "district_name": "113. iecirknis",
+      "district_slug": "113-iecirknis",
+      "district_type": "real",
+      "court": "Zemgales apgabaltiesa",
+      "email": "rigmonta.cakula@lzti.lv",
+      "address": "Brīvības iela 116, Jēkabpils, LV-5201",
+      "admin": {
+        "first_name": "Rigmonta",
+        "last_name": "Cakula",
+        "email": "rigmonta.cakula@lzti.lv"
+      }
+    },
+    {
+      "district_number": 114,
+      "district_name": "114. iecirknis",
+      "district_slug": "114-iecirknis",
+      "district_type": "real",
+      "court": "Zemgales apgabaltiesa",
+      "email": "parsla.berzina@lzti.lv",
+      "address": "Pils iela 14, Tukums, LV-3101",
+      "admin": {
+        "first_name": "Pārsla",
+        "last_name": "Bērziņa",
+        "email": "parsla.berzina@lzti.lv"
+      }
+    },
+    {
+      "district_number": 115,
+      "district_name": "115. iecirknis",
+      "district_slug": "115-iecirknis",
+      "district_type": "real",
+      "court": "Zemgales apgabaltiesa",
+      "email": "jolanta.bolsakova@lzti.lv",
+      "address": "Pils iela 14, Tukums, LV-3101",
+      "admin": {
+        "first_name": "Jolanta",
+        "last_name": "Boļšakova",
+        "email": "jolanta.bolsakova@lzti.lv"
+      }
+    },
+    {
+      "district_number": 116,
+      "district_name": "116. iecirknis",
+      "district_slug": "116-iecirknis",
+      "district_type": "real",
+      "court": "Zemgales apgabaltiesa",
+      "email": "andzela.vaitovska@lzti.lv",
+      "address": "Pils iela 14, Tukums, LV-3101",
+      "admin": {
+        "first_name": "Andžela",
+        "last_name": "Vaitovska",
+        "email": "andzela.vaitovska@lzti.lv"
+      }
+    },
+    {
+      "district_number": 600,
+      "district_name": "600. iecirknis",
+      "district_slug": "600-iecirknis",
+      "district_type": "test",
+      "court": "Testa apgabaltiesa",
+      "email": "janis.berzins+600@x.test",
+      "address": "Testa iela 600, Rīga, LV-1600",
+      "admin": {
+        "first_name": "Jānis",
+        "last_name": "Bērziņš",
+        "email": "janis.berzins+600@x.test"
+      }
+    },
+    {
+      "district_number": 700,
+      "district_name": "700. iecirknis",
+      "district_slug": "700-iecirknis",
+      "district_type": "test",
+      "court": "Testa apgabaltiesa",
+      "email": "ilze.kalnina+700@x.test",
+      "address": "Testa iela 700, Liepāja, LV-1700",
+      "admin": {
+        "first_name": "Ilze",
+        "last_name": "Kalniņa",
+        "email": "ilze.kalnina+700@x.test"
+      }
+    },
+    {
+      "district_number": 800,
+      "district_name": "800. iecirknis",
+      "district_slug": "800-iecirknis",
+      "district_type": "test",
+      "court": "Testa apgabaltiesa",
+      "email": "edgars.ozols+800@x.test",
+      "address": "Testa iela 800, Valmiera, LV-1800",
+      "admin": {
+        "first_name": "Edgars",
+        "last_name": "Ozols",
+        "email": "edgars.ozols+800@x.test"
+      }
+    }
+  ]
+}

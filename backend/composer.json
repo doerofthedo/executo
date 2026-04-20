@@ -15,6 +15,7 @@
     },
     "require-dev": {
         "larastan/larastan": "^3.9",
+        "mockery/mockery": "^1.6",
         "pestphp/pest": "^4.6",
         "pestphp/pest-plugin-laravel": "^4.1",
         "timacdonald/log-fake": "^2.4"

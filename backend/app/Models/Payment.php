@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
@@ -11,12 +12,20 @@ final class Payment extends Model
 {
     protected $fillable = [
         'ulid',
+        'customer_id',
         'debt_id',
         'amount',
-        'payment_date',
-        'reference',
-        'recorded_by',
+        'date',
+        'description',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'amount' => 'decimal:4',
+            'date' => 'date',
+        ];
+    }
 
     protected static function booted(): void
     {
@@ -26,5 +35,15 @@ final class Payment extends Model
     public function getRouteKeyName(): string
     {
         return 'ulid';
+    }
+
+    public function customer(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class);
+    }
+
+    public function debt(): BelongsTo
+    {
+        return $this->belongsTo(Debt::class);
     }
 }

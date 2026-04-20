@@ -2,19 +2,28 @@
     auto_https off
 }
 
-http://executo.local {
-    reverse_proxy /vite-hmr/* node:80
-    reverse_proxy /api/* backend:80
+executo.local:80 {
+    encode zstd gzip
+    log {
+        format console
+    }
 
-    handle /mailpit* {
-        uri strip_prefix /mailpit
+    log_skip /favicon.ico /favicon.svg /robots.txt /vite-hmr* /@vite* /assets/*
+
+    handle /api/* {
+        reverse_proxy backend:80 {
+            header_up X-Forwarded-Proto {scheme}
+            header_up X-Forwarded-Host {host}
+            header_up X-Forwarded-For {remote}
+        }
+    }
+
+    handle /mail* {
+        uri strip_prefix /mail
         reverse_proxy mailpit:8025
     }
 
-    reverse_proxy * node:80
-}
-
-:8080 {
-    root * /srv/public
-    file_server
+    handle {
+        reverse_proxy node:80
+    }
 }

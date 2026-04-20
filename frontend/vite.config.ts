@@ -24,15 +24,16 @@ export default defineConfig({
         emptyOutDir: true,
         rollupOptions: {
             input: {
+                shared: resolve(__dirname, 'src/entries/shared.ts'),
                 app: resolve(__dirname, 'src/entries/app.ts'),
-                auth: resolve(__dirname, 'src/entries/auth.ts'),
+                login: resolve(__dirname, 'src/entries/login.ts'),
             },
             output: {
-                entryFileNames: 'js/[name].js',
+                entryFileNames: 'js/[name]-[hash].js',
                 chunkFileNames: 'js/[name]-[hash].js',
                 assetFileNames: (assetInfo) => {
                     if (assetInfo.name?.endsWith('.css')) {
-                        return 'css/[name][extname]';
+                        return 'css/[name]-[hash][extname]';
                     }
 
                     return 'assets/[name]-[hash][extname]';

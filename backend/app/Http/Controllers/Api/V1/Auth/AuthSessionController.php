@@ -32,6 +32,12 @@ final class AuthSessionController extends Controller
             ]);
         }
 
+        if ($user->disabled) {
+            throw ValidationException::withMessages([
+                'login' => ['The user account is disabled.'],
+            ]);
+        }
+
         $token = $user->createToken('spa')->plainTextToken;
 
         return response()->json([

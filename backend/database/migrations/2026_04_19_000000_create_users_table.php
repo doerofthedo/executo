@@ -16,11 +16,14 @@ return new class extends Migration
             $table->string('name');
             $table->string('surname');
             $table->string('email')->unique();
+            $table->boolean('disabled')->default(false);
+            $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->text('mfa_secret')->nullable();
             $table->boolean('mfa_enabled')->default(false);
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::create('password_reset_tokens', static function (Blueprint $table): void {

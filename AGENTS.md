@@ -21,7 +21,7 @@ repo/
 └── .gitignore
 ```
 
-`public/assets/` is the Vite build output. It is **never committed to git**.
+`public/assets/` is the Vite build output. The repository keeps the latest compiled asset build there.
 
 ---
 
@@ -132,6 +132,21 @@ backend/app/
 - Models that are **purely internal** (e.g. `AuditLog`, `UserPreference`, pivot models)
   do not need a `ulid` column.
 
+### Preferences & Settings
+- User preferences are stored in a dedicated `user_preferences` table.
+- District settings are stored in a dedicated `district_settings` table.
+- These tables are internal and do not use ULIDs.
+- Every user may have one preference row for settings such as `locale`, `date_format`,
+  `decimal_separator`, `thousand_separator`, and `table_page_size`.
+- Every district may have one settings row for district-wide defaults such as `locale`,
+  `date_format`, `decimal_separator`, and `thousand_separator`.
+- User preferences override district settings in the UI and API formatting logic.
+
+### District Identity
+- Districts are identified by their numeric bailiff district number.
+- Districts also store the bailiff's person name in `bailiff_name` and `bailiff_surname`.
+- District metadata includes `court` and `address`.
+
 ### Security Rules (OWASP)
 - Never trust user input. Validate everything with Form Requests.
 - Never expose stack traces or internal errors in API responses. Use Handler to sanitise.
@@ -169,15 +184,20 @@ backend/app/
 - Frontend builds must produce separate authenticated and unauthenticated bundles.
 - Use dedicated Vite entry files for each shell:
   - `frontend/src/entries/app.ts` for authenticated application assets
-  - `frontend/src/entries/auth.ts` for unauthenticated authentication assets
+  - `frontend/src/entries/login.ts` for unauthenticated authentication assets
+  - `frontend/src/entries/shared.ts` for shared bootstrap and shared styles used by both shells
 - Auth-only styles and code must not be bundled into the authenticated entry by default.
 - App-only styles and code must not be bundled into the unauthenticated entry by default.
-- The production build output in `public/assets/` must contain distinct JS and CSS files for both entries.
+- The production build output in `public/assets/` must contain exactly three logical bundles for both JS and CSS:
+  - `app`
+  - `login`
+  - `shared`
+- Production asset filenames must include content hashes.
 
 ### Directory Reference
 ```
 frontend/src/
-├── entries/      ← dedicated Vite entry files for authenticated and unauthenticated shells
+├── entries/      ← dedicated Vite entry files for app, login, and shared bundles
 ├── api/          ← typed axios client + per-domain API functions
 ├── components/
 │   ├── domain/   ← feature-specific components
@@ -229,8 +249,9 @@ frontend/src/
 ## Docker Dev Environment
 
 ```
-docker/
+repo/
 ├── docker-compose.yml
+├── docker/
 ├── caddy/
 │   └── Caddyfile          ← reverse proxy config for all services
 ├── php/                   ← Dockerfile for php8.5-apache
@@ -241,8 +262,8 @@ Services:
 | Service   | Purpose                      | Internal Port | Public URL (via Caddy)         |
 |-----------|------------------------------|---------------|--------------------------------|
 | `caddy`   | Reverse proxy                | 80 / 443      | —                              |
-| `app`     | php8.5-apache + composer     | 80            | `executo.local`                |
-| `node`    | Vite dev server (HMR)        | 5173          | `executo.local` (proxied)      |
+| `backend` | php8.5-apache + composer     | 80            | `executo.local`                |
+| `node`    | Vite dev server (HMR)        | 80            | `executo.local` (proxied)      |
 | `db`      | MySQL 8 / MariaDB 11         | 3306          | not proxied — internal only    |
 | `redis`   | Cache, queues, rate-limiting | 6379          | not proxied — internal only    |
 | `mailpit` | SMTP trap + web UI           | 1025 / 8025   | `executo.local/mailpit`        |
@@ -252,10 +273,10 @@ Services:
 ```
 executo.local {
     # Vite HMR websocket (must come before the SPA catch-all)
-    reverse_proxy /vite-hmr/* node:5173
+    reverse_proxy /vite-hmr/* node:80
 
     # API → Laravel/Apache container
-    reverse_proxy /api/* app:80
+    reverse_proxy /api/* backend:80
 
     # Mailpit web UI — strip the /mailpit prefix before proxying
     handle /mailpit* {
@@ -264,7 +285,12 @@ executo.local {
     }
 
     # All other requests → Vite dev server (serves SPA shell + HMR)
-    reverse_proxy * node:5173
+    reverse_proxy * node:80
+}
+
+:8080 {
+    root * /srv/public
+    file_server
 }
 ```
 
@@ -275,14 +301,15 @@ Add to `/etc/hosts` on the host machine (one-time setup):
 ```
 
 ### Dev rules
-- Caddy is the **only** service that exposes ports to the host (`80`, `443`).
+- Caddy is the only public entrypoint for the app and exposes `80`, `443`, and `8080` on the host.
 - All other containers are on an internal Docker network — no `ports:` mappings except Caddy.
 - `db` and `redis` are accessible from host tooling (TablePlus, redis-cli) via `localhost:3306`
   and `localhost:6379` — add `ports:` for those only if needed locally, never in CI.
-- Never run `npm run build` in dev — use `npm run dev` for HMR.
+- Use `make dev` for day-to-day local startup. It installs missing host dependencies, compiles frontend assets, starts containers, and then attaches to logs.
 - Vite must set `server.hmr.path: '/vite-hmr'` to match the Caddy proxy path.
 - In dev, Laravel's `APP_URL` is `http://executo.local`. Set this in `backend/.env`.
-- Mailpit SMTP is available at `mailpit:1025` from the `app` container.
+- The main Laravel application shell is `backend/resources/views/app.blade.php`, and the unauthenticated shell is `backend/resources/views/login.blade.php`.
+- Mailpit SMTP is available at `mailpit:1025` from the `backend` container.
   Set `MAIL_HOST=mailpit`, `MAIL_PORT=1025` in `backend/.env`.
 
 ---
@@ -317,6 +344,8 @@ The `Makefile` lives at the repo root.
 - Group related targets with a `##@` section comment (see structure below).
 - Targets that are dangerous (data loss, irreversible) must prompt for confirmation
   using `@bash -c 'read -p "Are you sure? [y/N] " c; [[ $$c == y ]]'` before executing.
+- Exception: `make clean` is intentionally non-interactive and must immediately run
+  `docker compose down --volumes --remove-orphans` without a confirmation prompt.
 - Never hardcode container names — use variables defined at the top of the Makefile.
 - Never put secrets or `.env` values inside the Makefile.
 
@@ -329,6 +358,7 @@ The `Makefile` lives at the repo root.
 | Reset DB with fresh data | `make migrate-fresh-seed` |
 | Run tests + static analysis | `make lint` |
 | Clear all caches | `make cache-clear` |
+| Remove containers, volumes, orphans, and networks | `make clean` |
 | Full environment reset | `make reset` |
 | Check security before deploy | `make security` |
 
