@@ -19,8 +19,80 @@
         "stats_debts": "Parādi"
     },
     "auth": {
-        "welcome_title": "Droša piekļuve Executo",
-        "welcome_body": "Pierakstieties ar savu lietotājvārdu vai e-pastu, lai turpinātu darbu sistēmā.",
+        "hero": {
+            "eyebrow": "Tiesu izpildītāju darba vide",
+            "title": "Piekļūstiet klientu un parādu darba videi ar mierīgu un pārdomātu plūsmu.",
+            "body": "Pieslēdzieties, reģistrējieties vai atjaunojiet piekļuvi vienotā autentifikācijas vidē. Jauni konti sākotnēji nav piesaistīti apgabalam, līdz tos pievieno administrators.",
+            "cards": {
+                "secure_title": "Apstiprināta piekļuve",
+                "secure_body": "Jauniem kontiem pirms pieslēgšanās jāapstiprina e-pasta adrese.",
+                "locale_title": "Lokāli orientēta vide",
+                "locale_body": "Latviešu valoda ir noklusējuma izvēle, bet pieejama arī angļu valoda.",
+                "access_title": "Apgabala piešķiršana",
+                "access_body": "Pēc reģistrācijas piekļuvi piešķir lietotnes vai apgabala administrators."
+            },
+            "note_title": "Reģistrācijas modelis",
+            "note_body": "Pašreģistrācija izveido tikai lietotāja kontu. Piederību apgabalam vēlāk piešķir pilnvarots administrators."
+        },
+        "locale": {
+            "label": "Valoda",
+            "lv": "Latviešu",
+            "en": "English"
+        },
+        "links": {
+            "login": "Pieslēgties",
+            "register": "Izveidot kontu",
+            "forgot": "Aizmirsu paroli"
+        },
+        "shared": {
+            "working": "Apstrādā...",
+            "generic_error": "Radās kļūda. Lūdzu, mēģiniet vēlreiz."
+        },
+        "login": {
+            "title": "Pieslēgties"
+        },
+        "register": {
+            "title": "Izveidojiet savu kontu",
+            "body": "Reģistrējiet personīgo lietotāja kontu. Apgabala vai lietotnes administrators to vēlāk var piesaistīt apgabalam.",
+            "verify_title": "Apstipriniet savu e-pastu",
+            "verify_body": "Apstipriniet adresi, lai aktivizētu jaunā konta pieslēgšanās iespēju.",
+            "name_label": "Vārds",
+            "name_placeholder": "Anna",
+            "surname_label": "Uzvārds",
+            "surname_placeholder": "Kalniņa",
+            "email_label": "E-pasts",
+            "email_placeholder": "anna@example.com",
+            "password_placeholder": "Vismaz 8 rakstzīmes",
+            "password_confirmation_label": "Apstipriniet paroli",
+            "password_confirmation_placeholder": "Atkārtojiet paroli",
+            "submit": "Reģistrēties",
+            "success": "Reģistrācija ir pieņemta. Pārbaudiet e-pastu, lai atvērtu apstiprināšanas saiti.",
+            "resend_verification": "Nosūtīt apstiprinājumu vēlreiz",
+            "verification_resent": "Ja konts eksistē un vēl nav apstiprināts, ir nosūtīts jauns apstiprinājuma e-pasts.",
+            "verification_link_ready": "Apstiprināšanas saite ir gatava. Turpiniet, lai apstiprinātu e-pastu.",
+            "verification_link_missing": "Apstiprināšanas saite ir nepilnīga vai nav pieejama.",
+            "verify_submit": "Apstiprināt e-pastu",
+            "verified": "Jūsu e-pasts ir apstiprināts. Tagad varat pieslēgties.",
+            "verification_failed": "Apstiprināšanas saite nav derīga vai tās termiņš ir beidzies."
+        },
+        "forgot": {
+            "title": "Aizmirsāt paroli?",
+            "body": "Ievadiet savu e-pasta adresi, un mēs nosūtīsim paroles atiestatīšanas saiti.",
+            "email_label": "E-pasts",
+            "email_placeholder": "anna@example.com",
+            "submit": "Nosūtīt atiestatīšanas e-pastu",
+            "success": "Ja šāds konts eksistē, paroles atiestatīšanas saite ir nosūtīta."
+        },
+        "reset": {
+            "title": "Izveidojiet jaunu paroli",
+            "body": "Izvēlieties jaunu paroli, lai atjaunotu piekļuvi savam kontam.",
+            "email_label": "E-pasts",
+            "token_ready": "Atiestatīšanas saite ir gatava. Ievadiet jauno paroli, lai turpinātu.",
+            "token_missing": "Atiestatīšanas saite ir nepilnīga vai nav pieejama.",
+            "submit": "Atiestatīt paroli",
+            "success": "Jūsu parole ir veiksmīgi atjaunināta.",
+            "login_now": "Pieslēgties tagad"
+        },
         "form": {
             "login_label": "Lietotājvārds vai e-pasts",
             "login_placeholder": "admin",

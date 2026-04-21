@@ -8,10 +8,12 @@ use App\Models\Customer;
 use App\Models\Debt;
 use App\Models\District;
 use App\Models\Payment;
+use App\Models\User;
 use App\Policies\CustomerPolicy;
 use App\Policies\DebtPolicy;
 use App\Policies\DistrictPolicy;
 use App\Policies\PaymentPolicy;
+use App\Policies\UserPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
@@ -22,6 +24,7 @@ final class AuthServiceProvider extends ServiceProvider
         Debt::class => DebtPolicy::class,
         District::class => DistrictPolicy::class,
         Payment::class => PaymentPolicy::class,
+        User::class => UserPolicy::class,
     ];
 
     public function boot(): void

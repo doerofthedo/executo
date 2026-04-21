@@ -19,8 +19,80 @@
         "stats_debts": "Debts"
     },
     "auth": {
-        "welcome_title": "Secure access to Executo",
-        "welcome_body": "Sign in with your username or email address to continue into the application.",
+        "hero": {
+            "eyebrow": "Bailiff district workspace",
+            "title": "Access the customer and debt workspace with a calmer, more deliberate flow.",
+            "body": "Sign in, register, or restore access using the same operational shell used for district administration. New accounts stay unattached until an app admin or district admin assigns access.",
+            "cards": {
+                "secure_title": "Verified access",
+                "secure_body": "New accounts require email verification before they can sign in.",
+                "locale_title": "Local-first UI",
+                "locale_body": "Latvian stays the default, with English available for users who need it.",
+                "access_title": "District assignment",
+                "access_body": "After registration, access is granted by app admins or district admins."
+            },
+            "note_title": "Registration model",
+            "note_body": "Self-registration creates a user account only. District membership is added later by an authorized administrator."
+        },
+        "locale": {
+            "label": "Language",
+            "lv": "Latvian",
+            "en": "English"
+        },
+        "links": {
+            "login": "Sign in",
+            "register": "Create account",
+            "forgot": "Forgot password"
+        },
+        "shared": {
+            "working": "Working...",
+            "generic_error": "Something went wrong. Please try again."
+        },
+        "login": {
+            "title": "Sign in"
+        },
+        "register": {
+            "title": "Create your account",
+            "body": "Register your personal user account. A district admin or app admin can attach it to a district later.",
+            "verify_title": "Verify your email",
+            "verify_body": "Confirm your address to activate sign-in access for the new account.",
+            "name_label": "Name",
+            "name_placeholder": "Anna",
+            "surname_label": "Surname",
+            "surname_placeholder": "Kalnina",
+            "email_label": "Email",
+            "email_placeholder": "anna@example.com",
+            "password_placeholder": "At least 8 characters",
+            "password_confirmation_label": "Confirm password",
+            "password_confirmation_placeholder": "Repeat your password",
+            "submit": "Register",
+            "success": "Registration received. Check your email for the verification link.",
+            "resend_verification": "Resend verification email",
+            "verification_resent": "A new verification email has been sent if the account exists and is still unverified.",
+            "verification_link_ready": "Your verification link is ready. Continue to confirm your email.",
+            "verification_link_missing": "The verification link is incomplete or missing.",
+            "verify_submit": "Verify email",
+            "verified": "Your email has been verified. You can now sign in.",
+            "verification_failed": "The verification link is invalid or expired."
+        },
+        "forgot": {
+            "title": "Forgot your password?",
+            "body": "Enter your email address and we will send you a reset link.",
+            "email_label": "Email",
+            "email_placeholder": "anna@example.com",
+            "submit": "Send reset email",
+            "success": "If that account exists, a password reset link has been sent."
+        },
+        "reset": {
+            "title": "Create a new password",
+            "body": "Choose a new password to restore access to your account.",
+            "email_label": "Email",
+            "token_ready": "Your reset link is ready. Enter your new password to continue.",
+            "token_missing": "The reset link is incomplete or missing.",
+            "submit": "Reset password",
+            "success": "Your password has been updated successfully.",
+            "login_now": "Sign in now"
+        },
         "form": {
             "login_label": "Username or email",
             "login_placeholder": "admin",

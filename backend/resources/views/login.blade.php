@@ -12,7 +12,7 @@ declare(strict_types=1);
         <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
         @vite(['frontend/src/entries/shared.ts', 'frontend/src/entries/login.ts'])
     </head>
-    <body class="min-h-screen bg-slate-950 text-stone-50 antialiased">
+    <body class="min-h-screen antialiased">
         <div id="app"></div>
     </body>
 </html>

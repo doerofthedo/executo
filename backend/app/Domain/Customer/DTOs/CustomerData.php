@@ -10,10 +10,17 @@ final class CustomerData extends Data
 {
     public function __construct(
         public string $name,
-        public string $surname,
-        public string $personalCode,
+        public ?string $caseNumber,
+        public string $type,
         public ?string $email,
         public ?string $phone,
+        public ?string $firstName,
+        public ?string $lastName,
+        public ?string $personalCode,
+        public ?string $dateOfBirth,
+        public ?string $companyName,
+        public ?string $registrationNumber,
+        public ?string $contactPerson,
     ) {
     }
 }

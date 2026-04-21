@@ -4,14 +4,76 @@
 @import "tailwindcss";
 
 :root {
-    color-scheme: dark;
+    color-scheme: light;
+    --lex-bg: #f4efe6;
+    --lex-bg-accent: #ebe3d7;
+    --lex-surface: #fffdf9;
+    --lex-surface-muted: #f7f1e7;
+    --lex-border: #d8cfc1;
+    --lex-border-strong: #b9ad9a;
+    --lex-text: #1f2a37;
+    --lex-muted: #5d6875;
+    --lex-accent: #24416b;
+    --lex-accent-hover: #1b3355;
+    --lex-secondary-surface: #efe4d3;
+    --lex-secondary-surface-hover: #e6d7c1;
+    --lex-secondary-border: #cdbca4;
+    --lex-secondary-text: #2a456a;
+    --lex-inline-surface: transparent;
+    --lex-inline-surface-hover: rgba(36, 65, 107, 0.08);
+    --lex-inline-border: rgba(36, 65, 107, 0.2);
+    --lex-inline-text: #2f4b73;
+    --lex-inline-active-surface: rgba(36, 65, 107, 0.14);
+    --lex-inline-active-border: rgba(36, 65, 107, 0.32);
+    --lex-inline-active-text: #1f2a37;
+    --lex-success: #2f6b57;
+    --lex-danger: #8b3a32;
+    --lex-shadow: 0 14px 30px rgba(31, 42, 55, 0.08);
 }
 
 * {
     box-sizing: border-box;
 }
 
+html,
+body,
+#app {
+    min-height: 100%;
+}
+
 body {
     margin: 0;
-    font-family: "Manrope", "Segoe UI", sans-serif;
+    min-height: 100vh;
+    font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+    color: var(--lex-muted);
+}
+
+#app {
+    min-height: 100vh;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: var(--lex-text);
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+a:hover,
+a:active {
+    text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
 }

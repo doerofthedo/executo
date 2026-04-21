@@ -21,8 +21,19 @@ final class DistrictController extends Controller
     {
         $this->authorize('viewAny', District::class);
 
+        $query = District::query()
+            ->orderBy('number');
+
+        if (! request()->user()?->hasRole('app.admin')) {
+            $query->where(function ($builder): void {
+                $builder
+                    ->where('owner_id', request()->user()?->id)
+                    ->orWhereHas('users', static fn ($usersQuery) => $usersQuery->where('users.id', request()->user()?->id));
+            });
+        }
+
         return DistrictResource::collection(
-            District::query()->orderBy('number')->get(),
+            $query->get(),
         );
     }
 
@@ -74,9 +85,18 @@ final class DistrictController extends Controller
     {
         $this->authorize('viewAny', District::class);
 
-        $data = District::query()
-            ->orderBy('number')
-            ->get()
+        $query = District::query()
+            ->orderBy('number');
+
+        if (! request()->user()?->hasRole('app.admin')) {
+            $query->where(function ($builder): void {
+                $builder
+                    ->where('owner_id', request()->user()?->id)
+                    ->orWhereHas('users', static fn ($usersQuery) => $usersQuery->where('users.id', request()->user()?->id));
+            });
+        }
+
+        $data = $query->get()
             ->map(static function (District $district): array {
                 return [
                     'district' => (new DistrictResource($district))->resolve(),

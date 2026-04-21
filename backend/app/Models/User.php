@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Notifications\Auth\VerifyEmailNotification;
+use App\Notifications\Auth\ResetPasswordNotification;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
+use Illuminate\Auth\Passwords\CanResetPassword;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -14,8 +18,9 @@ use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
-final class User extends Authenticatable implements MustVerifyEmail
+final class User extends Authenticatable implements MustVerifyEmail, CanResetPasswordContract
 {
+    use CanResetPassword;
     use HasApiTokens;
     use HasRoles;
     use Notifiable;
@@ -65,8 +70,20 @@ final class User extends Authenticatable implements MustVerifyEmail
         $this->notify(new VerifyEmailNotification());
     }
 
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new ResetPasswordNotification((string) $token));
+    }
+
     public function preference(): HasOne
     {
         return $this->hasOne(UserPreference::class);
+    }
+
+    public function districts(): BelongsToMany
+    {
+        return $this->belongsToMany(District::class)
+            ->withPivot('role_id')
+            ->withTimestamps();
     }
 }

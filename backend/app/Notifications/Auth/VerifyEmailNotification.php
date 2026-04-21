@@ -16,7 +16,7 @@ final class VerifyEmailNotification extends VerifyEmail
      */
     protected function verificationUrl($notifiable): string
     {
-        return URL::temporarySignedRoute(
+        $signedApiUrl = URL::temporarySignedRoute(
             'api.v1.auth.email.verify',
             Carbon::now()->addMinutes(60),
             [
@@ -24,6 +24,10 @@ final class VerifyEmailNotification extends VerifyEmail
                 'hash' => sha1($notifiable->getEmailForVerification()),
             ],
         );
+
+        $frontendUrl = rtrim((string) (config('app.frontend_url') ?: config('app.url')), '/');
+
+        return $frontendUrl . '/register?verify=1&url=' . urlencode($signedApiUrl);
     }
 
     /**

@@ -26,19 +26,22 @@ final class AuthSessionController extends Controller
             ->where('email', $login)
             ->first();
 
-        if ($user === null || ! Hash::check($credentials['password'], $user->password)) {
+        $invalidCredentials = $user === null
+            || ! Hash::check($credentials['password'], $user->password)
+            || $user->disabled
+            || ! $user->hasVerifiedEmail();
+
+        if ($invalidCredentials) {
             throw ValidationException::withMessages([
                 'login' => ['The provided credentials are invalid.'],
             ]);
         }
 
-        if ($user->disabled) {
-            throw ValidationException::withMessages([
-                'login' => ['The user account is disabled.'],
-            ]);
-        }
+        $user->tokens()->delete();
 
-        $token = $user->createToken('spa')->plainTextToken;
+        $expiration = config('sanctum.expiration');
+        $expiresAt = is_int($expiration) ? now()->addMinutes($expiration) : null;
+        $token = $user->createToken('spa', ['*'], $expiresAt)->plainTextToken;
 
         return response()->json([
             'token' => $token,

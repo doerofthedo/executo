@@ -8,7 +8,21 @@
     </head>
     <body>
         <div id="app"></div>
-        <script type="module" src="/src/entries/shared.ts"></script>
-        <script type="module" src="/src/entries/app.ts"></script>
+        <script type="module">
+            import '/src/entries/shared.ts';
+
+            const authPaths = new Set([
+                '/login',
+                '/register',
+                '/forgot-password',
+                '/reset-password',
+            ]);
+
+            const entry = authPaths.has(window.location.pathname)
+                ? '/src/entries/login.ts'
+                : '/src/entries/app.ts';
+
+            await import(entry);
+        </script>
     </body>
 </html>

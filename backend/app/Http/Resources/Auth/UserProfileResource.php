@@ -7,10 +7,10 @@ namespace App\Http\Resources\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-final class CurrentUserResource extends JsonResource
+final class UserProfileResource extends JsonResource
 {
     /**
-     * @return array<string, string|bool|null>
+     * @return array<string, string|bool|int|null|array<string, string|int|null>>
      */
     public function toArray(Request $request): array
     {
@@ -22,6 +22,13 @@ final class CurrentUserResource extends JsonResource
             'disabled' => $this->resource?->disabled ?? false,
             'is_email_verified' => $this->resource?->hasVerifiedEmail() ?? false,
             'email_verified_at' => $this->resource?->email_verified_at?->toAtomString(),
+            'preferences' => [
+                'locale' => $this->resource?->preference?->locale,
+                'date_format' => $this->resource?->preference?->date_format,
+                'decimal_separator' => $this->resource?->preference?->decimal_separator,
+                'thousand_separator' => $this->resource?->preference?->thousand_separator,
+                'table_page_size' => $this->resource?->preference?->table_page_size,
+            ],
         ];
     }
 }

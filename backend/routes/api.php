@@ -5,23 +5,49 @@ declare(strict_types=1);
 use App\Http\Controllers\Api\V1\DistrictController;
 use App\Http\Controllers\Api\V1\DebtController;
 use App\Http\Controllers\Api\V1\PaymentController;
+use App\Http\Controllers\Api\V1\CustomerController;
+use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\Auth\AuthSessionController;
 use App\Http\Controllers\Api\V1\Auth\CurrentUserController;
 use App\Http\Controllers\Api\V1\Auth\EmailVerificationController;
+use App\Http\Controllers\Api\V1\Auth\PasswordResetController;
+use App\Http\Controllers\Api\V1\Auth\RegistrationController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(static function (): void {
     Route::post('/auth/login', [AuthSessionController::class, 'store'])
         ->middleware('throttle:5,1')
         ->name('api.v1.auth.login');
+
+    Route::post('/auth/register', [RegistrationController::class, 'store'])
+        ->middleware('throttle:5,1')
+        ->name('api.v1.auth.register');
+
+    Route::post('/auth/email/verification-request', [RegistrationController::class, 'requestVerification'])
+        ->middleware('throttle:5,1')
+        ->name('api.v1.auth.email.verification-request');
+
+    Route::post('/auth/password/forgot', [PasswordResetController::class, 'store'])
+        ->middleware('throttle:5,1')
+        ->name('api.v1.auth.password.forgot');
+
+    Route::post('/auth/password/reset', [PasswordResetController::class, 'update'])
+        ->middleware('throttle:5,1')
+        ->name('api.v1.auth.password.reset');
 });
 
-Route::middleware(['auth:sanctum'])->group(static function (): void {
+Route::middleware(['auth:sanctum', 'district.scope'])->group(static function (): void {
     Route::get('/auth/me', CurrentUserController::class)
         ->name('api.v1.auth.me');
 
     Route::post('/auth/logout', [AuthSessionController::class, 'destroy'])
         ->name('api.v1.auth.logout');
+
+    Route::get('/users/{user}', [UserController::class, 'show'])
+        ->name('api.v1.users.show');
+
+    Route::patch('/users/{user}', [UserController::class, 'update'])
+        ->name('api.v1.users.update');
 
     Route::post('/auth/email/verification-notification', [EmailVerificationController::class, 'store'])
         ->middleware('throttle:5,1')
@@ -44,6 +70,21 @@ Route::middleware(['auth:sanctum'])->group(static function (): void {
 
     Route::get('/districts/{district}/stats', [DistrictController::class, 'stats'])
         ->name('api.v1.districts.stats');
+
+    Route::get('/districts/{district}/customers', [CustomerController::class, 'index'])
+        ->name('api.v1.customers.index');
+
+    Route::post('/districts/{district}/customers', [CustomerController::class, 'store'])
+        ->name('api.v1.customers.store');
+
+    Route::get('/districts/{district}/customers/{customer}', [CustomerController::class, 'show'])
+        ->name('api.v1.customers.show');
+
+    Route::patch('/districts/{district}/customers/{customer}', [CustomerController::class, 'update'])
+        ->name('api.v1.customers.update');
+
+    Route::delete('/districts/{district}/customers/{customer}', [CustomerController::class, 'destroy'])
+        ->name('api.v1.customers.destroy');
 
     Route::get('/districts/{district}/customers/{customer}/debts/{debt}/payments', [PaymentController::class, 'index'])
         ->name('api.v1.payments.index');
