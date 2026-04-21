@@ -48,6 +48,13 @@
             "working": "Working...",
             "generic_error": "Something went wrong. Please try again."
         },
+        "validation": {
+            "field_required": "Please fill out this field.",
+            "invalid_email": "Please enter a valid email address.",
+            "password_too_short": "The password must be at least 8 characters.",
+            "passwords_no_match": "Passwords do not match.",
+            "link_invalid": "The link is incomplete or invalid."
+        },
         "login": {
             "title": "Sign in"
         },

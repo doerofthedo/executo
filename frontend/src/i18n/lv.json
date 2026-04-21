@@ -48,6 +48,13 @@
             "working": "Apstrādā...",
             "generic_error": "Radās kļūda. Lūdzu, mēģiniet vēlreiz."
         },
+        "validation": {
+            "field_required": "Lūdzu, aizpildiet šo lauku.",
+            "invalid_email": "Lūdzu, ievadiet derīgu e-pasta adresi.",
+            "password_too_short": "Parolei jābūt vismaz 8 rakstzīmju garai.",
+            "passwords_no_match": "Paroles nesakrīt.",
+            "link_invalid": "Saite ir nepilnīga vai nederīga."
+        },
         "login": {
             "title": "Pieslēgties"
         },

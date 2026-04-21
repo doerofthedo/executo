@@ -62,7 +62,7 @@ import { computed, ref } from 'vue';
 import { useForm } from 'vee-validate';
 import { useI18n } from 'vue-i18n';
 import { RouterLink, useRoute } from 'vue-router';
-import { type ResetPasswordInput, resetPassword, resetPasswordSchema } from '@/api/auth';
+import { createResetPasswordSchema, type ResetPasswordInput, resetPassword } from '@/api/auth';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 
 const { t } = useI18n();
@@ -84,6 +84,7 @@ const { defineField, errors, handleSubmit, isSubmitting, setErrors } = useForm<R
 const [emailValue] = defineField('email');
 const [passwordValue] = defineField('password');
 const [passwordConfirmationValue] = defineField('password_confirmation');
+const resetPasswordSchema = createResetPasswordSchema(t);
 
 const onSubmit = handleSubmit(async (values) => {
     submitError.value = '';

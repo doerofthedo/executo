@@ -42,7 +42,7 @@ import { ref } from 'vue';
 import { useForm } from 'vee-validate';
 import { useI18n } from 'vue-i18n';
 import { RouterLink } from 'vue-router';
-import { type ForgotPasswordInput, forgotPassword, forgotPasswordSchema } from '@/api/auth';
+import { createForgotPasswordSchema, type ForgotPasswordInput, forgotPassword } from '@/api/auth';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 
 const { t } = useI18n();
@@ -55,6 +55,7 @@ const { defineField, errors, handleSubmit, isSubmitting, setErrors } = useForm<F
 });
 
 const [emailValue] = defineField('email');
+const forgotPasswordSchema = createForgotPasswordSchema(t);
 
 const onSubmit = handleSubmit(async (values) => {
     submitError.value = '';

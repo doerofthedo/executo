@@ -90,7 +90,7 @@ import { computed, ref } from 'vue';
 import { useForm } from 'vee-validate';
 import { useI18n } from 'vue-i18n';
 import { RouterLink, useRoute } from 'vue-router';
-import { register, registerSchema, requestEmailVerification } from '@/api/auth';
+import { createRegisterSchema, register, requestEmailVerification } from '@/api/auth';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 
 const { t, locale } = useI18n();
@@ -122,6 +122,7 @@ const [surnameValue] = defineField('surname');
 const [emailValue] = defineField('email');
 const [passwordValue] = defineField('password');
 const [passwordConfirmationValue] = defineField('password_confirmation');
+const registerSchema = createRegisterSchema(t);
 
 const onRegister = handleSubmit(async (values) => {
     errorMessage.value = '';

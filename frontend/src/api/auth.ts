@@ -1,44 +1,54 @@
 import { z } from 'zod';
 import { apiClient } from './client';
 
-export const loginSchema = z.object({
-    login: z.string().min(1),
-    password: z.string().min(1),
-});
+type Translate = (key: string) => string;
 
-export type LoginInput = z.infer<typeof loginSchema>;
+export function createLoginSchema(t: Translate) {
+    return z.object({
+        login: z.string().trim().min(1, t('auth.validation.field_required')),
+        password: z.string().min(1, t('auth.validation.field_required')),
+    });
+}
 
-export const registerSchema = z.object({
-    name: z.string().min(1),
-    surname: z.string().min(1),
-    email: z.email(),
-    password: z.string().min(8),
-    password_confirmation: z.string().min(8),
-    locale: z.enum(['lv', 'en']),
-}).refine((data) => data.password === data.password_confirmation, {
-    path: ['password_confirmation'],
-    message: 'Passwords do not match.',
-});
+export type LoginInput = z.infer<ReturnType<typeof createLoginSchema>>;
 
-export type RegisterInput = z.infer<typeof registerSchema>;
+export function createRegisterSchema(t: Translate) {
+    return z.object({
+        name: z.string().trim().min(1, t('auth.validation.field_required')),
+        surname: z.string().trim().min(1, t('auth.validation.field_required')),
+        email: z.email(t('auth.validation.invalid_email')),
+        password: z.string().min(8, t('auth.validation.password_too_short')),
+        password_confirmation: z.string().min(1, t('auth.validation.field_required')),
+        locale: z.enum(['lv', 'en']),
+    }).refine((data) => data.password === data.password_confirmation, {
+        path: ['password_confirmation'],
+        message: t('auth.validation.passwords_no_match'),
+    });
+}
 
-export const forgotPasswordSchema = z.object({
-    email: z.email(),
-});
+export type RegisterInput = z.infer<ReturnType<typeof createRegisterSchema>>;
 
-export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
+export function createForgotPasswordSchema(t: Translate) {
+    return z.object({
+        email: z.email(t('auth.validation.invalid_email')),
+    });
+}
 
-export const resetPasswordSchema = z.object({
-    email: z.email(),
-    token: z.string().min(1),
-    password: z.string().min(8),
-    password_confirmation: z.string().min(8),
-}).refine((data) => data.password === data.password_confirmation, {
-    path: ['password_confirmation'],
-    message: 'Passwords do not match.',
-});
+export type ForgotPasswordInput = z.infer<ReturnType<typeof createForgotPasswordSchema>>;
 
-export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
+export function createResetPasswordSchema(t: Translate) {
+    return z.object({
+        email: z.email(t('auth.validation.invalid_email')),
+        token: z.string().min(1, t('auth.validation.link_invalid')),
+        password: z.string().min(8, t('auth.validation.password_too_short')),
+        password_confirmation: z.string().min(1, t('auth.validation.field_required')),
+    }).refine((data) => data.password === data.password_confirmation, {
+        path: ['password_confirmation'],
+        message: t('auth.validation.passwords_no_match'),
+    });
+}
+
+export type ResetPasswordInput = z.infer<ReturnType<typeof createResetPasswordSchema>>;
 
 export interface CurrentUser {
     ulid: string | null;
