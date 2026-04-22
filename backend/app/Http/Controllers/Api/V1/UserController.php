@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\UpdateUserRequest;
 use App\Http\Resources\Auth\UserProfileResource;
+use App\Models\District;
 use App\Models\User;
 use App\Models\UserPreference;
 use Illuminate\Support\Facades\DB;
@@ -66,6 +67,7 @@ final class UserController extends Controller
             }
 
             $preferencePayload = array_intersect_key($data, array_flip([
+                'default_district_ulid',
                 'locale',
                 'date_format',
                 'decimal_separator',
@@ -74,6 +76,15 @@ final class UserController extends Controller
             ]));
 
             if ($preferencePayload !== []) {
+                if (array_key_exists('default_district_ulid', $preferencePayload)) {
+                    $preferencePayload['default_district_id'] = $this->resolveDefaultDistrictId(
+                        $user,
+                        $preferencePayload['default_district_ulid'],
+                    );
+
+                    unset($preferencePayload['default_district_ulid']);
+                }
+
                 UserPreference::query()->updateOrCreate(
                     ['user_id' => $user->id],
                     $preferencePayload,
@@ -88,5 +99,32 @@ final class UserController extends Controller
         }
 
         return new UserProfileResource($freshUser->load('preference'));
+    }
+
+    private function resolveDefaultDistrictId(User $user, mixed $defaultDistrictUlid): ?int
+    {
+        if ($defaultDistrictUlid === null || $defaultDistrictUlid === '') {
+            return null;
+        }
+
+        $district = District::query()
+            ->where('ulid', (string) $defaultDistrictUlid)
+            ->first();
+
+        if ($district === null) {
+            abort(422, 'Selected default district does not exist.');
+        }
+
+        $canAccessDistrict = $user->districts()
+            ->where('districts.id', $district->id)
+            ->exists()
+            || $district->owner_id === $user->id
+            || $user->hasRole('app.admin');
+
+        if (! $canAccessDistrict) {
+            abort(422, 'Selected default district is not accessible for this user.');
+        }
+
+        return $district->id;
     }
 }

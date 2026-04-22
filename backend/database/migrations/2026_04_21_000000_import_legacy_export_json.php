@@ -21,11 +21,16 @@ return new class extends Migration
 
         DB::transaction(function () use ($payload): void {
             $ownerEmail = $this->ownerEmail($payload);
+            $userEmails = array_keys($payload['users_by_email'] ?? []);
             $ownerUserId = $this->upsertUsers($payload['users_by_email'] ?? [], $ownerEmail);
             $districtId = $this->upsertDistrict($payload, $ownerUserId);
+            $districtNumber = $this->districtNumber($payload);
 
             $this->attachDistrictUsers($payload['users_by_email'] ?? [], $districtId, $ownerEmail);
+            $this->createUserPreferences($userEmails);
+            $this->createDistrictSettings($districtId);
             $this->upsertCustomers($payload['debtors'] ?? [], $districtId);
+            $this->logImportSummary($districtNumber, $userEmails, $payload['debtors'] ?? []);
         });
     }
 
@@ -63,11 +68,24 @@ return new class extends Migration
             $emails = array_keys($payload['users_by_email'] ?? []);
 
             if ($emails !== []) {
+                $userIds = DB::table('users')
+                    ->select('id')
+                    ->whereIn('email', array_map('mb_strtolower', $emails))
+                    ->pluck('id');
+
+                DB::table('user_preferences')
+                    ->whereIn('user_id', $userIds)
+                    ->delete();
+
                 DB::table('district_user')
                     ->where('district_id', $districtId)
-                    ->whereIn('user_id', $this->userIdQuery($emails))
+                    ->whereIn('user_id', $userIds)
                     ->delete();
             }
+
+            DB::table('district_settings')
+                ->where('district_id', $districtId)
+                ->delete();
 
             $remainingCustomers = DB::table('customers')
                 ->where('district_id', $districtId)
@@ -505,5 +523,109 @@ return new class extends Migration
         return DB::table('users')
             ->select('id')
             ->whereIn('email', array_map('mb_strtolower', $emails));
+    }
+
+    /**
+     * Create user preferences for all imported users with Latvian defaults.
+     *
+     * @param  array<int, string>  $userEmails
+     */
+    private function createUserPreferences(array $userEmails): void
+    {
+        if ($userEmails === []) {
+            return;
+        }
+
+        $userIds = DB::table('users')
+            ->select('id')
+            ->whereIn('email', array_map('mb_strtolower', $userEmails))
+            ->pluck('id');
+
+        foreach ($userIds as $userId) {
+            if (! is_int($userId)) {
+                continue;
+            }
+
+            DB::table('user_preferences')->updateOrInsert(
+                ['user_id' => $userId],
+                [
+                    'locale' => 'lv',
+                    'date_format' => 'DD.MM.YYYY.',
+                    'decimal_separator' => ',',
+                    'thousand_separator' => ' ',
+                    'table_page_size' => 25,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ],
+            );
+        }
+    }
+
+    /**
+     * Create district settings with Latvian defaults.
+     */
+    private function createDistrictSettings(int $districtId): void
+    {
+        DB::table('district_settings')->updateOrInsert(
+            ['district_id' => $districtId],
+            [
+                'locale' => 'lv',
+                'date_format' => 'DD.MM.YYYY.',
+                'decimal_separator' => ',',
+                'thousand_separator' => ' ',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        );
+    }
+
+    /**
+     * Log import summary to activity log.
+     *
+     * @param  int  $districtNumber
+     * @param  array<int, string>  $userEmails
+     * @param  array<int, mixed>  $debtors
+     */
+    private function logImportSummary(int $districtNumber, array $userEmails, array $debtors): void
+    {
+        if (! Schema::hasTable('activity_log')) {
+            return;
+        }
+
+        $debtorCount = count(array_filter($debtors, 'is_array'));
+        $debtCount = 0;
+        $paymentCount = 0;
+
+        foreach ($debtors as $debtor) {
+            if (! is_array($debtor)) {
+                continue;
+            }
+
+            foreach ($debtor['debts'] ?? [] as $debt) {
+                if (is_array($debt)) {
+                    $debtCount++;
+                    $paymentCount += count(array_filter($debt['payments'] ?? [], 'is_array'));
+                }
+            }
+        }
+
+        DB::table('activity_log')->insert([
+            'log_name' => 'security',
+            'description' => 'Legacy data imported from export.json',
+            'event' => 'import.legacy_data.success',
+            'subject_type' => null,
+            'subject_id' => null,
+            'causer_type' => null,
+            'causer_id' => null,
+            'properties' => json_encode([
+                'district_number' => $districtNumber,
+                'user_count' => count($userEmails),
+                'customer_count' => $debtorCount,
+                'debt_count' => $debtCount,
+                'payment_count' => $paymentCount,
+            ]),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
     }
 };

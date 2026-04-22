@@ -57,6 +57,7 @@ export interface CurrentUser {
     disabled?: boolean;
     is_email_verified?: boolean;
     email_verified_at?: string | null;
+    default_district_ulid?: string | null;
 }
 
 export interface AuthSessionResponse {
@@ -83,9 +84,9 @@ export async function logout(): Promise<void> {
 }
 
 export async function fetchCurrentUser(): Promise<CurrentUser> {
-    const response = await apiClient.get<CurrentUser>('/auth/me');
+    const response = await apiClient.get<CurrentUser | { data: CurrentUser }>('/auth/me');
 
-    return response.data;
+    return 'data' in response.data ? response.data.data : response.data;
 }
 
 export async function forgotPassword(input: ForgotPasswordInput): Promise<void> {

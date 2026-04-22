@@ -14,6 +14,7 @@ use App\Models\District;
 use App\Models\Payment;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Spatie\Permission\Models\Role;
 
 final class DistrictController extends Controller
 {
@@ -70,9 +71,16 @@ final class DistrictController extends Controller
     {
         $this->authorize('view', $district);
 
+        $canViewUsersCount = $this->canViewUsersCount($district);
+
         return response()->json([
             'district' => (new DistrictResource($district))->resolve(),
-            'users_count' => $district->users()->count(),
+            'users_count' => $canViewUsersCount ? $district->users()->count() : null,
+            'can_view_users_count' => $canViewUsersCount,
+            'can_manage_users' => $canViewUsersCount,
+            'can_create_customer' => request()->user()?->can('district.customer.create') ?? false,
+            'can_create_debt' => request()->user()?->can('district.debt.create') ?? false,
+            'can_create_payment' => request()->user()?->can('district.payment.create') ?? false,
             'customers_count' => Customer::query()->where('district_id', $district->id)->count(),
             'debts_count' => Debt::query()->where('district_id', $district->id)->count(),
             'payments_count' => Payment::query()
@@ -97,10 +105,17 @@ final class DistrictController extends Controller
         }
 
         $data = $query->get()
-            ->map(static function (District $district): array {
+            ->map(function (District $district): array {
+                $canViewUsersCount = $this->canViewUsersCount($district);
+
                 return [
                     'district' => (new DistrictResource($district))->resolve(),
-                    'users_count' => $district->users()->count(),
+                    'users_count' => $canViewUsersCount ? $district->users()->count() : null,
+                    'can_view_users_count' => $canViewUsersCount,
+                    'can_manage_users' => $canViewUsersCount,
+                    'can_create_customer' => request()->user()?->can('district.customer.create') ?? false,
+                    'can_create_debt' => request()->user()?->can('district.debt.create') ?? false,
+                    'can_create_payment' => request()->user()?->can('district.payment.create') ?? false,
                     'customers_count' => Customer::query()->where('district_id', $district->id)->count(),
                     'debts_count' => Debt::query()->where('district_id', $district->id)->count(),
                     'payments_count' => Payment::query()
@@ -110,6 +125,39 @@ final class DistrictController extends Controller
             })
             ->values();
 
-        return response()->json($data);
+        return response()->json([
+            'data' => $data,
+            'districts_count' => $data->count(),
+            'customers_count' => $data->sum('customers_count'),
+            'debts_count' => $data->sum('debts_count'),
+            'payments_count' => $data->sum('payments_count'),
+        ]);
+    }
+
+    private function canViewUsersCount(District $district): bool
+    {
+        $user = request()->user();
+
+        if ($user === null) {
+            return false;
+        }
+
+        if ($user->hasRole('app.admin') || $district->owner_id === $user->id) {
+            return true;
+        }
+
+        $districtAdminRoleId = Role::query()
+            ->where('name', 'district.admin')
+            ->where('guard_name', 'web')
+            ->value('id');
+
+        if (! is_int($districtAdminRoleId)) {
+            return false;
+        }
+
+        return $district->users()
+            ->where('users.id', $user->id)
+            ->wherePivot('role_id', $districtAdminRoleId)
+            ->exists();
     }
 }

@@ -10,7 +10,7 @@ interface PreferencesState {
 export const usePreferencesStore = defineStore('preferences', {
     state: (): PreferencesState => ({
         locale: 'lv',
-        dateFormat: 'DD.MM.YYYY',
+        dateFormat: 'DD.MM.YYYY.',
         decimalSeparator: ',',
         thousandSeparator: ' ',
     }),

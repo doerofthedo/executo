@@ -13,6 +13,7 @@ use App\Models\UserPreference;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
@@ -58,7 +59,7 @@ final class SampleDataSeeder extends Seeder
                 name: $districtData['admin_name'],
                 surname: $districtData['admin_surname'],
                 locale: 'lv',
-                dateFormat: 'DD.MM.YYYY',
+                dateFormat: 'DD.MM.YYYY.',
                 decimalSeparator: ',',
                 thousandSeparator: ' ',
             );
@@ -79,7 +80,7 @@ final class SampleDataSeeder extends Seeder
                 ['district_id' => $district->id],
                 [
                     'locale' => 'lv',
-                    'date_format' => 'DD.MM.YYYY',
+                    'date_format' => 'DD.MM.YYYY.',
                     'decimal_separator' => ',',
                     'thousand_separator' => ' ',
                 ],
@@ -105,8 +106,12 @@ final class SampleDataSeeder extends Seeder
                 ]);
             }
 
-            foreach ($this->customersForDistrict($district, $districtIndex) as $customer) {
-                $this->seedDebtsAndPayments($customer, $districtIndex);
+            if ($districtData['number'] === 69) {
+                $this->pruneLegacyDistrictCustomers($district);
+            } else {
+                foreach ($this->customersForDistrict($district, $districtIndex) as $customer) {
+                    $this->seedDebtsAndPayments($customer, $districtIndex);
+                }
             }
         }
     }
@@ -272,6 +277,68 @@ final class SampleDataSeeder extends Seeder
         }
     }
 
+    private function pruneLegacyDistrictCustomers(District $district): void
+    {
+        $payload = $this->legacyExportPayload();
+
+        if ($payload === null) {
+            return;
+        }
+
+        $validCaseNumbers = [];
+        $validNamesWithoutCaseNumber = [];
+
+        foreach ($payload['debtors'] ?? [] as $debtor) {
+            if (! is_array($debtor)) {
+                continue;
+            }
+
+            $caseNumber = $this->nullableString($debtor['case_number'] ?? null);
+            $name = $this->nullableString($debtor['name'] ?? null);
+
+            if ($caseNumber !== null) {
+                $validCaseNumbers[] = $caseNumber;
+                continue;
+            }
+
+            if ($name !== null) {
+                $validNamesWithoutCaseNumber[] = $name;
+            }
+        }
+
+        $customers = DB::table('customers')
+            ->select('id', 'case_number', 'name')
+            ->where('district_id', $district->id)
+            ->get();
+
+        $staleCustomerIds = [];
+
+        foreach ($customers as $customer) {
+            $caseNumber = is_string($customer->case_number) && $customer->case_number !== ''
+                ? $customer->case_number
+                : null;
+            $name = is_string($customer->name) && $customer->name !== ''
+                ? $customer->name
+                : null;
+
+            $isLegacyCustomer = $caseNumber !== null
+                ? in_array($caseNumber, $validCaseNumbers, true)
+                : ($name !== null && in_array($name, $validNamesWithoutCaseNumber, true));
+
+            if (! $isLegacyCustomer && is_int($customer->id)) {
+                $staleCustomerIds[] = $customer->id;
+            }
+        }
+
+        if ($staleCustomerIds === []) {
+            return;
+        }
+
+        DB::table('customers')
+            ->whereIn('id', $staleCustomerIds)
+            ->delete();
+    }
+
     /**
      * @return Collection<int, array{number: int, court: string, address: string, admin_email: string, admin_name: string, admin_surname: string}>
      */
@@ -308,5 +375,29 @@ final class SampleDataSeeder extends Seeder
             })
             ->filter(static fn(array $district): bool => $district['number'] > 0)
             ->values();
+    }
+
+    private function legacyExportPayload(): ?array
+    {
+        $path = base_path('../data/export.json');
+
+        if (! File::exists($path)) {
+            return null;
+        }
+
+        $payload = json_decode(File::get($path), true, 512, JSON_THROW_ON_ERROR);
+
+        return is_array($payload) ? $payload : null;
+    }
+
+    private function nullableString(mixed $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $string = trim((string) $value);
+
+        return $string === '' ? null : $string;
     }
 }

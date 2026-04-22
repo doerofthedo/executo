@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Api\V1\DistrictController;
+use App\Http\Controllers\Api\V1\DistrictUserController;
 use App\Http\Controllers\Api\V1\DebtController;
 use App\Http\Controllers\Api\V1\PaymentController;
 use App\Http\Controllers\Api\V1\CustomerController;
@@ -70,6 +71,9 @@ Route::middleware(['auth:sanctum', 'district.scope'])->group(static function ():
 
     Route::get('/districts/{district}/stats', [DistrictController::class, 'stats'])
         ->name('api.v1.districts.stats');
+
+    Route::post('/districts/{district}/users', [DistrictUserController::class, 'store'])
+        ->name('api.v1.district-users.store');
 
     Route::get('/districts/{district}/customers', [CustomerController::class, 'index'])
         ->name('api.v1.customers.index');

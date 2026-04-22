@@ -5,7 +5,15 @@
 executo.local:80 {
     encode zstd gzip
     log {
-        format console
+        format filter {
+            wrap console
+            fields {
+                request>headers delete
+                resp_headers delete
+                duration delete
+                size delete
+            }
+        }
     }
 
     log_skip /favicon.ico
@@ -16,11 +24,7 @@ executo.local:80 {
     log_skip /assets/*
 
     handle /api/* {
-        reverse_proxy backend:80 {
-            header_up X-Forwarded-Proto {scheme}
-            header_up X-Forwarded-Host {host}
-            header_up X-Forwarded-For {remote}
-        }
+        reverse_proxy backend:80
     }
 
     redir /mail /mail/ 308

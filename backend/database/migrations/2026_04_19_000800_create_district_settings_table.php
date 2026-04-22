@@ -14,7 +14,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('district_id')->constrained('districts')->cascadeOnDelete();
             $table->string('locale', 5)->default('lv');
-            $table->string('date_format')->default('DD.MM.YYYY');
+            $table->string('date_format')->default('DD.MM.YYYY.');
             $table->string('decimal_separator', 5)->default(',');
             $table->string('thousand_separator', 5)->default(' ');
             $table->timestamps();

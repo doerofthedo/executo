@@ -26,7 +26,7 @@ final readonly class RegisterUserAction
             UserPreference::query()->create([
                 'user_id' => $user->id,
                 'locale' => $data->locale,
-                'date_format' => 'DD.MM.YYYY',
+                'date_format' => 'DD.MM.YYYY.',
                 'decimal_separator' => ',',
                 'thousand_separator' => ' ',
                 'table_page_size' => 25,

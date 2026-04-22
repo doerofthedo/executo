@@ -3,95 +3,151 @@
         <div class="lex-overview-page">
             <section class="lex-overview-hero-dark">
                 <div class="lex-overview-hero-body">
-                    <div>
-                        <p class="lex-overview-eyebrow">{{ t('dashboard.eyebrow') }}</p>
-                        <h1 class="lex-overview-title">{{ heroTitle }}</h1>
-                        <p class="lex-overview-copy">{{ heroCopy }}</p>
-                    </div>
-
-                    <div class="lex-overview-metric-grid-dark">
-                        <article v-for="item in heroStats" :key="item.label" class="lex-overview-metric-card-dark">
-                            <p class="lex-overview-metric-label">{{ t(item.label) }}</p>
-                            <p class="lex-overview-metric-value">{{ item.value }}</p>
-                        </article>
-                    </div>
-                </div>
-            </section>
-
-            <section class="lex-overview-hero-split">
-                <article class="lex-overview-hero">
-                    <div class="lex-overview-hero-accent" />
-                    <div class="p-8">
-                        <div class="flex flex-wrap items-center gap-2">
-                            <span class="lex-pill-accent">{{ t('dashboard.focus_badge') }}</span>
-                            <span class="lex-pill">{{ t('dashboard.access_badge') }}</span>
+                    <div class="lex-overview-hero-header">
+                        <div>
+                            <h1 class="lex-overview-title">{{ heroTitle }}</h1>
                         </div>
 
-                        <h2 class="mt-5 text-3xl font-semibold text-[var(--lex-text)]">
-                            {{ t('dashboard.focus_title') }}
-                        </h2>
-                        <p class="mt-3 text-[var(--lex-muted)] leading-7">
-                            {{ t('dashboard.focus_copy') }}
-                        </p>
-
-                        <div class="lex-overview-metric-grid mt-6">
-                            <article v-for="item in focusStats" :key="item.label" class="lex-overview-metric-card">
+                        <div class="lex-overview-metric-grid-dark">
+                            <article v-for="item in heroStats" :key="item.label" class="lex-overview-metric-card-dark">
                                 <p class="lex-overview-metric-label">{{ t(item.label) }}</p>
                                 <p class="lex-overview-metric-value">{{ item.value }}</p>
                             </article>
                         </div>
+                    </div>
+                </div>
+            </section>
 
-                        <div class="mt-6 flex flex-wrap gap-3">
-                            <RouterLink :to="{ name: 'dashboard' }" class="lex-button lex-button-primary">
-                                {{ t('dashboard.primary_action') }}
+            <section class="lex-dashboard-main-grid">
+                <div class="lex-panel lex-dashboard-section">
+                    <div class="lex-dashboard-section-header">
+                        <h2 class="lex-page-title lex-dashboard-section-title">{{ t('dashboard.districts_title') }}</h2>
+                    </div>
+
+                    <div v-if="loading" class="lex-dashboard-empty">
+                        {{ t('dashboard.loading') }}
+                    </div>
+
+                    <div v-else-if="loadError !== ''" class="lex-form-message lex-form-message-error lex-dashboard-status">
+                        {{ loadError }}
+                    </div>
+
+                    <div v-else-if="districtCards.length === 0" class="lex-dashboard-empty">
+                        {{ t('dashboard.no_districts') }}
+                    </div>
+
+                    <div v-else class="lex-district-card-grid">
+                        <article
+                            v-for="card in districtCards"
+                            :key="card.district.ulid"
+                            class="lex-district-card"
+                        >
+                            <div class="lex-district-card-header">
+                                <div class="lex-section-header">
+                                    <p class="lex-district-card-label">{{ districtLabel(card) }}</p>
+                                    <h3 class="lex-district-card-title">{{ districtTitle(card) }}</h3>
+                                    <p v-if="card.district.court" class="lex-district-card-copy">{{ card.district.court }}</p>
+                                </div>
+
+                                <RouterLink
+                                    :to="{ name: 'district', params: { district: card.district.ulid } }"
+                                    class="lex-button lex-button-inline"
+                                >
+                                    {{ t('dashboard.open_district') }}
+                                </RouterLink>
+                            </div>
+
+                            <dl class="lex-overview-metric-grid lex-district-card-metrics">
+                                <div v-if="card.can_view_users_count" class="lex-overview-metric-card">
+                                    <dt class="lex-overview-metric-label">{{ t('dashboard.stats_users') }}</dt>
+                                    <dd class="lex-overview-metric-value">{{ card.users_count ?? 0 }}</dd>
+                                </div>
+                                <div class="lex-overview-metric-card">
+                                    <dt class="lex-overview-metric-label">{{ t('dashboard.stats_customers') }}</dt>
+                                    <dd class="lex-overview-metric-value">{{ card.customers_count }}</dd>
+                                </div>
+                                <div class="lex-overview-metric-card">
+                                    <dt class="lex-overview-metric-label">{{ t('dashboard.stats_debts') }}</dt>
+                                    <dd class="lex-overview-metric-value">{{ card.debts_count }}</dd>
+                                </div>
+                                <div class="lex-overview-metric-card">
+                                    <dt class="lex-overview-metric-label">{{ t('dashboard.stats_payments') }}</dt>
+                                    <dd class="lex-overview-metric-value">{{ card.payments_count }}</dd>
+                                </div>
+                            </dl>
+                        </article>
+                    </div>
+                </div>
+
+                <aside class="lex-panel lex-dashboard-actions-panel">
+                    <div class="lex-dashboard-section-header">
+                        <h2 class="lex-page-title lex-dashboard-section-title">{{ t('dashboard.quick_actions_title') }}</h2>
+                    </div>
+
+                    <div v-if="effectiveDefaultDistrict === null && districtCards.length > 1" class="lex-dashboard-empty">
+                        <p class="lex-page-copy lex-page-copy-full">{{ t('dashboard.default_district_missing') }}</p>
+                        <div class="lex-section-actions">
+                            <RouterLink :to="{ name: 'preferences' }" class="lex-button lex-button-secondary">
+                                {{ t('dashboard.open_preferences') }}
                             </RouterLink>
-                            <a v-if="showMailpit" href="/mail/" class="lex-button lex-button-secondary">
-                                {{ t('dashboard.secondary_action') }}
-                            </a>
                         </div>
                     </div>
-                </article>
 
-                <article class="lex-panel p-8">
-                    <p class="lex-overview-support-title">{{ t('dashboard.quick_actions') }}</p>
-                    <div class="mt-5 grid gap-3">
-                        <RouterLink :to="{ name: 'dashboard' }" class="lex-button lex-button-primary">
-                            {{ t('dashboard.open_dashboard') }}
+                    <div v-else-if="effectiveDefaultDistrict === null" class="lex-dashboard-empty">
+                        {{ t('dashboard.no_districts') }}
+                    </div>
+
+                    <div v-else class="lex-dashboard-actions-stack">
+                        <p class="lex-key-value-label">{{ t('dashboard.quick_actions_context', { district: districtLabel(effectiveDefaultDistrict) }) }}</p>
+
+                        <RouterLink
+                            v-if="effectiveDefaultDistrict.can_manage_users"
+                            :to="{ name: 'district-user-create', params: { district: effectiveDefaultDistrict.district.ulid } }"
+                            class="lex-button lex-button-primary lex-dashboard-action-button"
+                        >
+                            {{ t('dashboard.add_user') }}
                         </RouterLink>
-                        <a v-if="showMailpit" href="/mail/" class="lex-button lex-button-secondary">
+
+                        <RouterLink
+                            v-if="effectiveDefaultDistrict.can_create_customer"
+                            :to="{ name: 'customer-create', params: { district: effectiveDefaultDistrict.district.ulid } }"
+                            class="lex-button lex-button-secondary lex-dashboard-action-button"
+                        >
+                            {{ t('dashboard.add_customer') }}
+                        </RouterLink>
+
+                        <RouterLink
+                            v-if="effectiveDefaultDistrict.can_create_debt"
+                            :to="{ name: 'debt-create', params: { district: effectiveDefaultDistrict.district.ulid } }"
+                            class="lex-button lex-button-secondary lex-dashboard-action-button"
+                        >
+                            {{ t('dashboard.add_debt') }}
+                        </RouterLink>
+
+                        <RouterLink
+                            v-if="effectiveDefaultDistrict.can_create_payment"
+                            :to="{ name: 'payment-create', params: { district: effectiveDefaultDistrict.district.ulid } }"
+                            class="lex-button lex-button-secondary lex-dashboard-action-button"
+                        >
+                            {{ t('dashboard.add_payment') }}
+                        </RouterLink>
+
+                        <a v-if="showMailpit" href="/mail/" class="lex-button lex-button-inline lex-dashboard-action-button">
                             {{ t('dashboard.open_mailpit') }}
                         </a>
                     </div>
-                </article>
-            </section>
-
-            <section class="grid gap-4 lg:grid-cols-3">
-                <article class="lex-overview-support-card">
-                    <p class="lex-overview-support-title">{{ t('dashboard.environment_title') }}</p>
-                    <p class="lex-overview-support-value">{{ t('dashboard.environment_value') }}</p>
-                    <p class="lex-overview-support-copy">{{ t('dashboard.environment_copy') }}</p>
-                </article>
-
-                <article class="lex-overview-support-card">
-                    <p class="lex-overview-support-title">{{ t('dashboard.today_title') }}</p>
-                    <p class="lex-overview-support-value">{{ t('dashboard.today_value') }}</p>
-                    <p class="lex-overview-support-copy">{{ t('dashboard.today_copy') }}</p>
-                </article>
-
-                <article class="lex-overview-support-card">
-                    <p class="lex-overview-support-title">{{ t('dashboard.access_title') }}</p>
-                    <p class="lex-overview-support-value">{{ t('dashboard.access_value') }}</p>
-                    <p class="lex-overview-support-copy">{{ t('dashboard.access_copy') }}</p>
-                </article>
+                </aside>
             </section>
         </div>
     </AppLayout>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { RouterLink } from 'vue-router';
+import type { DashboardDistrictCard, DashboardStats } from '@/api/dashboard';
+import { getDashboardStats } from '@/api/dashboard';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { useAuthStore } from '@/stores/auth';
 
@@ -99,19 +155,61 @@ const { t } = useI18n();
 const authStore = useAuthStore();
 const showMailpit = import.meta.env.DEV;
 
+const stats = ref<DashboardStats>({
+    data: [],
+    districts_count: 0,
+    customers_count: 0,
+    debts_count: 0,
+    payments_count: 0,
+});
+const loading = ref(true);
+const loadError = ref('');
+
 const firstName = computed(() => authStore.user?.name?.split(' ')[0] ?? '');
 const heroTitle = computed(() => firstName.value !== '' ? t('dashboard.greeting', { name: firstName.value }) : t('dashboard.fallback'));
-const heroCopy = computed(() => t('dashboard.focus_copy'));
+const heroStats = computed(() => [
+    { label: 'dashboard.stats_districts', value: String(stats.value.districts_count) },
+    { label: 'dashboard.stats_customers', value: String(stats.value.customers_count) },
+    { label: 'dashboard.stats_debts', value: String(stats.value.debts_count) },
+    { label: 'dashboard.stats_payments', value: String(stats.value.payments_count) },
+]);
+const districtCards = computed(() => {
+    return [...stats.value.data].sort((left, right) => left.district.number - right.district.number);
+});
+const effectiveDefaultDistrict = computed(() => {
+    const preferredDistrictUlid = authStore.user?.default_district_ulid ?? null;
 
-const heroStats = [
-    { label: 'dashboard.stats_districts', value: '1' },
-    { label: 'dashboard.stats_customers', value: '0' },
-    { label: 'dashboard.stats_debts', value: '0' },
-    { label: 'dashboard.stats_payments', value: '0' },
-];
+    if (preferredDistrictUlid !== null) {
+        return districtCards.value.find((card) => card.district.ulid === preferredDistrictUlid) ?? null;
+    }
 
-const focusStats = [
-    { label: 'dashboard.stats_customers', value: '0' },
-    { label: 'dashboard.stats_debts', value: '0' },
-];
+    if (districtCards.value.length === 1) {
+        return districtCards.value[0];
+    }
+
+    return null;
+});
+
+function districtLabel(card: DashboardDistrictCard): string {
+    return t('dashboard.district_label', { number: card.district.number });
+}
+
+function districtTitle(card: DashboardDistrictCard): string {
+    const parts = [card.district.bailiff_name, card.district.bailiff_surname].filter((part): part is string => part !== null && part !== '');
+
+    return parts.join(' ').trim() || districtLabel(card);
+}
+
+onMounted(async () => {
+    loading.value = true;
+    loadError.value = '';
+
+    try {
+        stats.value = await getDashboardStats();
+    } catch {
+        loadError.value = t('dashboard.load_error');
+    } finally {
+        loading.value = false;
+    }
+});
 </script>

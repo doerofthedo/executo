@@ -14,7 +14,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->string('locale', 5)->default('lv');
-            $table->string('date_format')->default('DD.MM.YYYY');
+            $table->string('date_format')->default('DD.MM.YYYY.');
             $table->string('decimal_separator', 5)->default(',');
             $table->string('thousand_separator', 5)->default(' ');
             $table->unsignedSmallInteger('table_page_size')->default(25);

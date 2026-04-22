@@ -20,6 +20,9 @@ return Application::configure(basePath: dirname(__DIR__))
         apiPrefix: '/api/v1',
     )
     ->withMiddleware(static function (Middleware $middleware): void {
+        $middleware->trimStrings([
+            'thousand_separator',
+        ]);
         $middleware->append(SecurityHeaders::class);
         $middleware->append(AuditLog::class);
         $middleware->alias([

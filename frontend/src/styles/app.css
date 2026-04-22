@@ -7,9 +7,20 @@ body {
 }
 
 .lex-panel {
+    position: relative;
+    overflow: hidden;
     border: 1px solid var(--lex-border);
     background: white;
     box-shadow: var(--lex-shadow);
+}
+
+.lex-panel::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    height: 0.25rem;
+    background: var(--lex-accent);
 }
 
 .lex-panel-muted {
@@ -17,12 +28,30 @@ body {
     background: var(--lex-surface-muted);
 }
 
+.lex-panel-header {
+    position: relative;
+    overflow: hidden;
+}
+
+.lex-panel-header::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    height: 0.25rem;
+    background: var(--lex-accent);
+}
+
 .lex-app-shell {
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
     color: var(--lex-text);
 }
 
 .lex-app-header {
+    position: relative;
+    z-index: 30;
     border-bottom: 1px solid var(--lex-border);
     background: color-mix(in srgb, white 90%, transparent);
     backdrop-filter: blur(10px);
@@ -61,6 +90,36 @@ body {
     gap: 0.75rem;
 }
 
+.lex-app-account-menu {
+    position: relative;
+}
+
+.lex-app-account-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    min-height: 3rem;
+    min-width: 12rem;
+    border: 1px solid var(--lex-border);
+    background: rgba(255, 255, 255, 0.72);
+    padding: 0.625rem 0.875rem;
+    color: var(--lex-text);
+    text-align: right;
+    box-shadow: 0 8px 16px rgba(31, 42, 55, 0.05);
+    cursor: pointer;
+}
+
+.lex-app-account-trigger:hover {
+    border-color: var(--lex-border-strong);
+    background: white;
+}
+
+.lex-app-account-trigger:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--lex-accent), 0 0 0 4px white;
+}
+
 .lex-app-account-copy {
     text-align: right;
 }
@@ -77,6 +136,52 @@ body {
     line-height: 1.4;
     font-weight: 500;
     color: var(--lex-text);
+}
+
+.lex-app-account-trigger-icon {
+    font-size: 1.125rem;
+    color: var(--lex-muted);
+}
+
+.lex-app-account-dropdown {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    z-index: 50;
+    min-width: 13rem;
+    overflow: hidden;
+    border: 1px solid var(--lex-border);
+    background: white;
+    box-shadow: 0 10px 24px rgba(31, 42, 55, 0.14);
+}
+
+.lex-app-account-dropdown-item {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0.75rem 1rem;
+    background: white;
+    color: var(--lex-text);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 400;
+    text-align: left;
+    cursor: pointer;
+}
+
+.lex-app-account-dropdown-item:hover,
+.lex-app-account-dropdown-item:focus-visible {
+    outline: none;
+    background: var(--lex-surface-muted);
+}
+
+.lex-app-account-dropdown-divider {
+    border-top: 1px solid var(--lex-border);
+}
+
+.lex-app-account-dropdown-item-danger {
+    color: #8b2f2b;
 }
 
 .lex-app-breadcrumb-bar {
@@ -115,6 +220,7 @@ body {
 }
 
 .lex-app-main {
+    flex: 1 0 auto;
     margin-inline: auto;
     width: 100%;
     max-width: 80rem;
@@ -126,8 +232,121 @@ body {
     gap: 1.5rem;
 }
 
+.lex-page-stack {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.lex-page-eyebrow {
+    font-size: 0.875rem;
+    line-height: 1.2;
+    color: var(--lex-muted);
+}
+
+.lex-page-title {
+    margin-top: 0.75rem;
+    font-size: 2rem;
+    line-height: 1.1;
+    font-weight: 600;
+    color: var(--lex-text);
+}
+
+.lex-heading-lg {
+    font-size: 1.5rem;
+    line-height: 1.2;
+    font-weight: 600;
+    color: var(--lex-text);
+}
+
+.lex-page-copy {
+    margin-top: 0.75rem;
+    max-width: 44rem;
+    color: var(--lex-muted);
+    line-height: 1.7;
+}
+
+.lex-page-copy-full {
+    max-width: none;
+}
+
+.lex-key-value-grid {
+    display: grid;
+    gap: 1rem;
+}
+
+.lex-key-value-item {
+    display: grid;
+    gap: 0.25rem;
+}
+
+.lex-key-value-label {
+    font-size: 0.875rem;
+    line-height: 1.2;
+    color: var(--lex-muted);
+}
+
+.lex-key-value-value {
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--lex-text);
+}
+
+.lex-section-header {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.lex-section-actions {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.lex-settings-grid {
+    display: grid;
+    gap: 1.25rem;
+}
+
+.lex-inline-action {
+    margin-top: 1rem;
+}
+
+.lex-identity-grid {
+    margin-top: 1.5rem;
+    display: grid;
+    gap: 1rem;
+}
+
+.lex-identity-item {
+    display: grid;
+    gap: 0.25rem;
+    border: 1px solid var(--lex-border);
+    background: var(--lex-surface-muted);
+    padding: 1rem 1.25rem;
+}
+
+.lex-break-anywhere {
+    overflow-wrap: anywhere;
+}
+
+@media (min-width: 64rem) {
+    .lex-key-value-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .lex-settings-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .lex-identity-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
 .lex-app-footer {
-    margin-top: 2rem;
+    margin-top: auto;
     border-top: 1px solid color-mix(in srgb, var(--lex-border) 70%, transparent);
     background: rgba(255, 253, 249, 0.72);
 }
@@ -159,6 +378,11 @@ body {
 
 .lex-overview-hero-body {
     padding: 2rem;
+}
+
+.lex-overview-hero-header {
+    display: grid;
+    gap: 1.5rem;
 }
 
 .lex-overview-eyebrow {
@@ -284,9 +508,20 @@ body {
 }
 
 .lex-overview-support-card {
+    position: relative;
+    overflow: hidden;
     border: 1px solid var(--lex-border);
     background: var(--lex-surface-muted);
     padding: 1.25rem;
+}
+
+.lex-overview-support-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    height: 0.25rem;
+    background: var(--lex-accent);
 }
 
 .lex-overview-support-value {
@@ -304,6 +539,106 @@ body {
     color: var(--lex-text);
 }
 
+.lex-dashboard-section {
+    padding: 2rem;
+}
+
+.lex-dashboard-main-grid {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.lex-dashboard-section-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.lex-dashboard-section-title {
+    margin-top: 0;
+}
+
+.lex-dashboard-status {
+    margin-top: 1.5rem;
+}
+
+.lex-dashboard-empty {
+    margin-top: 1.5rem;
+    padding: 1.25rem 0;
+    color: var(--lex-muted);
+}
+
+.lex-dashboard-actions-panel {
+    padding: 2rem;
+}
+
+.lex-dashboard-actions-stack {
+    margin-top: 1.5rem;
+    display: grid;
+    gap: 0.75rem;
+}
+
+.lex-dashboard-action-button {
+    justify-content: flex-start;
+    text-align: left;
+}
+
+.lex-district-card-grid {
+    margin-top: 1.5rem;
+    display: grid;
+    gap: 1rem;
+}
+
+.lex-district-card {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--lex-border);
+    background: color-mix(in srgb, white 88%, var(--lex-surface-muted));
+    padding: 1.5rem;
+    box-shadow: 0 10px 24px rgba(31, 42, 55, 0.06);
+}
+
+.lex-district-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    height: 0.25rem;
+    background: var(--lex-accent);
+}
+
+.lex-district-card-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.lex-district-card-label {
+    font-size: 0.9375rem;
+    line-height: 1.3;
+    color: var(--lex-accent);
+}
+
+.lex-district-card-title {
+    font-size: 1.5rem;
+    line-height: 1.2;
+    font-weight: 600;
+    color: var(--lex-text);
+}
+
+.lex-district-card-copy {
+    color: var(--lex-muted);
+    line-height: 1.6;
+}
+
+.lex-district-card-metrics {
+    margin-top: 1rem;
+}
+
 @media (min-width: 768px) {
     .lex-app-header-inner {
         padding-inline: 2rem;
@@ -319,21 +654,32 @@ body {
     .lex-overview-metric-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
-}
 
-@media (min-width: 1024px) {
-    .lex-overview-hero-body {
-        display: grid;
-        grid-template-columns: minmax(0, 1.25fr) minmax(24rem, 0.75fr);
-        gap: 2rem;
+    .lex-overview-hero-header {
+        grid-template-columns: minmax(0, 1.3fr) minmax(18rem, 0.9fr);
         align-items: end;
     }
 
+    .lex-district-card-metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .lex-dashboard-main-grid {
+        grid-template-columns: minmax(0, 1.85fr) minmax(15.5rem, 0.65fr);
+        align-items: start;
+    }
+}
+
+@media (min-width: 1024px) {
     .lex-overview-hero-split {
         grid-template-columns: minmax(0, 1.1fr) minmax(20rem, 0.9fr);
     }
 
     .lex-overview-metric-grid-dark {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .lex-district-card-metrics {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
 final class UpdateUserRequest extends FormRequest
@@ -26,10 +27,30 @@ final class UpdateUserRequest extends FormRequest
             'password' => ['sometimes', 'string', 'confirmed', Password::min(8)],
             'disabled' => ['sometimes', 'boolean'],
             'locale' => ['sometimes', 'string', 'in:lv,en'],
-            'date_format' => ['sometimes', 'string', 'max:255'],
-            'decimal_separator' => ['sometimes', 'string', 'max:5'],
-            'thousand_separator' => ['sometimes', 'string', 'max:5'],
-            'table_page_size' => ['sometimes', 'integer', 'min:1', 'max:500'],
+            'default_district_ulid' => ['sometimes', 'nullable', 'string', 'exists:districts,ulid'],
+            'date_format' => ['sometimes', 'string', Rule::in([
+                'DD.MM.YYYY.',
+                'DD.MM.YYYY',
+                'DD-MM-YYYY',
+                'DD-MMM-YYYY',
+                'YYYY-MM-DD',
+            ])],
+            'decimal_separator' => ['sometimes', 'string', Rule::in([
+                '.',
+                ',',
+            ])],
+            'thousand_separator' => ['sometimes', 'string', Rule::in([
+                ' ',
+                '.',
+                ',',
+                "'",
+            ])],
+            'table_page_size' => ['sometimes', 'integer', Rule::in([
+                10,
+                25,
+                50,
+                100,
+            ])],
         ];
     }
 }

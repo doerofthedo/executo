@@ -23,6 +23,7 @@ final class UserProfileResource extends JsonResource
             'is_email_verified' => $this->resource?->hasVerifiedEmail() ?? false,
             'email_verified_at' => $this->resource?->email_verified_at?->toAtomString(),
             'preferences' => [
+                'default_district_ulid' => $this->resource?->preference?->defaultDistrict?->ulid,
                 'locale' => $this->resource?->preference?->locale,
                 'date_format' => $this->resource?->preference?->date_format,
                 'decimal_separator' => $this->resource?->preference?->decimal_separator,

@@ -164,7 +164,7 @@
     "src": "node_modules/remixicon/fonts/remixicon.woff2"
   },
   "src/entries/app.ts": {
-    "file": "js/app-Dpn2_qIg.js",
+    "file": "js/app-CnG2Pdo-.js",
     "name": "app",
     "src": "src/entries/app.ts",
     "isEntry": true,
@@ -173,11 +173,11 @@
       "src/entries/shared.ts"
     ],
     "css": [
-      "css/app-DG3sn6pd.css"
+      "css/app-CmZPADQk.css"
     ]
   },
   "src/entries/login.ts": {
-    "file": "js/login-BISvQO99.js",
+    "file": "js/login-DWqPXyAU.js",
     "name": "login",
     "src": "src/entries/login.ts",
     "isEntry": true,
@@ -190,12 +190,12 @@
     ]
   },
   "src/entries/shared.ts": {
-    "file": "js/shared-LZsPTSGV.js",
+    "file": "js/shared-CwJvOwPZ.js",
     "name": "shared",
     "src": "src/entries/shared.ts",
     "isEntry": true,
     "css": [
-      "css/shared-Ca6_PeeR.css"
+      "css/shared-6iYsZb0z.css"
     ],
     "assets": [
       "fonts/ibm-plex-sans-cyrillic-ext-400-normal-g30qAdWV.woff2",
