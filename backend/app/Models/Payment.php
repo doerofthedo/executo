@@ -37,11 +37,17 @@ final class Payment extends Model
         return 'ulid';
     }
 
+    /**
+     * @return BelongsTo<Customer, $this>
+     */
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
     }
 
+    /**
+     * @return BelongsTo<Debt, $this>
+     */
     public function debt(): BelongsTo
     {
         return $this->belongsTo(Debt::class);

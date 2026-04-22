@@ -39,6 +39,10 @@ final class AuthSessionController extends Controller
 
         $user->tokens()->delete();
 
+        if ($request->hasSession()) {
+            $request->session()->regenerate();
+        }
+
         $expiration = config('sanctum.expiration');
         $expiresAt = is_int($expiration) ? now()->addMinutes($expiration) : null;
         $token = $user->createToken('spa', ['*'], $expiresAt)->plainTextToken;
@@ -52,6 +56,11 @@ final class AuthSessionController extends Controller
     public function destroy(Request $request): JsonResponse
     {
         $request->user()?->currentAccessToken()?->delete();
+
+        if ($request->hasSession()) {
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
 
         return response()->json([], 204);
     }

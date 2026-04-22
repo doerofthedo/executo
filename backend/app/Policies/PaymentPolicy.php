@@ -18,6 +18,10 @@ final class PaymentPolicy
 
     public function view(User $user, Payment $payment): bool
     {
+        if ($payment->debt === null) {
+            return false;
+        }
+
         return $user->can('district.payment.view')
             && $this->canAccessDistrict($user, $payment->debt->district_id);
     }
@@ -30,12 +34,20 @@ final class PaymentPolicy
 
     public function update(User $user, Payment $payment): bool
     {
+        if ($payment->debt === null) {
+            return false;
+        }
+
         return $user->can('district.payment.update')
             && $this->canAccessDistrict($user, $payment->debt->district_id);
     }
 
     public function delete(User $user, Payment $payment): bool
     {
+        if ($payment->debt === null) {
+            return false;
+        }
+
         return $user->can('district.payment.delete')
             && $this->canAccessDistrict($user, $payment->debt->district_id);
     }

@@ -48,16 +48,25 @@ final class Customer extends Model
         return 'ulid';
     }
 
+    /**
+     * @return BelongsTo<District, $this>
+     */
     public function district(): BelongsTo
     {
         return $this->belongsTo(District::class);
     }
 
+    /**
+     * @return HasMany<Debt, $this>
+     */
     public function debts(): HasMany
     {
         return $this->hasMany(Debt::class);
     }
 
+    /**
+     * @return HasMany<Payment, $this>
+     */
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);

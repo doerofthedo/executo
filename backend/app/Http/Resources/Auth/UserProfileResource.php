@@ -19,7 +19,7 @@ final class UserProfileResource extends JsonResource
             'email' => $this->resource?->email,
             'name' => $this->resource?->name,
             'surname' => $this->resource?->surname,
-            'disabled' => $this->resource?->disabled ?? false,
+            'disabled' => $this->resource->disabled ?? false,
             'is_email_verified' => $this->resource?->hasVerifiedEmail() ?? false,
             'email_verified_at' => $this->resource?->email_verified_at?->toAtomString(),
             'preferences' => [

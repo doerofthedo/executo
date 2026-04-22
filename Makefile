@@ -8,6 +8,7 @@ COMPOSER       = $(COMPOSE) exec backend composer
 NPM            = $(COMPOSE) exec node npm
 HOST_UID       := $(shell id -u)
 HOST_GID       := $(shell id -g)
+PHPSTAN_MEMORY ?= 512M
 
 .DEFAULT_GOAL := help
 
@@ -163,7 +164,7 @@ test-coverage: ## Run tests with coverage report
 	$(PHP) vendor/bin/pest --coverage --min=80
 
 analyse: ## Run PHPStan static analysis (level 8)
-	$(PHP) vendor/bin/phpstan analyse
+	$(PHP) vendor/bin/phpstan analyse --memory-limit=$(PHPSTAN_MEMORY)
 
 lint: ## Run all quality checks (PHPStan + tests)
 	$(MAKE) analyse

@@ -14,6 +14,10 @@ final readonly class CalculateInterestAction
     ) {
     }
 
+    /**
+     * @param  numeric-string  $principal
+     * @param  numeric-string  $annualRate
+     */
     public function execute(string $principal, string $annualRate, int $days): InterestBreakdownData
     {
         return $this->interestCalculator->calculateSimple($principal, $annualRate, $days);

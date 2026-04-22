@@ -13,6 +13,8 @@ use App\Http\Resources\DebtResource;
 use App\Models\Customer;
 use App\Models\Debt;
 use App\Models\District;
+use App\Models\Payment;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -56,7 +58,9 @@ final class DebtController extends Controller
         $this->authorize('view', $debt);
 
         $debt->load(['district', 'customer', 'payments.customer', 'payments.debt']);
-        $schedule = $this->buildInterestSchedule->execute($debt, $debt->payments);
+        /** @var EloquentCollection<int, Payment> $payments */
+        $payments = $debt->payments;
+        $schedule = $this->buildInterestSchedule->execute($debt, $payments);
 
         return new DebtDetailResource($debt, $schedule);
     }

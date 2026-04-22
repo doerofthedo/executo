@@ -75,11 +75,17 @@ final class User extends Authenticatable implements MustVerifyEmail, CanResetPas
         $this->notify(new ResetPasswordNotification((string) $token));
     }
 
+    /**
+     * @return HasOne<UserPreference, $this>
+     */
     public function preference(): HasOne
     {
         return $this->hasOne(UserPreference::class);
     }
 
+    /**
+     * @return BelongsToMany<District, $this>
+     */
     public function districts(): BelongsToMany
     {
         return $this->belongsToMany(District::class)

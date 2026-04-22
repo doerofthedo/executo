@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Customer;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\In;
 use Illuminate\Validation\Rule;
 
 final class ListCustomersRequest extends FormRequest
@@ -15,7 +17,7 @@ final class ListCustomersRequest extends FormRequest
     }
 
     /**
-     * @return array<string, array<int, \Illuminate\Contracts\Validation\ValidationRule|string>>
+     * @return array<string, array<int, ValidationRule|In|string>>
      */
     public function rules(): array
     {

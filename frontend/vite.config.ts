@@ -22,6 +22,7 @@ export default defineConfig({
     build: {
         outDir: '../public/assets',
         emptyOutDir: true,
+        manifest: 'manifest.json',
         rollupOptions: {
             input: {
                 shared: resolve(__dirname, 'src/entries/shared.ts'),

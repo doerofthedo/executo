@@ -153,9 +153,7 @@ const onSubmit = handleSubmit(async (values) => {
         const message = t('auth.form.invalid_credentials');
 
         submitError.value = message;
-        setErrors({
-            login: message,
-        });
+        setErrors({});
     }
 });
 </script>

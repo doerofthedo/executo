@@ -104,7 +104,13 @@ final class CustomerController extends Controller
             $this->authorize('restore', $resolvedCustomer);
             $resolvedCustomer->restore();
 
-            return new CustomerResource($resolvedCustomer->fresh()->load('district'));
+            $restoredCustomer = $resolvedCustomer->fresh();
+
+            if ($restoredCustomer === null) {
+                throw new NotFoundHttpException();
+            }
+
+            return new CustomerResource($restoredCustomer->load('district'));
         }
 
         $this->authorize('update', $resolvedCustomer);
@@ -119,7 +125,13 @@ final class CustomerController extends Controller
             $resolvedCustomer->save();
         }
 
-        return new CustomerResource($resolvedCustomer->fresh()->load('district'));
+        $freshCustomer = $resolvedCustomer->fresh();
+
+        if ($freshCustomer === null) {
+            throw new NotFoundHttpException();
+        }
+
+        return new CustomerResource($freshCustomer->load('district'));
     }
 
     public function destroy(District $district, string $customer): JsonResponse

@@ -21,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(static function (Middleware $middleware): void {
         $middleware->append(SecurityHeaders::class);
+        $middleware->append(AuditLog::class);
         $middleware->alias([
             'audit.log' => AuditLog::class,
             'api.key' => CheckApiKey::class,

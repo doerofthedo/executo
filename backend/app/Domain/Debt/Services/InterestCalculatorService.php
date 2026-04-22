@@ -16,6 +16,10 @@ final readonly class InterestCalculatorService
 {
     private const ANNUAL_RATE = '6.0000';
 
+    /**
+     * @param  numeric-string  $principal
+     * @param  numeric-string  $annualRate
+     */
     public function calculateSimple(string $principal, string $annualRate, int $days): InterestBreakdownData
     {
         $dayFactor = bcdiv((string) $days, '365', 8);
@@ -179,6 +183,10 @@ final readonly class InterestCalculatorService
         );
     }
 
+    /**
+     * @param  numeric-string  $remainingPrincipal
+     * @return numeric-string
+     */
     private function dailyInterest(string $remainingPrincipal): string
     {
         return $this->roundDisplay(
@@ -191,40 +199,78 @@ final readonly class InterestCalculatorService
         );
     }
 
+    /**
+     * @param  numeric-string  $value
+     * @return numeric-string
+     */
     private function normalizeMoney(string $value): string
     {
         return $this->roundMoney($value);
     }
 
+    /**
+     * @param  numeric-string  $value
+     * @return numeric-string
+     */
     private function roundScheduleMoney(string $value): string
     {
         return $this->roundDisplay($value, 2);
     }
 
+    /**
+     * @param  numeric-string  $value
+     * @return numeric-string
+     */
     private function formatScheduleMoney(string $value): string
     {
         return $this->roundScheduleMoney($value);
     }
 
+    /**
+     * @param  numeric-string  $value
+     * @return numeric-string
+     */
     private function roundMoney(string $value): string
     {
         return $this->roundDisplay($value, 4);
     }
 
+    /**
+     * @param  numeric-string  $value
+     * @return numeric-string
+     */
     private function roundDisplay(string $value, int $scale): string
     {
-        $adjustment = '0.' . str_repeat('0', max($scale, 0)) . '5';
-
-        return bcadd($value, $adjustment, $scale);
+        return bcadd($value, $this->roundingAdjustment($scale), $scale);
     }
 
+    /**
+     * @param  numeric-string  $left
+     * @param  numeric-string  $right
+     * @return numeric-string
+     */
     private function min(string $left, string $right): string
     {
         return bccomp($left, $right, 4) <= 0 ? $left : $right;
     }
 
+    /**
+     * @param  numeric-string  $left
+     * @param  numeric-string  $right
+     * @return numeric-string
+     */
     private function max(string $left, string $right): string
     {
         return bccomp($left, $right, 4) >= 0 ? $left : $right;
+    }
+
+    /**
+     * @return numeric-string
+     */
+    private function roundingAdjustment(int $scale): string
+    {
+        $precision = max($scale, 0) + 1;
+
+        return bcdiv('5', '1' . str_repeat('0', $precision), $precision);
     }
 }

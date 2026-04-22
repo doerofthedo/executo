@@ -10,6 +10,7 @@ use App\Http\Resources\Auth\UserProfileResource;
 use App\Models\User;
 use App\Models\UserPreference;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 final class UserController extends Controller
 {
@@ -80,6 +81,12 @@ final class UserController extends Controller
             }
         });
 
-        return new UserProfileResource($user->fresh()->load('preference'));
+        $freshUser = $user->fresh();
+
+        if ($freshUser === null) {
+            throw new NotFoundHttpException();
+        }
+
+        return new UserProfileResource($freshUser->load('preference'));
     }
 }

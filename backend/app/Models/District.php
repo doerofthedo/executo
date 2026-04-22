@@ -48,11 +48,15 @@ final class District extends Model
             $users = $district->users()
                 ->with('roles')
                 ->get()
-                ->when(
-                    $district->owner()->exists(),
-                    static fn (Collection $collection): Collection => $collection->push($district->owner)
-                )
                 ->unique('id');
+
+            $owner = $district->owner;
+
+            if ($owner instanceof User) {
+                $users = $users->push($owner);
+            }
+
+            $users = $users->unique('id');
 
             $users
                 ->reject(static fn (User $user): bool => $user->hasRole('app.admin'))
@@ -71,16 +75,25 @@ final class District extends Model
         return 'ulid';
     }
 
+    /**
+     * @return HasMany<Customer, $this>
+     */
     public function customers(): HasMany
     {
         return $this->hasMany(Customer::class);
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'owner_id');
     }
 
+    /**
+     * @return BelongsToMany<User, $this>
+     */
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class)
@@ -88,6 +101,9 @@ final class District extends Model
             ->withTimestamps();
     }
 
+    /**
+     * @return HasOne<DistrictSetting, $this>
+     */
     public function setting(): HasOne
     {
         return $this->hasOne(DistrictSetting::class);
