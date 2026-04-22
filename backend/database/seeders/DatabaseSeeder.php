@@ -13,6 +13,7 @@ final class DatabaseSeeder extends Seeder
         $this->call([
             RbacSeeder::class,
             DevAdminSeeder::class,
+            SampleDataSeeder::class,
         ]);
     }
 }

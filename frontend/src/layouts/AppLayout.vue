@@ -1,40 +1,80 @@
 <template>
-    <div class="min-h-screen px-6 py-8 text-stone-50">
-        <div class="mx-auto flex max-w-6xl flex-col gap-8">
-            <header class="flex flex-wrap items-center justify-between gap-4 rounded-[2rem] border border-white/10 bg-white/5 px-6 py-5 backdrop-blur">
-                <div>
-                    <p class="text-xs uppercase tracking-[0.3em] text-amber-300/80">{{ t('app.name') }}</p>
-                    <h1 class="text-2xl font-semibold text-white">{{ t('navigation.dashboard') }}</h1>
-                </div>
-                <nav class="flex flex-wrap gap-2 text-sm text-stone-200">
-                    <RouterLink
-                        v-for="item in navigationItems"
-                        :key="item.name"
-                        :to="item.to"
-                        class="rounded-full border border-white/10 px-4 py-2 transition hover:border-amber-300/40 hover:text-amber-100"
-                    >
-                        {{ t(item.name) }}
+    <div class="lex-app-shell">
+        <header class="lex-app-header">
+            <div class="lex-app-header-inner">
+                <div class="lex-app-nav-row">
+                    <RouterLink :to="{ name: 'dashboard' }" class="lex-brand">
+                        {{ t('app.name') }}
                     </RouterLink>
-                </nav>
-            </header>
 
-            <main>
-                <slot />
-            </main>
+                    <div class="lex-app-account">
+                        <div class="lex-app-account-copy" v-if="displayName !== ''">
+                            <p class="lex-app-account-label">{{ t('app.signed_in_as') }}</p>
+                            <p class="lex-app-account-name">{{ displayName }}</p>
+                        </div>
+                        <div class="lex-app-account-actions">
+                            <RouterLink :to="{ name: 'dashboard' }" class="lex-button lex-button-secondary">
+                                {{ t('navigation.dashboard') }}
+                            </RouterLink>
+                            <a v-if="showMailpit" href="/mail/" class="lex-button lex-button-secondary">
+                                {{ t('app.mailpit') }}
+                            </a>
+                            <button type="button" class="lex-button lex-button-secondary" @click="onSignOut">
+                                {{ t('app.logout') }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="lex-app-breadcrumb-bar">
+            <div class="lex-app-breadcrumb-inner">
+                <ol class="lex-app-breadcrumb-list">
+                    <li>
+                        <RouterLink :to="{ name: 'dashboard' }" class="lex-app-breadcrumb-link">
+                            {{ t('navigation.dashboard') }}
+                        </RouterLink>
+                    </li>
+                    <li v-if="route.name === 'district'">/</li>
+                    <li v-if="route.name === 'district'" class="lex-app-breadcrumb-current">
+                        {{ route.params.district }}
+                    </li>
+                </ol>
+            </div>
         </div>
+
+        <main class="lex-app-main">
+            <section class="lex-app-content">
+                <slot />
+            </section>
+        </main>
+
+        <footer class="lex-app-footer">
+            <div class="lex-app-footer-inner">
+                <span>{{ t('app.footer') }}</span>
+                <span v-if="showMailpit">{{ t('app.mailpit_hint') }}</span>
+            </div>
+        </footer>
     </div>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { RouterLink } from 'vue-router';
+import { RouterLink, useRoute, useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
 
 const { t } = useI18n();
+const route = useRoute();
+const router = useRouter();
+const authStore = useAuthStore();
+const showMailpit = import.meta.env.DEV;
 
-const navigationItems = [
-    { name: 'navigation.dashboard', to: { name: 'dashboard' } },
-    { name: 'navigation.customers', to: { name: 'dashboard' } },
-    { name: 'navigation.debts', to: { name: 'dashboard' } },
-    { name: 'navigation.settings', to: { name: 'login' } },
-];
+const displayName = computed(() => [authStore.user?.name, authStore.user?.surname].filter((value): value is string => typeof value === 'string' && value !== '').join(' '));
+
+async function onSignOut(): Promise<void> {
+    await authStore.signOut();
+    await router.push({ name: 'login' });
+}
 </script>

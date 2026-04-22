@@ -102,6 +102,7 @@ services:
     image: axllent/mailpit:v1.21
     container_name: executo-mailpit
     restart: unless-stopped
+    command: [ "--webroot", "/mail" ]
     networks:
       - executo
 

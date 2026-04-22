@@ -23,12 +23,19 @@ executo.local:80 {
         }
     }
 
+    redir /mail /mail/ 308
+
     handle /mail* {
-        uri strip_prefix /mail
         reverse_proxy mailpit:8025
     }
 
     handle {
         reverse_proxy node:80
+    }
+}
+
+executo.local:8080 {
+    handle {
+        reverse_proxy backend:80
     }
 }

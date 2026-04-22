@@ -9,6 +9,8 @@
         "preview": "vite preview"
     },
     "dependencies": {
+        "@fontsource/ibm-plex-sans": "^5.2.8",
+        "@fontsource/roboto": "^5.2.10",
         "@vueuse/core": "^14.2",
         "axios": "^1.15",
         "dayjs": "^1.11",

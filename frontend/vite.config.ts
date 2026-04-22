@@ -37,6 +37,10 @@ export default defineConfig({
                         return 'css/[name]-[hash][extname]';
                     }
 
+                    if (assetInfo.name !== undefined && /\.(woff2?|ttf|otf|eot)$/i.test(assetInfo.name)) {
+                        return 'fonts/[name]-[hash][extname]';
+                    }
+
                     return 'assets/[name]-[hash][extname]';
                 },
             },

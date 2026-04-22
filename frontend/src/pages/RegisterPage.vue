@@ -1,85 +1,84 @@
 <template>
     <AuthLayout>
-        <div class="mb-6 grid gap-6">
-            <RouterLink
-                :to="{ name: 'login' }"
-                class="inline-flex items-center text-[2.25rem] leading-[0.95] font-semibold uppercase tracking-[0.12em] text-[var(--lex-muted)] [font-family:'Iowan_Old_Style','Palatino_Linotype','Book_Antiqua',Georgia,serif]"
-            >
-                {{ t('app.name') }}
-            </RouterLink>
-            <div class="grid gap-1">
-                <h1 class="text-3xl font-semibold tracking-[-0.04em] text-[var(--lex-text)]">
-                    {{ verifyMode ? t('auth.register.verify_title') : t('auth.register.title') }}
-                </h1>
-                <p class="text-sm leading-[1.7] text-[var(--lex-muted)]">
-                    {{ verifyMode ? t('auth.register.verify_body') : t('auth.register.body') }}
-                </p>
+        <div class="lex-auth-inner">
+            <div class="lex-form-header">
+                <RouterLink
+                    :to="{ name: 'login' }"
+                    class="lex-brand"
+                >
+                    {{ t('app.name') }}
+                </RouterLink>
+                <div class="lex-form-heading-group">
+                    <h1 class="lex-form-title">
+                        {{ verifyMode ? t('auth.register.verify_title') : t('auth.register.title') }}
+                    </h1>
+                </div>
             </div>
-        </div>
 
-        <form v-if="!verifyMode && !registrationComplete" class="grid gap-4" @submit.prevent="onRegister">
-            <label class="grid gap-2">
-                <span class="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--lex-muted)]">{{ t('auth.register.name_label') }}</span>
-                <input v-model="nameValue" type="text" class="w-full rounded-sm border border-[var(--lex-border-strong)] bg-white px-4 py-3 text-[var(--lex-text)] outline-none transition focus:border-[var(--lex-accent)] focus:shadow-[0_0_0_3px_rgba(36,65,107,0.08)]" :placeholder="t('auth.register.name_placeholder')" />
-                <p v-if="errors.name" class="text-sm text-[var(--lex-danger)]">{{ errors.name }}</p>
-            </label>
+            <form v-if="!verifyMode && !registrationComplete" class="lex-form" @submit.prevent="onRegister">
+                <label class="lex-form-field">
+                    <span :class="['lex-input-label', errors.name ? 'lex-input-label-error' : '']">{{ t('auth.register.name_label') }}</span>
+                    <input v-model="nameValue" type="text" autofocus :class="['lex-input', errors.name ? 'lex-input-error' : '']" />
+                    <p v-if="errors.name" class="lex-input-error-message">{{ errors.name }}</p>
+                </label>
 
-            <label class="grid gap-2">
-                <span class="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--lex-muted)]">{{ t('auth.register.surname_label') }}</span>
-                <input v-model="surnameValue" type="text" class="w-full rounded-sm border border-[var(--lex-border-strong)] bg-white px-4 py-3 text-[var(--lex-text)] outline-none transition focus:border-[var(--lex-accent)] focus:shadow-[0_0_0_3px_rgba(36,65,107,0.08)]" :placeholder="t('auth.register.surname_placeholder')" />
-                <p v-if="errors.surname" class="text-sm text-[var(--lex-danger)]">{{ errors.surname }}</p>
-            </label>
+                <label class="lex-form-field">
+                    <span :class="['lex-input-label', errors.surname ? 'lex-input-label-error' : '']">{{ t('auth.register.surname_label') }}</span>
+                    <input v-model="surnameValue" type="text" :class="['lex-input', errors.surname ? 'lex-input-error' : '']" />
+                    <p v-if="errors.surname" class="lex-input-error-message">{{ errors.surname }}</p>
+                </label>
 
-            <label class="grid gap-2">
-                <span class="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--lex-muted)]">{{ t('auth.register.email_label') }}</span>
-                <input v-model="emailValue" type="email" autocomplete="email" class="w-full rounded-sm border border-[var(--lex-border-strong)] bg-white px-4 py-3 text-[var(--lex-text)] outline-none transition focus:border-[var(--lex-accent)] focus:shadow-[0_0_0_3px_rgba(36,65,107,0.08)]" :placeholder="t('auth.register.email_placeholder')" />
-                <p v-if="errors.email" class="text-sm text-[var(--lex-danger)]">{{ errors.email }}</p>
-            </label>
+                <label class="lex-form-field">
+                    <span :class="['lex-input-label', errors.email ? 'lex-input-label-error' : '']">{{ t('auth.register.email_label') }}</span>
+                    <input v-model="emailValue" type="email" autocomplete="email" :class="['lex-input', errors.email ? 'lex-input-error' : '']" />
+                    <p v-if="errors.email" class="lex-input-error-message">{{ errors.email }}</p>
+                </label>
 
-            <label class="grid gap-2">
-                <span class="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--lex-muted)]">{{ t('auth.form.password_label') }}</span>
-                <input v-model="passwordValue" type="password" autocomplete="new-password" class="w-full rounded-sm border border-[var(--lex-border-strong)] bg-white px-4 py-3 text-[var(--lex-text)] outline-none transition focus:border-[var(--lex-accent)] focus:shadow-[0_0_0_3px_rgba(36,65,107,0.08)]" :placeholder="t('auth.register.password_placeholder')" />
-                <p v-if="errors.password" class="text-sm text-[var(--lex-danger)]">{{ errors.password }}</p>
-            </label>
+                <label class="lex-form-field">
+                    <span :class="['lex-input-label', errors.password ? 'lex-input-label-error' : '']">{{ t('auth.form.password_label') }}</span>
+                    <input v-model="passwordValue" type="password" autocomplete="new-password" :class="['lex-input', errors.password ? 'lex-input-error' : '']" />
+                    <p v-if="errors.password" class="lex-input-error-message">{{ errors.password }}</p>
+                </label>
 
-            <label class="grid gap-2">
-                <span class="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--lex-muted)]">{{ t('auth.register.password_confirmation_label') }}</span>
-                <input v-model="passwordConfirmationValue" type="password" autocomplete="new-password" class="w-full rounded-sm border border-[var(--lex-border-strong)] bg-white px-4 py-3 text-[var(--lex-text)] outline-none transition focus:border-[var(--lex-accent)] focus:shadow-[0_0_0_3px_rgba(36,65,107,0.08)]" :placeholder="t('auth.register.password_confirmation_placeholder')" />
-                <p v-if="errors.password_confirmation" class="text-sm text-[var(--lex-danger)]">{{ errors.password_confirmation }}</p>
-            </label>
+                <label class="lex-form-field">
+                    <span :class="['lex-input-label', errors.password_confirmation ? 'lex-input-label-error' : '']">{{ t('auth.register.password_confirmation_label') }}</span>
+                    <input v-model="passwordConfirmationValue" type="password" autocomplete="new-password" :class="['lex-input', errors.password_confirmation ? 'lex-input-error' : '']" />
+                    <p v-if="errors.password_confirmation" class="lex-input-error-message">{{ errors.password_confirmation }}</p>
+                </label>
 
-            <button type="submit" :disabled="isSubmitting" class="inline-flex cursor-pointer items-center justify-center rounded-sm bg-[var(--lex-accent)] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[var(--lex-accent-hover)] disabled:cursor-not-allowed disabled:opacity-70">
-                {{ isSubmitting ? t('auth.shared.working') : t('auth.register.submit') }}
-            </button>
-        </form>
+                <button type="submit" :disabled="isSubmitting" class="lex-button lex-button-primary">
+                    {{ isSubmitting ? t('auth.shared.working') : t('auth.register.submit') }}
+                </button>
+            </form>
 
-        <div v-else-if="registrationComplete" class="grid gap-4">
-            <p class="rounded-sm bg-[#e8f4ee] px-5 py-4 text-sm leading-6 text-[var(--lex-success)]">{{ infoMessage }}</p>
-            <button type="button" class="inline-flex min-h-12 items-center justify-center rounded-sm border border-[var(--lex-border)] bg-[var(--lex-surface-muted)] px-4 py-3 text-center text-sm font-semibold leading-tight text-[var(--lex-text)] transition hover:border-[var(--lex-border-strong)] hover:bg-[#f2eadc] disabled:cursor-not-allowed disabled:opacity-70" :disabled="resending" @click="onResendVerification">
-                {{ resending ? t('auth.shared.working') : t('auth.register.resend_verification') }}
-            </button>
-        </div>
+            <div v-else-if="registrationComplete" class="lex-form">
+                <p class="lex-form-message lex-form-message-success">{{ infoMessage }}</p>
+                <button type="button" class="lex-button lex-button-secondary" :disabled="resending" @click="onResendVerification">
+                    {{ resending ? t('auth.shared.working') : t('auth.register.resend_verification') }}
+                </button>
+            </div>
 
-        <form v-else class="grid gap-4" @submit.prevent="onVerify">
-            <p class="text-sm leading-[1.7] text-[var(--lex-muted)]">
-                {{ signedVerificationUrl ? t('auth.register.verification_link_ready') : t('auth.register.verification_link_missing') }}
-            </p>
-            <button type="submit" :disabled="verifying || signedVerificationUrl === ''" class="inline-flex cursor-pointer items-center justify-center rounded-sm bg-[var(--lex-accent)] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[var(--lex-accent-hover)] disabled:cursor-not-allowed disabled:opacity-70">
-                {{ verifying ? t('auth.shared.working') : t('auth.register.verify_submit') }}
-            </button>
-        </form>
+            <form v-else class="lex-form" @submit.prevent="onVerify">
+                <p class="lex-form-body">
+                    {{ signedVerificationUrl ? t('auth.register.verification_link_ready') : t('auth.register.verification_link_missing') }}
+                </p>
+                <button type="submit" :disabled="verifying || signedVerificationUrl === ''" class="lex-button lex-button-primary">
+                    {{ verifying ? t('auth.shared.working') : t('auth.register.verify_submit') }}
+                </button>
+            </form>
 
-        <div v-if="messages.length > 0 || errorMessage || infoMessage" class="mt-4 grid gap-3">
-            <ul v-if="messages.length > 0" class="rounded-sm bg-[#fbeceb] px-5 py-4 text-sm leading-6 text-[var(--lex-danger)]">
-                <li v-for="message in messages" :key="message">{{ message }}</li>
-            </ul>
-            <p v-if="errorMessage" class="rounded-sm bg-[#fbeceb] px-5 py-4 text-sm leading-6 text-[var(--lex-danger)]">{{ errorMessage }}</p>
-            <p v-if="infoMessage && !registrationComplete" class="rounded-sm bg-[#e8f4ee] px-5 py-4 text-sm leading-6 text-[var(--lex-success)]">{{ infoMessage }}</p>
-        </div>
+            <div v-if="messages.length > 0 || errorMessage || infoMessage" class="lex-auth-status">
+                <ul v-if="messages.length > 0" class="lex-form-message lex-form-message-error">
+                    <li v-for="message in messages" :key="message">{{ message }}</li>
+                </ul>
+                <p v-if="errorMessage" class="lex-form-message lex-form-message-error">{{ errorMessage }}</p>
+                <p v-if="infoMessage && !registrationComplete" class="lex-form-message lex-form-message-success">{{ infoMessage }}</p>
+            </div>
 
-        <div class="mt-4 grid gap-3 border-t border-[var(--lex-border)] pt-4 sm:grid-cols-2">
-            <RouterLink class="inline-flex min-h-12 items-center justify-center rounded-sm border border-[var(--lex-border)] bg-[var(--lex-surface-muted)] px-4 py-3 text-center text-sm font-semibold leading-tight text-[var(--lex-text)] transition hover:border-[var(--lex-border-strong)] hover:bg-[#f2eadc]" :to="{ name: 'login' }">{{ t('auth.links.login') }}</RouterLink>
-            <RouterLink class="inline-flex min-h-12 items-center justify-center rounded-sm border border-[var(--lex-border)] bg-[var(--lex-surface-muted)] px-4 py-3 text-center text-sm font-semibold leading-tight text-[var(--lex-text)] transition hover:border-[var(--lex-border-strong)] hover:bg-[#f2eadc]" :to="{ name: 'forgot-password' }">{{ t('auth.links.forgot') }}</RouterLink>
+            <div class="lex-form-section lex-auth-footer-nav sm:grid-cols-2">
+                <RouterLink class="lex-button lex-button-secondary" :to="{ name: 'login' }">{{ t('auth.links.login') }}</RouterLink>
+                <RouterLink class="lex-button lex-button-secondary" :to="{ name: 'forgot-password' }">{{ t('auth.links.forgot') }}</RouterLink>
+            </div>
         </div>
     </AuthLayout>
 </template>

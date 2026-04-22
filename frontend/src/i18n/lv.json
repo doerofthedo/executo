@@ -1,6 +1,11 @@
 {
     "app": {
-        "name": "Executo"
+        "name": "Executo",
+        "signed_in_as": "Pieslēdzies kā",
+        "logout": "Izrakstīties",
+        "mailpit": "Pasts",
+        "footer": "Executo darba vide",
+        "mailpit_hint": "Izstrādes e-pasti ir pieejami Mailpit"
     },
     "navigation": {
         "dashboard": "Pārskats",
@@ -12,11 +17,30 @@
         "eyebrow": "Tiesu izpildītāju darba panelis",
         "title": "Pārvaldiet klientus, lietas un maksājumus vienotā plūsmā",
         "subtitle": "Sākotnējais karkass sagatavo autentifikācijas, apgabalu un parādu moduļus tālākai ieviešanai.",
-        "primary_action": "Atvērt apgabalu sarakstu",
-        "secondary_action": "Skatīt API stāvokli",
+        "greeting": "Sveicināti, {name}",
+        "fallback": "Sveicināti.",
+        "focus_badge": "Pašreizējais fokuss",
+        "access_badge": "Aizsargāta piekļuve",
+        "focus_title": "Vienota darba telpa iecirkņa ikdienai",
+        "focus_copy": "Turpiniet darbu ar klientiem, parādiem un maksājumiem vienotā, mierīgā darba plūsmā. Kad tiks pieslēgti iecirkņu dati, šeit parādīsies jūsu aktīvais konteksts un galvenie rādītāji.",
+        "primary_action": "Atvērt pārskatu",
+        "secondary_action": "Atvērt Mailpit",
+        "quick_actions": "Ātrās darbības",
+        "open_dashboard": "Atvērt pārskatu",
+        "open_mailpit": "Atvērt Mailpit",
+        "environment_title": "Vide",
+        "environment_value": "Aizsargāta sistēma",
+        "environment_copy": "Piekļuve ir organizēta caur autentifikāciju, lomām un drošības galvenēm, lai darba vide būtu piemērota sensitīviem datiem.",
+        "today_title": "Šodien",
+        "today_value": "Sagatavots darbam",
+        "today_copy": "Sākuma ekrāns ir veidots kā centrāls darba punkts, no kura vēlāk turpināt klientu, lietu un maksājumu plūsmas.",
+        "access_title": "Piekļuves modelis",
+        "access_value": "Lietotājs vispirms",
+        "access_copy": "Jauni konti sāk bez piesaistes iecirknim. Pēc tam piekļuvi iecirknim piešķir lietotnes vai iecirkņa administrators.",
         "stats_districts": "Apgabali",
         "stats_customers": "Klienti",
-        "stats_debts": "Parādi"
+        "stats_debts": "Parādi",
+        "stats_payments": "Maksājumi"
     },
     "auth": {
         "hero": {
@@ -68,7 +92,7 @@
             "surname_label": "Uzvārds",
             "surname_placeholder": "Kalniņa",
             "email_label": "E-pasts",
-            "email_placeholder": "anna@example.com",
+            "email_placeholder": "anna [at] example.com",
             "password_placeholder": "Vismaz 8 rakstzīmes",
             "password_confirmation_label": "Apstipriniet paroli",
             "password_confirmation_placeholder": "Atkārtojiet paroli",
@@ -86,15 +110,14 @@
             "title": "Aizmirsāt paroli?",
             "body": "Ievadiet savu e-pasta adresi, un mēs nosūtīsim paroles atiestatīšanas saiti.",
             "email_label": "E-pasts",
-            "email_placeholder": "anna@example.com",
+            "email_placeholder": "anna [at] example.com",
             "submit": "Nosūtīt atiestatīšanas e-pastu",
-            "success": "Ja šāds konts eksistē, paroles atiestatīšanas saite ir nosūtīta."
+            "success": "Ja šāds konts eksistē, paroles atiestatīšanas saite ir nosūtīta. Lūdzu, sekojiet norādījumiem e-pastā."
         },
         "reset": {
-            "title": "Izveidojiet jaunu paroli",
-            "body": "Izvēlieties jaunu paroli, lai atjaunotu piekļuvi savam kontam.",
+            "title": "Paroles atiestatīšana",
             "email_label": "E-pasts",
-            "token_ready": "Atiestatīšanas saite ir gatava. Ievadiet jauno paroli, lai turpinātu.",
+            "token_ready": "Lai turpinātu, ievadiet jaunu paroli.",
             "token_missing": "Atiestatīšanas saite ir nepilnīga vai nav pieejama.",
             "submit": "Atiestatīt paroli",
             "success": "Jūsu parole ir veiksmīgi atjaunināta.",

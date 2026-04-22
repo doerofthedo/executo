@@ -10,6 +10,7 @@ use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Validation\ValidationException;
@@ -34,23 +35,37 @@ final class PasswordResetController extends Controller
     public function update(ResetPasswordRequest $request): JsonResponse
     {
         $validated = $request->validated();
+        $resetToken = DB::table('password_reset_tokens')
+            ->whereNotNull('created_at')
+            ->orderByDesc('created_at')
+            ->get(['email', 'token'])
+            ->first(static fn (object $tokenRow): bool => Hash::check($validated['token'], (string) $tokenRow->token));
 
-        $status = Password::broker()->reset(
-            $validated,
-            static function (User $user, string $password): void {
-                $user->forceFill([
-                    'password' => Hash::make($password),
-                ])->save();
-
-                $user->tokens()->delete();
-            },
-        );
-
-        if ($status !== Password::PASSWORD_RESET) {
+        if ($resetToken === null) {
             throw ValidationException::withMessages([
-                'email' => [trans($status)],
+                'token' => [trans(Password::INVALID_TOKEN)],
             ]);
         }
+
+        $user = User::query()
+            ->where('email', $resetToken->email)
+            ->first();
+
+        if ($user === null || Password::broker()->tokenExists($user, $validated['token']) === false) {
+            throw ValidationException::withMessages([
+                'token' => [trans(Password::INVALID_TOKEN)],
+            ]);
+        }
+
+        $user->forceFill([
+            'password' => Hash::make($validated['password']),
+        ])->save();
+
+        $user->tokens()->delete();
+
+        DB::table('password_reset_tokens')
+            ->where('email', $user->email)
+            ->delete();
 
         return response()->json([], Response::HTTP_NO_CONTENT);
     }

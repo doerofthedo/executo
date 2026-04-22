@@ -38,7 +38,6 @@ export type ForgotPasswordInput = z.infer<ReturnType<typeof createForgotPassword
 
 export function createResetPasswordSchema(t: Translate) {
     return z.object({
-        email: z.email(t('auth.validation.invalid_email')),
         token: z.string().min(1, t('auth.validation.link_invalid')),
         password: z.string().min(8, t('auth.validation.password_too_short')),
         password_confirmation: z.string().min(1, t('auth.validation.field_required')),

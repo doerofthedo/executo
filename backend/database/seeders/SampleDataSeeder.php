@@ -47,7 +47,6 @@ final class SampleDataSeeder extends Seeder
 
     public function run(): void
     {
-        fake('lv_LV')->seed(20260420);
         mt_srand(20260420);
 
         $districtAdminRole = Role::query()->where('name', 'district.admin')->firstOrFail();
@@ -83,7 +82,6 @@ final class SampleDataSeeder extends Seeder
                     'date_format' => 'DD.MM.YYYY',
                     'decimal_separator' => ',',
                     'thousand_separator' => ' ',
-                    'table_page_size' => 25,
                 ],
             );
 

@@ -1,66 +1,67 @@
 <template>
-    <AuthLayout panel-class="max-w-[28rem]">
-        <div class="mx-auto w-full max-w-[24rem]">
-            <div class="mb-5 grid gap-4">
+    <AuthLayout>
+        <div class="lex-auth-inner">
+            <div class="lex-form-header">
                 <RouterLink
                     :to="{ name: 'login' }"
-                    class="inline-flex items-center text-[2.25rem] leading-[0.95] font-semibold uppercase tracking-[0.12em] text-[var(--lex-muted)] [font-family:'Iowan_Old_Style','Palatino_Linotype','Book_Antiqua',Georgia,serif]"
+                    class="lex-brand"
                 >
                     {{ t('app.name') }}
                 </RouterLink>
-                <div class="grid gap-0.5">
-                    <h1 class="text-3xl font-semibold tracking-[-0.04em] text-[var(--lex-text)]">{{ t('auth.login.title') }}</h1>
+                <div class="lex-form-heading-group">
+                    <h1 class="lex-form-title">{{ t('auth.login.title') }}</h1>
                 </div>
             </div>
 
-            <form class="grid gap-4" @submit.prevent="onSubmit">
-                <label class="grid gap-1">
-                    <span :class="fieldLabelClass">{{ t('auth.form.login_label') }}</span>
+            <form class="lex-form" @submit.prevent="onSubmit">
+                <label class="lex-form-field">
+                    <span :class="['lex-input-label', errors.login ? 'lex-input-label-error' : '']">{{ t('auth.form.login_label') }}</span>
                     <input
                         v-model="loginValue"
                         type="text"
                         autocomplete="username"
                         autofocus
-                        :class="inputClass"
+                        :class="['lex-input', errors.login ? 'lex-input-error' : '']"
                     />
-                    <p v-if="errors.login" class="text-sm text-[var(--lex-danger)]">{{ errors.login }}</p>
+                    <p v-if="errors.login" class="lex-input-error-message">{{ errors.login }}</p>
                 </label>
 
-                <label class="grid gap-1">
-                    <span :class="fieldLabelClass">{{ t('auth.form.password_label') }}</span>
+                <label class="lex-form-field">
+                    <span :class="['lex-input-label', errors.password ? 'lex-input-label-error' : '']">{{ t('auth.form.password_label') }}</span>
                     <input
                         v-model="passwordValue"
+                        ref="passwordInput"
                         type="password"
                         autocomplete="current-password"
-                        :class="inputClass"
+                        :class="['lex-input', errors.password ? 'lex-input-error' : '']"
                     />
-                    <p v-if="errors.password" class="text-sm text-[var(--lex-danger)]">{{ errors.password }}</p>
+                    <p v-if="errors.password" class="lex-input-error-message">{{ errors.password }}</p>
                 </label>
 
                 <button
                     type="submit"
                     :disabled="isSubmitting"
-                    :class="primaryButtonClass"
+                    class="lex-button lex-button-primary"
                 >
                     {{ isSubmitting ? t('auth.form.submitting') : t('auth.form.submit') }}
                 </button>
             </form>
 
-            <div v-if="submitError !== null" class="mt-4 grid gap-3">
-                <p class="rounded-sm bg-[#fbeceb] px-5 py-4 text-sm leading-6 text-[var(--lex-danger)]">{{ submitError }}</p>
+            <div v-if="submitError !== null" class="lex-form-error">
+                <p class="lex-input-error-message">{{ submitError }}</p>
             </div>
 
-            <div class="mt-5 grid gap-3 border-t border-[var(--lex-border)] pt-5 sm:grid-cols-2">
-                <button type="button" :class="secondaryButtonClass" @click="router.push({ name: 'register' })">{{ t('auth.links.register') }}</button>
-                <button type="button" :class="secondaryButtonClass" @click="router.push({ name: 'forgot-password' })">{{ t('auth.links.forgot') }}</button>
+            <div class="lex-form-section lex-auth-footer-nav sm:grid-cols-2">
+                <RouterLink class="lex-button lex-button-secondary" :to="{ name: 'register' }">{{ t('auth.links.register') }}</RouterLink>
+                <RouterLink class="lex-button lex-button-secondary" :to="{ name: 'forgot-password' }">{{ t('auth.links.forgot') }}</RouterLink>
             </div>
 
-            <div class="mt-5 flex flex-wrap items-center justify-center gap-2.5 border-t border-[var(--lex-border)] pt-5">
-                <span :class="fieldLabelClass">{{ t('auth.locale.label') }}</span>
+            <div class="lex-form-section lex-auth-locale">
+                <span class="lex-input-label">{{ t('auth.locale.label') }}</span>
                 <button
                     type="button"
                     :aria-pressed="locale === 'lv'"
-                    :class="inlineButtonClass('lv')"
+                    :class="localeButtonClass('lv')"
                     @click="setLocale('lv')"
                 >
                     {{ t('auth.locale.lv') }}
@@ -68,7 +69,7 @@
                 <button
                     type="button"
                     :aria-pressed="locale === 'en'"
-                    :class="inlineButtonClass('en')"
+                    :class="localeButtonClass('en')"
                     @click="setLocale('en')"
                 >
                     {{ t('auth.locale.en') }}
@@ -79,7 +80,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, nextTick, ref } from 'vue';
 import { useForm } from 'vee-validate';
 import { useI18n } from 'vue-i18n';
 import { RouterLink, useRoute, useRouter } from 'vue-router';
@@ -94,7 +95,8 @@ const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
 const submitError = ref<string | null>(null);
-const { errors, defineField, handleSubmit, isSubmitting, setErrors } = useForm<LoginInput>({
+const passwordInput = ref<HTMLInputElement | null>(null);
+const { errors, defineField, handleSubmit, isSubmitting, setFieldError, setErrors } = useForm<LoginInput>({
     initialValues: {
         login: '',
         password: '',
@@ -105,18 +107,12 @@ const [loginValue] = defineField('login');
 const [passwordValue] = defineField('password');
 const loginSchema = createLoginSchema(t);
 
-const fieldLabelClass = 'text-sm leading-4 text-[var(--lex-muted)]';
-const inputClass = 'w-full rounded-sm border border-[var(--lex-border-strong)] bg-white px-4 py-3 text-[var(--lex-text)] transition focus:border-[var(--lex-accent)] focus:shadow-[0_0_0_3px_rgba(36,65,107,0.08)]';
-const primaryButtonClass = 'inline-flex min-h-12 cursor-pointer items-center justify-center rounded-sm bg-[var(--lex-accent)] px-4 py-3 text-sm font-semibold leading-5 text-white shadow-[0_10px_18px_rgba(36,65,107,0.12)] transition hover:-translate-y-px hover:bg-[var(--lex-accent-hover)] hover:shadow-[0_14px_24px_rgba(27,51,85,0.18)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lex-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-white active:translate-y-px disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:shadow-[0_10px_18px_rgba(36,65,107,0.12)]';
-const secondaryButtonClass = 'inline-flex min-h-12 cursor-pointer items-center justify-center rounded-sm border border-[var(--lex-secondary-border)] bg-[var(--lex-secondary-surface)] px-4 py-3 text-sm font-semibold leading-5 text-[var(--lex-secondary-text)] shadow-[0_8px_16px_rgba(31,42,55,0.06)] transition hover:-translate-y-px hover:bg-[var(--lex-secondary-surface-hover)] hover:shadow-[0_12px_22px_rgba(31,42,55,0.1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lex-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-white active:translate-y-px';
-function inlineButtonClass(value: 'lv' | 'en'): string {
-    const base = 'inline-flex min-h-8 cursor-pointer items-center justify-center rounded-sm border px-3 py-1.5 text-sm font-medium leading-4 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lex-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-white active:translate-y-px';
-
-    if (locale.value === value) {
-        return `${base} border-[var(--lex-inline-active-border)] bg-[var(--lex-inline-active-surface)] text-[var(--lex-inline-active-text)]`;
-    }
-
-    return `${base} border-[var(--lex-inline-border)] bg-[var(--lex-inline-surface)] text-[var(--lex-inline-text)] hover:bg-[var(--lex-inline-surface-hover)] hover:text-[var(--lex-text)]`;
+function localeButtonClass(value: 'lv' | 'en'): string[] {
+    return [
+        'lex-button',
+        'lex-button-inline',
+        ...(locale.value === value ? ['lex-button-inline-active'] : []),
+    ];
 }
 
 const redirectTarget = computed(() => {
@@ -131,7 +127,8 @@ function setLocale(value: 'lv' | 'en'): void {
 
 const onSubmit = handleSubmit(async (values) => {
     submitError.value = null;
-    setErrors({});
+    setFieldError('login', undefined);
+    setFieldError('password', undefined);
 
     const result = loginSchema.safeParse(values);
 
@@ -153,7 +150,11 @@ const onSubmit = handleSubmit(async (values) => {
         const message = t('auth.form.invalid_credentials');
 
         submitError.value = message;
-        setErrors({});
+        setFieldError('login', undefined);
+        setFieldError('password', undefined);
+        await nextTick();
+        passwordInput.value?.focus();
+        passwordInput.value?.select();
     }
 });
 </script>

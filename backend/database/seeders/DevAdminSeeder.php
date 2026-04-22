@@ -7,6 +7,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Hash;
 
 final class DevAdminSeeder extends Seeder
 {
@@ -17,7 +18,7 @@ final class DevAdminSeeder extends Seeder
             [
                 'name' => 'System',
                 'surname' => 'Administrator',
-                'password' => '$2y$12$yGE3TDYt6XBji2zaqjUfVenc3KdjUs7lEjoW2IXOk8w7D6wHc.Omi',
+                'password' => Hash::make('123'),
                 'disabled' => false,
                 'email_verified_at' => Carbon::now(),
                 'mfa_enabled' => false,

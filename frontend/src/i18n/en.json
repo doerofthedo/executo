@@ -1,6 +1,11 @@
 {
     "app": {
-        "name": "Executo"
+        "name": "Executo",
+        "signed_in_as": "Signed in as",
+        "logout": "Sign out",
+        "mailpit": "Mailpit",
+        "footer": "Executo workspace",
+        "mailpit_hint": "Development email is available in Mailpit"
     },
     "navigation": {
         "dashboard": "Dashboard",
@@ -12,11 +17,30 @@
         "eyebrow": "Bailiff operations workspace",
         "title": "Manage customers, cases, and payments in one workflow",
         "subtitle": "This initial scaffold prepares the authentication, district, and debt modules for the next implementation phase.",
-        "primary_action": "Open district list",
-        "secondary_action": "View API status",
+        "greeting": "Welcome back, {name}",
+        "fallback": "Welcome back.",
+        "focus_badge": "Current focus",
+        "access_badge": "Protected access",
+        "focus_title": "One workspace for day-to-day district operations",
+        "focus_copy": "Continue with customers, debts, and payments inside one calm operational flow. Once district data is connected, this area will show your active context and key metrics.",
+        "primary_action": "Open dashboard",
+        "secondary_action": "Open Mailpit",
+        "quick_actions": "Quick actions",
+        "open_dashboard": "Open dashboard",
+        "open_mailpit": "Open Mailpit",
+        "environment_title": "Environment",
+        "environment_value": "Protected system",
+        "environment_copy": "Access is organized through authentication, roles, and security headers so the workspace is suitable for sensitive operational data.",
+        "today_title": "Today",
+        "today_value": "Ready for work",
+        "today_copy": "The landing screen is designed as a central starting point for customer, case, and payment flows that will expand from here.",
+        "access_title": "Access model",
+        "access_value": "User first",
+        "access_copy": "New accounts start without district membership. Access to a district is then granted by an app admin or district admin.",
         "stats_districts": "Districts",
         "stats_customers": "Customers",
-        "stats_debts": "Debts"
+        "stats_debts": "Debts",
+        "stats_payments": "Payments"
     },
     "auth": {
         "hero": {
@@ -68,7 +92,7 @@
             "surname_label": "Surname",
             "surname_placeholder": "Kalnina",
             "email_label": "Email",
-            "email_placeholder": "anna@example.com",
+            "email_placeholder": "anna [at] example.com",
             "password_placeholder": "At least 8 characters",
             "password_confirmation_label": "Confirm password",
             "password_confirmation_placeholder": "Repeat your password",
@@ -86,16 +110,15 @@
             "title": "Forgot your password?",
             "body": "Enter your email address and we will send you a reset link.",
             "email_label": "Email",
-            "email_placeholder": "anna@example.com",
+            "email_placeholder": "anna [at] example.com",
             "submit": "Send reset email",
-            "success": "If that account exists, a password reset link has been sent."
+            "success": "If that account exists, a password reset link has been sent. Please follow the instructions in the email."
         },
         "reset": {
-            "title": "Create a new password",
-            "body": "Choose a new password to restore access to your account.",
+            "title": "Reset password",
             "email_label": "Email",
-            "token_ready": "Your reset link is ready. Enter your new password to continue.",
-            "token_missing": "The reset link is incomplete or missing.",
+            "token_ready": "Enter a new password to continue.",
+            "token_missing": "The reset link is invalid.",
             "submit": "Reset password",
             "success": "Your password has been updated successfully.",
             "login_now": "Sign in now"
