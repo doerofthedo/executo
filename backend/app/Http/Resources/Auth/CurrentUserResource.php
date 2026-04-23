@@ -23,6 +23,8 @@ final class CurrentUserResource extends JsonResource
             'is_email_verified' => $this->resource?->hasVerifiedEmail() ?? false,
             'email_verified_at' => $this->resource?->email_verified_at?->toAtomString(),
             'default_district_ulid' => $this->resource?->preference?->defaultDistrict?->ulid,
+            'timezone' => $this->resource?->preference?->timezone ?? 'Europe/Riga',
+            'is_app_admin' => $this->resource?->hasRole('app.admin') ?? false,
         ];
     }
 }

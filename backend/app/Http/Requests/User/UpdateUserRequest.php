@@ -28,6 +28,10 @@ final class UpdateUserRequest extends FormRequest
             'password' => ['sometimes', 'string', 'confirmed', Password::min(8)],
             'disabled' => ['sometimes', 'boolean'],
             'locale' => ['sometimes', 'string', 'in:lv,en'],
+            'timezone' => ['sometimes', 'string', Rule::in([
+                'Europe/Riga',
+                'UTC',
+            ])],
             'default_district_ulid' => ['sometimes', 'nullable', 'string', 'exists:districts,ulid'],
             'date_format' => ['sometimes', 'string', Rule::in([
                 'DD.MM.YYYY.',

@@ -28,6 +28,15 @@
                 </label>
 
                 <label class="lex-form-field">
+                    <span class="lex-input-label">{{ t('preferences.timezone') }}</span>
+                    <select v-model="timezoneValue" class="lex-input">
+                        <option value="Europe/Riga">{{ t('preferences.timezone_europe_riga') }}</option>
+                        <option value="UTC">{{ t('preferences.timezone_utc') }}</option>
+                    </select>
+                    <p v-if="errors.timezone" class="lex-input-error-message">{{ errors.timezone }}</p>
+                </label>
+
+                <label class="lex-form-field">
                     <span class="lex-input-label">{{ t('preferences.date_format') }}</span>
                     <select v-model="dateFormatValue" class="lex-input">
                         <option v-for="option in dateFormatOptions" :key="option" :value="option">{{ option }}</option>
@@ -118,6 +127,7 @@ const { errors, defineField, handleSubmit, isSubmitting, resetForm } = useForm<U
     initialValues: {
         default_district_ulid: null,
         locale: 'lv',
+        timezone: 'Europe/Riga',
         date_format: 'DD.MM.YYYY.',
         decimal_separator: ',',
         thousand_separator: ' ',
@@ -127,6 +137,7 @@ const { errors, defineField, handleSubmit, isSubmitting, resetForm } = useForm<U
 
 const [defaultDistrictUlidValue] = defineField('default_district_ulid');
 const [localeValue] = defineField('locale');
+const [timezoneValue] = defineField('timezone');
 const [dateFormatValue] = defineField('date_format');
 const [decimalSeparatorValue] = defineField('decimal_separator');
 const [thousandSeparatorValue] = defineField('thousand_separator');
@@ -143,6 +154,7 @@ watch(
             values: {
                 default_district_ulid: profile.preferences.default_district_ulid,
                 locale: (profile.preferences.locale === 'en' ? 'en' : 'lv'),
+                timezone: profile.preferences.timezone ?? 'Europe/Riga',
                 date_format: profile.preferences.date_format ?? 'DD.MM.YYYY.',
                 decimal_separator: profile.preferences.decimal_separator === '.' ? '.' : ',',
                 thousand_separator: profile.preferences.thousand_separator ?? ' ',
@@ -163,6 +175,7 @@ const onSubmit = handleSubmit(async (values) => {
     const currentValues: UserPreferencesInput = {
         default_district_ulid: props.profile.preferences.default_district_ulid,
         locale: (props.profile.preferences.locale === 'en' ? 'en' : 'lv'),
+        timezone: props.profile.preferences.timezone ?? 'Europe/Riga',
         date_format: props.profile.preferences.date_format ?? 'DD.MM.YYYY.',
         decimal_separator: props.profile.preferences.decimal_separator === '.' ? '.' : ',',
         thousand_separator: props.profile.preferences.thousand_separator ?? ' ',
@@ -181,11 +194,13 @@ const onSubmit = handleSubmit(async (values) => {
         });
 
         preferencesStore.locale = updatedProfile.preferences.locale === 'en' ? 'en' : 'lv';
+        preferencesStore.timezone = updatedProfile.preferences.timezone ?? 'Europe/Riga';
         preferencesStore.dateFormat = updatedProfile.preferences.date_format ?? 'DD.MM.YYYY.';
         preferencesStore.decimalSeparator = updatedProfile.preferences.decimal_separator ?? ',';
         preferencesStore.thousandSeparator = updatedProfile.preferences.thousand_separator ?? ' ';
         if (authStore.user !== null) {
             authStore.user.default_district_ulid = updatedProfile.preferences.default_district_ulid;
+            authStore.user.timezone = updatedProfile.preferences.timezone ?? 'Europe/Riga';
         }
 
         locale.value = preferencesStore.locale;

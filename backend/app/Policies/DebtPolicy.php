@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
+use App\Domain\District\Services\DistrictPermissionResolver;
 use App\Models\Debt;
 use App\Models\District;
 use App\Models\User;
@@ -12,35 +13,36 @@ final class DebtPolicy
 {
     public function viewAny(User $user): bool
     {
-        return $user->can('district.debt.view')
-            && $this->canAccessCurrentDistrict($user);
+        $districtId = $this->currentDistrictId();
+
+        return is_int($districtId)
+            && app(DistrictPermissionResolver::class)->hasPermission($user, 'district.debt.view', $districtId);
     }
 
     public function view(User $user, Debt $debt): bool
     {
-        return $user->can('district.debt.view')
-            && $this->canAccessDistrict($user, $debt->district_id);
+        return app(DistrictPermissionResolver::class)->hasPermission($user, 'district.debt.view', $debt->district_id);
     }
 
     public function create(User $user): bool
     {
-        return $user->can('district.debt.create')
-            && $this->canAccessCurrentDistrict($user);
+        $districtId = $this->currentDistrictId();
+
+        return is_int($districtId)
+            && app(DistrictPermissionResolver::class)->hasPermission($user, 'district.debt.create', $districtId);
     }
 
     public function update(User $user, Debt $debt): bool
     {
-        return $user->can('district.debt.update')
-            && $this->canAccessDistrict($user, $debt->district_id);
+        return app(DistrictPermissionResolver::class)->hasPermission($user, 'district.debt.update', $debt->district_id);
     }
 
     public function delete(User $user, Debt $debt): bool
     {
-        return $user->can('district.debt.delete')
-            && $this->canAccessDistrict($user, $debt->district_id);
+        return app(DistrictPermissionResolver::class)->hasPermission($user, 'district.debt.delete', $debt->district_id);
     }
 
-    private function canAccessCurrentDistrict(User $user): bool
+    private function currentDistrictId(): ?int
     {
         $districtId = request()->attributes->get('current_district_id');
 
@@ -52,12 +54,6 @@ final class DebtPolicy
             }
         }
 
-        return $districtId === null || $this->canAccessDistrict($user, $districtId);
-    }
-
-    private function canAccessDistrict(User $user, int $districtId): bool
-    {
-        return $user->districts()->where('districts.id', $districtId)->exists()
-            || District::query()->where('id', $districtId)->where('owner_id', $user->id)->exists();
+        return is_int($districtId) ? $districtId : null;
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
+use App\Domain\District\Services\DistrictPermissionResolver;
 use App\Models\Customer;
 use App\Models\Debt;
 use App\Models\District;
@@ -32,12 +33,15 @@ final class DistrictStatsResource extends JsonResource
 
         return [
             'district' => (new DistrictResource($district))->resolve($request),
-            'users_count' => $this->canViewUsersCount ? $district->users()->count() : null,
+            'users_count' => $this->canViewUsersCount ? $district->users()->distinct('users.id')->count('users.id') : null,
             'can_view_users_count' => $this->canViewUsersCount,
             'can_manage_users' => $this->canViewUsersCount,
-            'can_create_customer' => $request->user()?->can('district.customer.create') ?? false,
-            'can_create_debt' => $request->user()?->can('district.debt.create') ?? false,
-            'can_create_payment' => $request->user()?->can('district.payment.create') ?? false,
+            'can_create_customer' => $request->user() !== null
+                && app(DistrictPermissionResolver::class)->hasPermission($request->user(), 'district.customer.create', $district->id),
+            'can_create_debt' => $request->user() !== null
+                && app(DistrictPermissionResolver::class)->hasPermission($request->user(), 'district.debt.create', $district->id),
+            'can_create_payment' => $request->user() !== null
+                && app(DistrictPermissionResolver::class)->hasPermission($request->user(), 'district.payment.create', $district->id),
             'customers_count' => Customer::query()->where('district_id', $district->id)->count(),
             'debts_count' => Debt::query()->where('district_id', $district->id)->count(),
             'payments_count' => Payment::query()

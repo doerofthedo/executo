@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\URL;
 
 final class VerifyEmailNotification extends VerifyEmail
@@ -28,8 +29,9 @@ final class VerifyEmailNotification extends VerifyEmail
         );
 
         $frontendUrl = rtrim((string) (config('app.frontend_url') ?: config('app.url')), '/');
+        $token = urlencode(Crypt::encryptString($signedApiUrl));
 
-        return $frontendUrl . '/register?verify=1&url=' . urlencode($signedApiUrl);
+        return $frontendUrl . '/verify-email?token=' . $token;
     }
 
     public function toMail($notifiable): MailMessage

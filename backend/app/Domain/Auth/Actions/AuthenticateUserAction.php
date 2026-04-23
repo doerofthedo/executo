@@ -29,8 +29,7 @@ final readonly class AuthenticateUserAction
 
         $invalidCredentials = $user === null
             || ! Hash::check($password, $user->password)
-            || $user->disabled
-            || ! $user->hasVerifiedEmail();
+            || $user->disabled;
 
         if ($invalidCredentials) {
             throw ValidationException::withMessages([

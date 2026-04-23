@@ -80,6 +80,7 @@ final readonly class UpdateUserProfileAction
         $preferencePayload = array_intersect_key($payload, array_flip([
             'default_district_ulid',
             'locale',
+            'timezone',
             'date_format',
             'decimal_separator',
             'thousand_separator',

@@ -58,14 +58,18 @@
                 </button>
             </div>
 
-            <form v-else class="lex-form" @submit.prevent="onVerify">
+            <form v-else-if="!autoVerifying" class="lex-form" @submit.prevent="onVerify">
                 <p class="lex-form-body">
-                    {{ signedVerificationUrl ? t('auth.register.verification_link_ready') : t('auth.register.verification_link_missing') }}
+                    {{ verificationToken || signedVerificationUrl ? t('auth.register.verification_link_ready') : t('auth.register.verification_link_missing') }}
                 </p>
-                <button type="submit" :disabled="verifying || signedVerificationUrl === ''" class="lex-button lex-button-primary">
+                <button type="submit" :disabled="verifying || (verificationToken === '' && signedVerificationUrl === '')" class="lex-button lex-button-primary">
                     {{ verifying ? t('auth.shared.working') : t('auth.register.verify_submit') }}
                 </button>
             </form>
+
+            <div v-else class="lex-form">
+                <p class="lex-form-body">{{ t('auth.shared.working') }}</p>
+            </div>
 
             <div v-if="messages.length > 0 || errorMessage || infoMessage" class="lex-auth-status">
                 <ul v-if="messages.length > 0" class="lex-form-message lex-form-message-error">
@@ -84,25 +88,29 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import axios from 'axios';
 import { useForm } from 'vee-validate';
 import { useI18n } from 'vue-i18n';
 import { RouterLink, useRoute } from 'vue-router';
-import { createRegisterSchema, register, requestEmailVerification, verifyEmail, type RegisterInput } from '@/api/auth';
+import { createRegisterSchema, register, requestEmailVerification, verifyEmail, verifyEmailToken, type RegisterInput } from '@/api/auth';
 import { toTypedSchema } from '@vee-validate/zod';
 import AuthLayout from '@/layouts/AuthLayout.vue';
+import { useAuthStore } from '@/stores/auth';
 
 const { t, locale } = useI18n();
 const route = useRoute();
+const authStore = useAuthStore();
 const errorMessage = ref('');
 const infoMessage = ref('');
 const messages = ref<string[]>([]);
 const submittedEmail = ref('');
 const resending = ref(false);
 const verifying = ref(false);
+const autoVerifying = ref(false);
 
-const verifyMode = computed(() => route.query.verify === '1');
+const verificationToken = computed(() => (typeof route.query.token === 'string' ? route.query.token : ''));
+const verifyMode = computed(() => verificationToken.value !== '' || route.query.verify === '1');
 const signedVerificationUrl = computed(() => (typeof route.query.url === 'string' ? route.query.url : ''));
 const registrationComplete = computed(() => !verifyMode.value && infoMessage.value !== '');
 const registerValidationSchema = computed(() => toTypedSchema(createRegisterSchema(t)));
@@ -169,7 +177,7 @@ async function onResendVerification(): Promise<void> {
 }
 
 async function onVerify(): Promise<void> {
-    if (signedVerificationUrl.value === '') {
+    if (verificationToken.value === '' && signedVerificationUrl.value === '') {
         errorMessage.value = t('auth.register.verification_link_missing');
         return;
     }
@@ -179,7 +187,18 @@ async function onVerify(): Promise<void> {
     infoMessage.value = '';
 
     try {
-        await verifyEmail(signedVerificationUrl.value);
+        if (verificationToken.value !== '') {
+            await verifyEmailToken(verificationToken.value);
+        } else {
+            await verifyEmail(signedVerificationUrl.value);
+        }
+
+        if (authStore.isAuthenticated) {
+            await authStore.loadCurrentUser();
+            window.location.assign('/profile?verification=success');
+            return;
+        }
+
         infoMessage.value = t('auth.register.verified');
     } catch {
         errorMessage.value = t('auth.register.verification_failed');
@@ -187,4 +206,18 @@ async function onVerify(): Promise<void> {
         verifying.value = false;
     }
 }
+
+onMounted(async () => {
+    if (!verifyMode.value || !authStore.isAuthenticated) {
+        return;
+    }
+
+    autoVerifying.value = true;
+
+    try {
+        await onVerify();
+    } finally {
+        autoVerifying.value = false;
+    }
+});
 </script>

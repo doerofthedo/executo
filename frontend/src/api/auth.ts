@@ -58,6 +58,8 @@ export interface CurrentUser {
     is_email_verified?: boolean;
     email_verified_at?: string | null;
     default_district_ulid?: string | null;
+    timezone?: string | null;
+    is_app_admin?: boolean;
 }
 
 export interface AuthSessionResponse {
@@ -98,7 +100,11 @@ export async function resetPassword(input: ResetPasswordInput): Promise<void> {
 }
 
 export async function verifyEmail(url: string): Promise<void> {
-    await apiClient.get(url.startsWith('/api/') ? url.replace('/api/v1', '') : url.replace('/api/v1', ''), {
-        baseURL: '/api/v1',
+    await apiClient.get(url, {
+        baseURL: undefined,
     });
+}
+
+export async function verifyEmailToken(token: string): Promise<void> {
+    await apiClient.post('/auth/email/verify-token', { token });
 }

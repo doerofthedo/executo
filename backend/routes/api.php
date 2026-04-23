@@ -17,6 +17,7 @@ use App\Models\Customer;
 use App\Models\Debt;
 use App\Models\District;
 use App\Models\Payment;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 Route::bind('customer', static function (string $value): Customer {
@@ -86,6 +87,20 @@ Route::bind('payment', static function (string $value): Payment {
     return $query->firstOrFail();
 });
 
+Route::bind('user', static function (string $value): User {
+    $query = User::query()
+        ->where('ulid', $value);
+
+    $district = request()->route('district');
+    $routeName = request()->route()?->getName() ?? '';
+
+    if ($district instanceof District && str_starts_with($routeName, 'api.v1.district-users.')) {
+        $query->whereHas('districts', static fn ($districtsQuery) => $districtsQuery->where('districts.id', $district->id));
+    }
+
+    return $query->firstOrFail();
+});
+
 Route::middleware('guest')->group(static function (): void {
     Route::post('/auth/login', [AuthSessionController::class, 'store'])
         ->middleware('throttle:5,1')
@@ -107,6 +122,10 @@ Route::middleware('guest')->group(static function (): void {
         ->middleware('throttle:5,1')
         ->name('api.v1.auth.password.reset');
 });
+
+Route::post('/auth/email/verify-token', [EmailVerificationController::class, 'verifyToken'])
+    ->middleware('throttle:5,1')
+    ->name('api.v1.auth.email.verify-token');
 
 Route::middleware(['auth:sanctum', 'district.scope'])->group(static function (): void {
     Route::get('/auth/me', CurrentUserController::class)
@@ -143,8 +162,17 @@ Route::middleware(['auth:sanctum', 'district.scope'])->group(static function ():
     Route::get('/districts/{district}/stats', [DistrictController::class, 'stats'])
         ->name('api.v1.districts.stats');
 
+    Route::get('/districts/{district}/users', [DistrictUserController::class, 'index'])
+        ->name('api.v1.district-users.index');
+
     Route::post('/districts/{district}/users', [DistrictUserController::class, 'store'])
         ->name('api.v1.district-users.store');
+
+    Route::patch('/districts/{district}/users/{user}', [DistrictUserController::class, 'update'])
+        ->name('api.v1.district-users.update');
+
+    Route::delete('/districts/{district}/users/{user}', [DistrictUserController::class, 'destroy'])
+        ->name('api.v1.district-users.destroy');
 
     Route::get('/districts/{district}/customers', [CustomerController::class, 'index'])
         ->name('api.v1.customers.index');

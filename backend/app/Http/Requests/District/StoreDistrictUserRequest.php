@@ -20,13 +20,26 @@ final class StoreDistrictUserRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'email' => ['required', 'string', 'email:rfc', 'max:255'],
+        return $this->roleRules(withEmail: true);
+    }
+
+    /**
+     * @return array<string, array<int, In|string>>
+     */
+    protected function roleRules(bool $withEmail): array
+    {
+        $rules = [
             'role' => ['required', 'string', Rule::in([
                 'district.admin',
                 'district.manager',
                 'district.user',
             ])],
         ];
+
+        if ($withEmail) {
+            $rules['email'] = ['required', 'string', 'email:rfc', 'max:255'];
+        }
+
+        return $rules;
     }
 }

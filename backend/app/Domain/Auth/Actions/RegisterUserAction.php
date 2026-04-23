@@ -42,6 +42,7 @@ final readonly class RegisterUserAction
             UserPreference::query()->create([
                 'user_id' => $user->id,
                 'locale' => $data->locale,
+                'timezone' => 'Europe/Riga',
                 'date_format' => 'DD.MM.YYYY.',
                 'decimal_separator' => ',',
                 'thousand_separator' => ' ',

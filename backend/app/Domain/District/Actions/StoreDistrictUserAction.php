@@ -6,6 +6,7 @@ namespace App\Domain\District\Actions;
 
 use App\Models\District;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 
 final readonly class StoreDistrictUserAction
@@ -34,20 +35,24 @@ final readonly class StoreDistrictUserAction
             ->exists();
 
         if ($existingMembership) {
-            $district->users()->updateExistingPivot($user->id, ['role_id' => $role->id]);
-        } else {
-            $district->users()->attach($user->id, ['role_id' => $role->id]);
+            abort(422, 'This user is already assigned to the district. Change the role instead of sending another invitation.');
         }
+
+        DB::transaction(function () use ($district, $user, $role): void {
+            $district->users()->attach($user->id, ['role_id' => $role->id]);
+        });
 
         $districtUser = $district->users()
             ->where('users.id', $user->id)
             ->firstOrFail();
 
         $districtUser->setAttribute('district_role', $role->name);
+        $districtUser->setAttribute('district_permissions', $role->permissions()->pluck('name')->sort()->values()->all());
+        $districtUser->setAttribute('district_is_owner', $district->owner_id === $districtUser->id);
 
         return [
             'user' => $districtUser,
-            'created' => ! $existingMembership,
+            'created' => true,
         ];
     }
 }

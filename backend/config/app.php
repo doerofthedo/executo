@@ -8,7 +8,7 @@ return [
     'debug' => (bool) env('APP_DEBUG', false),
     'url' => env('APP_URL', 'http://localhost'),
     'frontend_url' => env('FRONTEND_URL', env('APP_URL', 'http://localhost')),
-    'timezone' => 'Europe/Riga',
+    'timezone' => 'UTC',
     'locale' => env('APP_LOCALE', 'lv'),
     'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
     'faker_locale' => 'lv_LV',

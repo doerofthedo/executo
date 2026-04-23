@@ -10,6 +10,9 @@ import PreferencesPage from '@/pages/PreferencesPage.vue';
 import ProfilePage from '@/pages/ProfilePage.vue';
 import RegisterPage from '@/pages/RegisterPage.vue';
 import ResetPasswordPage from '@/pages/ResetPasswordPage.vue';
+import UserManagementPage from '@/pages/UserManagementPage.vue';
+import { fetchAccessibleDistricts } from '@/api/districts';
+import { getDashboardStats } from '@/api/dashboard';
 import { useAuthStore } from '@/stores/auth';
 
 export const router = createRouter({
@@ -53,7 +56,13 @@ export const router = createRouter({
             path: '/districts/:district/users/create',
             name: 'district-user-create',
             component: DistrictUserCreatePage,
-            meta: { requiresAuth: true },
+            meta: { requiresAuth: true, requiresManageUsers: true },
+        },
+        {
+            path: '/districts/:district/users',
+            name: 'user-management',
+            component: UserManagementPage,
+            meta: { requiresAuth: true, requiresManageUsers: true },
         },
         {
             path: '/profile',
@@ -80,6 +89,11 @@ export const router = createRouter({
             meta: { guestOnly: true },
         },
         {
+            path: '/verify-email',
+            name: 'verify-email',
+            component: RegisterPage,
+        },
+        {
             path: '/forgot-password',
             name: 'forgot-password',
             component: ForgotPasswordPage,
@@ -100,16 +114,36 @@ router.beforeEach(async (to) => {
     await authStore.bootstrap();
 
     if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-        return {
-            name: 'login',
-            query: {
-                redirect: to.fullPath,
-            },
-        };
+        return { name: 'login' };
     }
 
     if (to.meta.guestOnly && authStore.isAuthenticated) {
         return { name: 'dashboard' };
+    }
+
+    const districtParam = typeof to.params.district === 'string' ? to.params.district : null;
+
+    if (districtParam !== null) {
+        try {
+            const accessibleDistricts = await fetchAccessibleDistricts();
+            const hasDistrictAccess = accessibleDistricts.some((district) => district.ulid === districtParam);
+
+            if (!hasDistrictAccess) {
+                return { name: 'dashboard' };
+            }
+
+            if (to.meta.requiresManageUsers === true) {
+                const stats = await getDashboardStats();
+                const canManageUsers = stats.data.some((card) => card.district.ulid === districtParam && card.can_manage_users);
+                const isAppAdmin = authStore.user?.is_app_admin === true;
+
+                if (!canManageUsers && !isAppAdmin) {
+                    return { name: 'dashboard' };
+                }
+            }
+        } catch {
+            return { name: 'dashboard' };
+        }
     }
 
     return true;

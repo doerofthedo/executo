@@ -124,7 +124,7 @@ const firstMenuItem = ref<HTMLButtonElement | null>(null);
 
 const displayName = computed(() => [authStore.user?.name, authStore.user?.surname].filter((value): value is string => typeof value === 'string' && value !== '').join(' '));
 const breadcrumbs = computed(() => {
-    const items: Array<{ label: string; to?: { name: 'dashboard' } }> = [
+    const items: Array<{ label: string; to?: { name: 'dashboard' | 'user-management'; params?: { district: string } } }> = [
         { label: t('navigation.dashboard'), to: { name: 'dashboard' } },
     ];
 
@@ -134,6 +134,14 @@ const breadcrumbs = computed(() => {
         items.push({ label: t('navigation.preferences') });
     } else if (route.name === 'district') {
         items.push({ label: String(route.params.district ?? '') });
+    } else if (route.name === 'user-management') {
+        items.push({ label: String(route.params.district ?? '') });
+        items.push({ label: t('navigation.user_management') });
+    } else if (route.name === 'district-user-create') {
+        const district = String(route.params.district ?? '');
+        items.push({ label: district });
+        items.push({ label: t('navigation.user_management'), to: { name: 'user-management', params: { district } } });
+        items.push({ label: t('user_management.invite_title') });
     }
 
     return items;

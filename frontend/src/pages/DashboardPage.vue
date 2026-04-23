@@ -48,13 +48,6 @@
                                     <h3 class="lex-district-card-title">{{ districtTitle(card) }}</h3>
                                     <p v-if="card.district.court" class="lex-district-card-copy">{{ card.district.court }}</p>
                                 </div>
-
-                                <RouterLink
-                                    :to="{ name: 'district', params: { district: card.district.ulid } }"
-                                    class="lex-button lex-button-inline"
-                                >
-                                    {{ t('dashboard.open_district') }}
-                                </RouterLink>
                             </div>
 
                             <dl class="lex-overview-metric-grid lex-district-card-metrics">
@@ -75,6 +68,23 @@
                                     <dd class="lex-overview-metric-value">{{ card.payments_count }}</dd>
                                 </div>
                             </dl>
+
+                            <div class="mt-5 flex flex-wrap gap-3">
+                                <RouterLink
+                                    :to="{ name: 'district', params: { district: card.district.ulid } }"
+                                    class="lex-button lex-button-inline"
+                                >
+                                    {{ t('dashboard.open_district') }}
+                                </RouterLink>
+
+                                <RouterLink
+                                    v-if="card.can_manage_users"
+                                    :to="{ name: 'user-management', params: { district: card.district.ulid } }"
+                                    class="lex-button lex-button-secondary"
+                                >
+                                    {{ t('dashboard.manage_users') }}
+                                </RouterLink>
+                            </div>
                         </article>
                     </div>
                 </div>
@@ -102,10 +112,10 @@
 
                         <RouterLink
                             v-if="effectiveDefaultDistrict.can_manage_users"
-                            :to="{ name: 'district-user-create', params: { district: effectiveDefaultDistrict.district.ulid } }"
+                            :to="{ name: 'user-management', params: { district: effectiveDefaultDistrict.district.ulid } }"
                             class="lex-button lex-button-primary lex-dashboard-action-button"
                         >
-                            {{ t('dashboard.add_user') }}
+                            {{ t('dashboard.manage_users') }}
                         </RouterLink>
 
                         <RouterLink
@@ -143,16 +153,25 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { RouterLink } from 'vue-router';
 import type { DashboardDistrictCard, DashboardStats } from '@/api/dashboard';
 import { getDashboardStats } from '@/api/dashboard';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { useAuthStore } from '@/stores/auth';
+import { usePreferencesStore } from '@/stores/preferences';
+import { formatLatvianVocativeFirstName } from '@/utils/latvianNameDeclension';
 
-const { t } = useI18n();
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+const { locale, t } = useI18n();
 const authStore = useAuthStore();
+const preferencesStore = usePreferencesStore();
 const showMailpit = import.meta.env.DEV;
 
 const stats = ref<DashboardStats>({
@@ -164,9 +183,41 @@ const stats = ref<DashboardStats>({
 });
 const loading = ref(true);
 const loadError = ref('');
+const currentTime = ref(dayjs());
+let currentTimeInterval: number | null = null;
 
 const firstName = computed(() => authStore.user?.name?.split(' ')[0] ?? '');
-const heroTitle = computed(() => firstName.value !== '' ? t('dashboard.greeting', { name: firstName.value }) : t('dashboard.fallback'));
+const greetingName = computed(() => {
+    if (firstName.value === '') {
+        return '';
+    }
+
+    return locale.value === 'lv'
+        ? formatLatvianVocativeFirstName(firstName.value)
+        : firstName.value;
+});
+const greetingKey = computed(() => {
+    if (locale.value !== 'lv') {
+        return firstName.value === '' ? 'dashboard.fallback' : 'dashboard.greeting';
+    }
+
+    const localHour = currentTime.value.tz(preferencesStore.timezone).hour();
+
+    if (localHour < 12) {
+        return firstName.value === '' ? 'dashboard.fallback_morning' : 'dashboard.greeting_morning';
+    }
+
+    if (localHour < 18) {
+        return firstName.value === '' ? 'dashboard.fallback_afternoon' : 'dashboard.greeting_afternoon';
+    }
+
+    return firstName.value === '' ? 'dashboard.fallback_evening' : 'dashboard.greeting_evening';
+});
+const heroTitle = computed(() => {
+    return greetingName.value !== ''
+        ? t(greetingKey.value, { name: greetingName.value })
+        : t(greetingKey.value);
+});
 const heroStats = computed(() => [
     { label: 'dashboard.stats_districts', value: String(stats.value.districts_count) },
     { label: 'dashboard.stats_customers', value: String(stats.value.customers_count) },
@@ -201,6 +252,10 @@ function districtTitle(card: DashboardDistrictCard): string {
 }
 
 onMounted(async () => {
+    currentTimeInterval = window.setInterval(() => {
+        currentTime.value = dayjs();
+    }, 60_000);
+
     loading.value = true;
     loadError.value = '';
 
@@ -210,6 +265,12 @@ onMounted(async () => {
         loadError.value = t('dashboard.load_error');
     } finally {
         loading.value = false;
+    }
+});
+
+onUnmounted(() => {
+    if (currentTimeInterval !== null) {
+        window.clearInterval(currentTimeInterval);
     }
 });
 </script>

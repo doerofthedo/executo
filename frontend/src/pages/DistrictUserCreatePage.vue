@@ -43,7 +43,7 @@ import { useForm } from 'vee-validate';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
-import { assignDistrictUser, createDistrictUserSchema, type DistrictUserFormInput } from '@/api/operations';
+import { createDistrictUserSchema, inviteDistrictUser, type DistrictUserFormInput } from '@/api/users';
 import { toTypedSchema } from '@vee-validate/zod';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { useAuthStore } from '@/stores/auth';
@@ -78,7 +78,7 @@ const onSubmit = handleSubmit(async (values) => {
     }
 
     try {
-        await assignDistrictUser(defaultDistrictUlid.value, values);
+        await inviteDistrictUser(defaultDistrictUlid.value, values.email, values.role);
         await router.push({ name: 'dashboard' });
     } catch (error) {
         formError.value = axios.isAxiosError(error) && typeof error.response?.data?.message === 'string'

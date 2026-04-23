@@ -16,11 +16,6 @@ export interface DebtOption {
     description: string | null;
 }
 
-export interface DistrictUserInput {
-    email: string;
-    role: 'district.admin' | 'district.manager' | 'district.user';
-}
-
 export interface CustomerCreateInput {
     case_number: string | null;
     type: 'physical' | 'legal';
@@ -46,15 +41,6 @@ export interface PaymentCreateInput {
     date: string;
     description: string | null;
 }
-
-export function createDistrictUserSchema(t: Translate) {
-    return z.object({
-        email: z.string().email(t('auth.validation.invalid_email')),
-        role: z.enum(['district.admin', 'district.manager', 'district.user']),
-    });
-}
-
-export type DistrictUserFormInput = z.infer<ReturnType<typeof createDistrictUserSchema>>;
 
 export function createCustomerSchema(t: Translate) {
     return z.object({
@@ -110,10 +96,6 @@ export function createPaymentSchema(t: Translate) {
 }
 
 export type PaymentFormInput = z.infer<ReturnType<typeof createPaymentSchema>>;
-
-export async function assignDistrictUser(districtUlid: string, input: DistrictUserInput): Promise<void> {
-    await apiClient.post(`/districts/${districtUlid}/users`, input);
-}
 
 export async function createCustomer(districtUlid: string, input: CustomerCreateInput): Promise<void> {
     await apiClient.post(`/districts/${districtUlid}/customers`, input);

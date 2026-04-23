@@ -13,6 +13,7 @@ final class UserPreference extends Model
         'user_id',
         'default_district_id',
         'locale',
+        'timezone',
         'date_format',
         'decimal_separator',
         'thousand_separator',

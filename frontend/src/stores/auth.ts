@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import type { CurrentUser, LoginInput } from '@/api/auth';
 import { fetchCurrentUser, login, logout } from '@/api/auth';
+import { usePreferencesStore } from '@/stores/preferences';
 
 const TOKEN_KEY = 'executo_auth_token';
 
@@ -25,10 +26,12 @@ export const useAuthStore = defineStore('auth', {
 
             this.setToken(session.token);
             this.user = session.user;
+            this.syncPreferencesFromUser();
             this.bootstrapped = true;
         },
         async loadCurrentUser(): Promise<void> {
             this.user = await fetchCurrentUser();
+            this.syncPreferencesFromUser();
             this.bootstrapped = true;
         },
         async signOut(): Promise<void> {
@@ -73,6 +76,11 @@ export const useAuthStore = defineStore('auth', {
             this.setToken(null);
             this.user = null;
             this.bootstrapped = true;
+        },
+        syncPreferencesFromUser(): void {
+            const preferencesStore = usePreferencesStore();
+
+            preferencesStore.timezone = this.user?.timezone ?? 'Europe/Riga';
         },
     },
 });

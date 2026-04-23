@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
+use App\Domain\District\Services\DistrictPermissionResolver;
 use App\Models\District;
 use App\Models\User;
+use Spatie\Permission\Models\Role;
 
 final class DistrictPolicy
 {
     public function viewAny(User $user): bool
     {
-        return $user->can('district.district.view')
-            && $user->districts()->exists();
+        return app(DistrictPermissionResolver::class)->hasAnyDistrictAccess($user);
     }
 
     public function view(User $user, District $district): bool
     {
-        return $user->can('district.district.view')
-            && $this->canAccessDistrict($user, $district->id);
+        return app(DistrictPermissionResolver::class)->hasPermission($user, 'district.district.view', $district->id);
     }
 
     public function create(User $user): bool
@@ -28,13 +28,36 @@ final class DistrictPolicy
 
     public function update(User $user, District $district): bool
     {
-        return $user->can('district.district.manage')
-            && $this->canAccessDistrict($user, $district->id);
+        return app(DistrictPermissionResolver::class)->hasPermission($user, 'district.district.manage', $district->id);
     }
 
-    private function canAccessDistrict(User $user, int $districtId): bool
+    public function viewUsers(User $user, District $district): bool
     {
-        return $user->districts()->where('districts.id', $districtId)->exists()
-            || District::query()->where('id', $districtId)->where('owner_id', $user->id)->exists();
+        return $this->canManageDistrictUsers($user, $district);
+    }
+
+    public function manageUsers(User $user, District $district): bool
+    {
+        return $this->canManageDistrictUsers($user, $district);
+    }
+    private function canManageDistrictUsers(User $user, District $district): bool
+    {
+        if ($district->owner_id === $user->id) {
+            return true;
+        }
+
+        $districtAdminRoleId = Role::query()
+            ->where('name', 'district.admin')
+            ->where('guard_name', 'web')
+            ->value('id');
+
+        if (! is_int($districtAdminRoleId)) {
+            return false;
+        }
+
+        return $district->users()
+            ->where('users.id', $user->id)
+            ->wherePivot('role_id', $districtAdminRoleId)
+            ->exists();
     }
 }

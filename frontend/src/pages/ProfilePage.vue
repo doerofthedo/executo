@@ -9,6 +9,13 @@
                         <h1 class="lex-overview-title">{{ displayName }}</h1>
                         <p class="lex-overview-copy">{{ t('profile.intro') }}</p>
 
+                        <p v-if="showVerificationRequiredNotice" class="lex-form-message lex-form-message-error">
+                            {{ t('profile.verification_required') }}
+                        </p>
+                        <p v-if="showVerificationSuccessNotice" class="lex-form-message lex-form-message-success">
+                            {{ t('profile.verification_confirmed') }}
+                        </p>
+
                         <div class="lex-overview-metric-grid">
                             <article class="lex-overview-metric-card">
                                 <p class="lex-overview-metric-label">{{ t('profile.current_email') }}</p>
@@ -105,7 +112,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { RouterLink } from 'vue-router';
+import { RouterLink, useRoute } from 'vue-router';
 import { requestEmailVerification, forgotPassword } from '@/api/auth';
 import { fetchUserProfile, type UserProfile } from '@/api/users';
 import AppLayout from '@/layouts/AppLayout.vue';
@@ -113,6 +120,7 @@ import { useAuthStore } from '@/stores/auth';
 
 const { t } = useI18n();
 const authStore = useAuthStore();
+const route = useRoute();
 
 const profile = ref<UserProfile | null>(null);
 const verificationInfo = ref('');
@@ -131,6 +139,8 @@ const displayName = computed(() => {
 
 const isVerified = computed(() => profile.value?.is_email_verified ?? authStore.user?.is_email_verified ?? false);
 const activeLocale = computed(() => profile.value?.preferences.locale === 'en' ? 'en' : 'lv');
+const showVerificationRequiredNotice = computed(() => route.query.verification === 'required' && !isVerified.value);
+const showVerificationSuccessNotice = computed(() => route.query.verification === 'success' && isVerified.value);
 
 async function loadProfile(): Promise<void> {
     if (authStore.user?.ulid === null || authStore.user?.ulid === undefined) {

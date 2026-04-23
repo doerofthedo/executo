@@ -25,6 +25,7 @@ final class UserProfileResource extends JsonResource
             'preferences' => [
                 'default_district_ulid' => $this->resource?->preference?->defaultDistrict?->ulid,
                 'locale' => $this->resource?->preference?->locale,
+                'timezone' => $this->resource?->preference?->timezone ?? 'Europe/Riga',
                 'date_format' => $this->resource?->preference?->date_format,
                 'decimal_separator' => $this->resource?->preference?->decimal_separator,
                 'thousand_separator' => $this->resource?->preference?->thousand_separator,

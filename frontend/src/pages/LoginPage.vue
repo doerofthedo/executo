@@ -83,7 +83,7 @@
 import { computed, nextTick, ref } from 'vue';
 import { useForm } from 'vee-validate';
 import { useI18n } from 'vue-i18n';
-import { RouterLink, useRoute, useRouter } from 'vue-router';
+import { RouterLink } from 'vue-router';
 import type { LoginInput } from '@/api/auth';
 import { createLoginSchema } from '@/api/auth';
 import { toTypedSchema } from '@vee-validate/zod';
@@ -92,8 +92,6 @@ import { useAuthStore } from '@/stores/auth';
 import { setPreferredLocale } from '@/i18n';
 
 const { t, locale } = useI18n();
-const route = useRoute();
-const router = useRouter();
 const authStore = useAuthStore();
 const submitError = ref<string | null>(null);
 const passwordInput = ref<HTMLInputElement | null>(null);
@@ -117,12 +115,6 @@ function localeButtonClass(value: 'lv' | 'en'): string[] {
     ];
 }
 
-const redirectTarget = computed(() => {
-    const redirect = route.query.redirect;
-
-    return typeof redirect === 'string' && redirect !== '' ? redirect : '/dashboard';
-});
-
 function setLocale(value: 'lv' | 'en'): void {
     setPreferredLocale(value);
 }
@@ -134,7 +126,11 @@ const onSubmit = handleSubmit(async (values) => {
 
     try {
         await authStore.signIn(values);
-        window.location.assign(redirectTarget.value);
+        const destination = authStore.user?.is_email_verified === false
+            ? '/profile?verification=required'
+            : '/dashboard';
+
+        window.location.assign(destination);
     } catch {
         const message = t('auth.form.invalid_credentials');
 
