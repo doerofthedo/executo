@@ -4,34 +4,30 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1\Auth;
 
+use App\Domain\Auth\Actions\RequestEmailVerificationAction;
 use App\Domain\Auth\Actions\RegisterUserAction;
 use App\Domain\Auth\DTOs\RegisterUserData;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\RequestEmailVerificationRequest;
-use App\Models\User;
-use Illuminate\Http\Response;
+use App\Http\Resources\EmptyResource;
+use Illuminate\Support\Facades\Gate;
+use Symfony\Component\HttpFoundation\Response;
 
 final class RegistrationController extends Controller
 {
     public function __construct(
         private readonly RegisterUserAction $registerUser,
+        private readonly RequestEmailVerificationAction $requestEmailVerification,
     ) {
     }
 
     public function store(RegisterRequest $request): Response
     {
+        Gate::authorize('register');
         $validated = $request->validated();
 
-        $existingUser = User::query()
-            ->where('email', $validated['email'])
-            ->first();
-
-        if ($existingUser !== null) {
-            return response()->noContent(Response::HTTP_ACCEPTED);
-        }
-
-        $user = $this->registerUser->execute(new RegisterUserData(
+        $this->registerUser->registerIfNew(new RegisterUserData(
             name: $validated['name'],
             surname: $validated['surname'],
             email: $validated['email'],
@@ -39,21 +35,21 @@ final class RegistrationController extends Controller
             locale: $validated['locale'] ?? 'lv',
         ));
 
-        $user->sendEmailVerificationNotification();
-
-        return response()->noContent(Response::HTTP_ACCEPTED);
+        return $this->accepted();
     }
 
     public function requestVerification(RequestEmailVerificationRequest $request): Response
     {
-        $user = User::query()
-            ->where('email', $request->validated()['email'])
-            ->first();
+        Gate::authorize('requestEmailVerification');
+        $this->requestEmailVerification->execute($request->validated()['email']);
 
-        if ($user !== null && ! $user->hasVerifiedEmail()) {
-            $user->sendEmailVerificationNotification();
-        }
+        return $this->accepted();
+    }
 
-        return response()->noContent(Response::HTTP_ACCEPTED);
+    private function accepted(): Response
+    {
+        return (new EmptyResource())
+            ->response()
+            ->setStatusCode(Response::HTTP_ACCEPTED);
     }
 }

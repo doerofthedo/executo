@@ -84,12 +84,13 @@
 </template>
 
 <script setup lang="ts">
-import axios from 'axios';
 import { computed, ref } from 'vue';
+import axios from 'axios';
 import { useForm } from 'vee-validate';
 import { useI18n } from 'vue-i18n';
 import { RouterLink, useRoute } from 'vue-router';
-import { createRegisterSchema, register, requestEmailVerification } from '@/api/auth';
+import { createRegisterSchema, register, requestEmailVerification, verifyEmail, type RegisterInput } from '@/api/auth';
+import { toTypedSchema } from '@vee-validate/zod';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 
 const { t, locale } = useI18n();
@@ -104,8 +105,10 @@ const verifying = ref(false);
 const verifyMode = computed(() => route.query.verify === '1');
 const signedVerificationUrl = computed(() => (typeof route.query.url === 'string' ? route.query.url : ''));
 const registrationComplete = computed(() => !verifyMode.value && infoMessage.value !== '');
+const registerValidationSchema = computed(() => toTypedSchema(createRegisterSchema(t)));
 
-const { defineField, errors, handleSubmit, isSubmitting, setErrors } = useForm({
+const { defineField, errors, handleSubmit, isSubmitting } = useForm<RegisterInput>({
+    validationSchema: registerValidationSchema,
     initialValues: {
         name: '',
         surname: '',
@@ -121,36 +124,20 @@ const [surnameValue] = defineField('surname');
 const [emailValue] = defineField('email');
 const [passwordValue] = defineField('password');
 const [passwordConfirmationValue] = defineField('password_confirmation');
-const registerSchema = createRegisterSchema(t);
 
 const onRegister = handleSubmit(async (values) => {
     errorMessage.value = '';
     infoMessage.value = '';
     messages.value = [];
-    setErrors({});
-
-    const result = registerSchema.safeParse({
-        ...values,
-        locale: locale.value as 'lv' | 'en',
-    });
-
-    if (!result.success) {
-        const fieldErrors = result.error.flatten().fieldErrors;
-
-        setErrors({
-            name: fieldErrors.name?.[0],
-            surname: fieldErrors.surname?.[0],
-            email: fieldErrors.email?.[0],
-            password: fieldErrors.password?.[0],
-            password_confirmation: fieldErrors.password_confirmation?.[0],
-        });
-
-        return;
-    }
 
     try {
-        await register(result.data);
-        submittedEmail.value = result.data.email;
+        const payload = {
+            ...values,
+            locale: locale.value as 'lv' | 'en',
+        };
+
+        await register(payload);
+        submittedEmail.value = payload.email;
         infoMessage.value = t('auth.register.success');
     } catch (error: unknown) {
         if (axios.isAxiosError(error) && error.response?.status === 422 && typeof error.response.data === 'object' && error.response.data !== null && 'errors' in error.response.data) {
@@ -192,11 +179,7 @@ async function onVerify(): Promise<void> {
     infoMessage.value = '';
 
     try {
-        await axios.get(signedVerificationUrl.value, {
-            headers: {
-                Accept: 'application/json',
-            },
-        });
+        await verifyEmail(signedVerificationUrl.value);
         infoMessage.value = t('auth.register.verified');
     } catch {
         errorMessage.value = t('auth.register.verification_failed');

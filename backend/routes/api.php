@@ -13,7 +13,78 @@ use App\Http\Controllers\Api\V1\Auth\CurrentUserController;
 use App\Http\Controllers\Api\V1\Auth\EmailVerificationController;
 use App\Http\Controllers\Api\V1\Auth\PasswordResetController;
 use App\Http\Controllers\Api\V1\Auth\RegistrationController;
+use App\Models\Customer;
+use App\Models\Debt;
+use App\Models\District;
+use App\Models\Payment;
 use Illuminate\Support\Facades\Route;
+
+Route::bind('customer', static function (string $value): Customer {
+    $district = request()->route('district');
+    $district = is_string($district)
+        ? District::query()->where('ulid', $district)->first()
+        : $district;
+    $query = Customer::query()
+        ->where('ulid', $value);
+
+    if ($district instanceof District) {
+        $query->where('district_id', $district->id);
+    }
+
+    if ((request()->boolean('restore') && request()->isMethod('patch')) || request()->boolean('force')) {
+        $query->withTrashed();
+    }
+
+    return $query->firstOrFail();
+});
+
+Route::bind('debt', static function (string $value): Debt {
+    $district = request()->route('district');
+    $district = is_string($district)
+        ? District::query()->where('ulid', $district)->first()
+        : $district;
+    $customer = request()->route('customer');
+    $customer = is_string($customer)
+        ? Customer::query()->where('ulid', $customer)->first()
+        : $customer;
+
+    $query = Debt::query()
+        ->where('ulid', $value);
+
+    if ($district instanceof District) {
+        $query->where('district_id', $district->id);
+    }
+
+    if ($customer instanceof Customer) {
+        $query->where('customer_id', $customer->id);
+    }
+
+    return $query->firstOrFail();
+});
+
+Route::bind('payment', static function (string $value): Payment {
+    $customer = request()->route('customer');
+    $customer = is_string($customer)
+        ? Customer::query()->where('ulid', $customer)->first()
+        : $customer;
+    $debt = request()->route('debt');
+    $debt = is_string($debt)
+        ? Debt::query()->where('ulid', $debt)->first()
+        : $debt;
+
+    $query = Payment::query()
+        ->where('ulid', $value);
+
+    if ($customer instanceof Customer) {
+        $query->where('customer_id', $customer->id);
+    }
+
+    if ($debt instanceof Debt) {
+        $query->where('debt_id', $debt->id);
+    }
+
+    return $query->firstOrFail();
+});
 
 Route::middleware('guest')->group(static function (): void {
     Route::post('/auth/login', [AuthSessionController::class, 'store'])

@@ -6,13 +6,14 @@ namespace App\Http\Resources;
 
 use App\Domain\Debt\DTOs\InterestScheduleData;
 use App\Domain\Debt\DTOs\InterestScheduleRowData;
+use App\Models\Debt;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 final class DebtDetailResource extends JsonResource
 {
     public function __construct(
-        mixed $resource,
+        Debt $resource,
         private readonly InterestScheduleData $interestSchedule,
     ) {
         parent::__construct($resource);
@@ -28,18 +29,18 @@ final class DebtDetailResource extends JsonResource
             'payments' => PaymentResource::collection($this->resource->payments->loadMissing(['customer', 'debt']))->resolve($request),
             'interest' => [
                 'columns' => [
-                    ['key' => 'payment_date', 'label' => 'Date', 'align' => 'left'],
-                    ['key' => 'payment_amount', 'label' => 'Payment Amount', 'align' => 'right'],
-                    ['key' => 'days_since_last_payment', 'label' => 'Days Since Last Payment', 'align' => 'right'],
-                    ['key' => 'interest_per_day', 'label' => 'Interest Per Day', 'align' => 'right'],
-                    ['key' => 'interest_accrued', 'label' => 'Interest Accrued', 'align' => 'right'],
-                    ['key' => 'interest_rollover', 'label' => 'Interest Rollover', 'align' => 'right'],
-                    ['key' => 'interest_total', 'label' => 'Interest Total', 'align' => 'right'],
-                    ['key' => 'interest_paid', 'label' => 'Interest Paid', 'align' => 'right'],
-                    ['key' => 'principal_paid', 'label' => 'Principal Paid', 'align' => 'right'],
-                    ['key' => 'remaining_interest', 'label' => 'Remaining Interest', 'align' => 'right'],
-                    ['key' => 'remaining_principal', 'label' => 'Remaining Principal', 'align' => 'right'],
-                    ['key' => 'total_debt', 'label' => 'Total Debt', 'align' => 'right'],
+                    ['key' => 'payment_date', 'label_key' => 'debt.interest_breakdown.columns.payment_date', 'align' => 'left'],
+                    ['key' => 'payment_amount', 'label_key' => 'debt.interest_breakdown.columns.payment_amount', 'align' => 'right'],
+                    ['key' => 'days_since_last_payment', 'label_key' => 'debt.interest_breakdown.columns.days_since_last_payment', 'align' => 'right'],
+                    ['key' => 'interest_per_day', 'label_key' => 'debt.interest_breakdown.columns.interest_per_day', 'align' => 'right'],
+                    ['key' => 'interest_accrued', 'label_key' => 'debt.interest_breakdown.columns.interest_accrued', 'align' => 'right'],
+                    ['key' => 'interest_rollover', 'label_key' => 'debt.interest_breakdown.columns.interest_rollover', 'align' => 'right'],
+                    ['key' => 'interest_total', 'label_key' => 'debt.interest_breakdown.columns.interest_total', 'align' => 'right'],
+                    ['key' => 'interest_paid', 'label_key' => 'debt.interest_breakdown.columns.interest_paid', 'align' => 'right'],
+                    ['key' => 'principal_paid', 'label_key' => 'debt.interest_breakdown.columns.principal_paid', 'align' => 'right'],
+                    ['key' => 'remaining_interest', 'label_key' => 'debt.interest_breakdown.columns.remaining_interest', 'align' => 'right'],
+                    ['key' => 'remaining_principal', 'label_key' => 'debt.interest_breakdown.columns.remaining_principal', 'align' => 'right'],
+                    ['key' => 'total_debt', 'label_key' => 'debt.interest_breakdown.columns.total_debt', 'align' => 'right'],
                 ],
                 'rows' => array_map(
                     fn (InterestScheduleRowData $row): array => $this->formatRow($row),

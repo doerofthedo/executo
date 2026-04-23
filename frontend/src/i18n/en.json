@@ -142,6 +142,24 @@
         "date": "Date",
         "description": "Description"
     },
+    "debt": {
+        "interest_breakdown": {
+            "columns": {
+                "payment_date": "Date",
+                "payment_amount": "Payment amount",
+                "days_since_last_payment": "Days since last payment",
+                "interest_per_day": "Interest per day",
+                "interest_accrued": "Interest accrued",
+                "interest_rollover": "Interest rollover",
+                "interest_total": "Interest total",
+                "interest_paid": "Interest paid",
+                "principal_paid": "Principal paid",
+                "remaining_interest": "Remaining interest",
+                "remaining_principal": "Remaining principal",
+                "total_debt": "Total debt"
+            }
+        }
+    },
     "auth": {
         "hero": {
             "eyebrow": "Bailiff district workspace",

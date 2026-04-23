@@ -74,7 +74,9 @@ import {
     fetchDistrictCustomers,
     type CustomerOption,
     type DebtOption,
+    type PaymentFormInput,
 } from '@/api/operations';
+import { toTypedSchema } from '@vee-validate/zod';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { useAuthStore } from '@/stores/auth';
 
@@ -88,9 +90,10 @@ const debts = ref<DebtOption[]>([]);
 const defaultDistrictUlid = computed(() => typeof route.params.district === 'string'
     ? route.params.district
     : (authStore.user?.default_district_ulid ?? null));
-const schema = computed(() => createPaymentSchema(t));
+const schema = computed(() => toTypedSchema(createPaymentSchema(t)));
 
-const { errors, defineField, handleSubmit, isSubmitting, setErrors } = useForm({
+const { errors, defineField, handleSubmit, isSubmitting } = useForm<PaymentFormInput>({
+    validationSchema: schema,
     initialValues: {
         customer_ulid: '',
         debt_ulid: '',
@@ -127,18 +130,6 @@ async function onCustomerChange(): Promise<void> {
 
 const onSubmit = handleSubmit(async (values) => {
     formError.value = '';
-    const result = schema.value.safeParse(values);
-
-    if (!result.success) {
-        const fieldErrors = result.error.flatten().fieldErrors;
-        setErrors({
-            customer_ulid: fieldErrors.customer_ulid?.[0],
-            debt_ulid: fieldErrors.debt_ulid?.[0],
-            amount: fieldErrors.amount?.[0],
-            date: fieldErrors.date?.[0],
-        });
-        return;
-    }
 
     if (defaultDistrictUlid.value === null) {
         formError.value = t('dashboard.default_district_missing');
@@ -146,10 +137,10 @@ const onSubmit = handleSubmit(async (values) => {
     }
 
     try {
-        await createPayment(defaultDistrictUlid.value, result.data.customer_ulid, result.data.debt_ulid, {
-            amount: result.data.amount,
-            date: result.data.date,
-            description: result.data.description || null,
+        await createPayment(defaultDistrictUlid.value, values.customer_ulid, values.debt_ulid, {
+            amount: values.amount,
+            date: values.date,
+            description: values.description || null,
         });
         await router.push({ name: 'dashboard' });
     } catch (error) {

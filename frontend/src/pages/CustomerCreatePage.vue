@@ -90,7 +90,8 @@ import { useForm } from 'vee-validate';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
-import { createCustomer, createCustomerSchema } from '@/api/operations';
+import { createCustomer, createCustomerSchema, type CustomerFormInput } from '@/api/operations';
+import { toTypedSchema } from '@vee-validate/zod';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { useAuthStore } from '@/stores/auth';
 
@@ -103,9 +104,10 @@ const formError = ref('');
 const defaultDistrictUlid = computed(() => typeof route.params.district === 'string'
     ? route.params.district
     : (authStore.user?.default_district_ulid ?? null));
-const schema = computed(() => createCustomerSchema(t));
+const schema = computed(() => toTypedSchema(createCustomerSchema(t)));
 
-const { errors, defineField, handleSubmit, isSubmitting, setErrors } = useForm({
+const { errors, defineField, handleSubmit, isSubmitting } = useForm<CustomerFormInput>({
+    validationSchema: schema,
     initialValues: {
         case_number: '',
         type: 'physical',
@@ -136,21 +138,6 @@ const [contactPersonValue] = defineField('contact_person');
 const onSubmit = handleSubmit(async (values) => {
     formError.value = '';
 
-    const result = schema.value.safeParse(values);
-
-    if (!result.success) {
-        const fieldErrors = result.error.flatten().fieldErrors;
-
-        setErrors({
-            email: fieldErrors.email?.[0],
-            first_name: fieldErrors.first_name?.[0],
-            last_name: fieldErrors.last_name?.[0],
-            company_name: fieldErrors.company_name?.[0],
-        });
-
-        return;
-    }
-
     if (defaultDistrictUlid.value === null) {
         formError.value = t('dashboard.default_district_missing');
         return;
@@ -158,17 +145,17 @@ const onSubmit = handleSubmit(async (values) => {
 
     try {
         await createCustomer(defaultDistrictUlid.value, {
-            ...result.data,
-            case_number: result.data.case_number || null,
-            email: result.data.email || null,
-            phone: result.data.phone || null,
-            first_name: result.data.first_name || null,
-            last_name: result.data.last_name || null,
-            personal_code: result.data.personal_code || null,
-            date_of_birth: result.data.date_of_birth || null,
-            company_name: result.data.company_name || null,
-            registration_number: result.data.registration_number || null,
-            contact_person: result.data.contact_person || null,
+            ...values,
+            case_number: values.case_number || null,
+            email: values.email || null,
+            phone: values.phone || null,
+            first_name: values.first_name || null,
+            last_name: values.last_name || null,
+            personal_code: values.personal_code || null,
+            date_of_birth: values.date_of_birth || null,
+            company_name: values.company_name || null,
+            registration_number: values.registration_number || null,
+            contact_person: values.contact_person || null,
         });
 
         await router.push({ name: 'dashboard' });

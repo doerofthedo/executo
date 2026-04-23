@@ -164,7 +164,7 @@
     "src": "node_modules/remixicon/fonts/remixicon.woff2"
   },
   "src/entries/app.ts": {
-    "file": "js/app-CnG2Pdo-.js",
+    "file": "js/app-D95bHByx.js",
     "name": "app",
     "src": "src/entries/app.ts",
     "isEntry": true,
@@ -177,7 +177,7 @@
     ]
   },
   "src/entries/login.ts": {
-    "file": "js/login-DWqPXyAU.js",
+    "file": "js/login-Cg5As0Cg.js",
     "name": "login",
     "src": "src/entries/login.ts",
     "isEntry": true,
@@ -190,7 +190,7 @@
     ]
   },
   "src/entries/shared.ts": {
-    "file": "js/shared-CwJvOwPZ.js",
+    "file": "js/shared-ClzVIFns.js",
     "name": "shared",
     "src": "src/entries/shared.ts",
     "isEntry": true,

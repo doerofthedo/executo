@@ -16,7 +16,7 @@ export function createRegisterSchema(t: Translate) {
     return z.object({
         name: z.string().trim().min(1, t('auth.validation.field_required')),
         surname: z.string().trim().min(1, t('auth.validation.field_required')),
-        email: z.email(t('auth.validation.invalid_email')),
+        email: z.string().email(t('auth.validation.invalid_email')),
         password: z.string().min(8, t('auth.validation.password_too_short')),
         password_confirmation: z.string().min(1, t('auth.validation.field_required')),
         locale: z.enum(['lv', 'en']),
@@ -30,7 +30,7 @@ export type RegisterInput = z.infer<ReturnType<typeof createRegisterSchema>>;
 
 export function createForgotPasswordSchema(t: Translate) {
     return z.object({
-        email: z.email(t('auth.validation.invalid_email')),
+        email: z.string().email(t('auth.validation.invalid_email')),
     });
 }
 

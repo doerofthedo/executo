@@ -43,7 +43,8 @@ import { useForm } from 'vee-validate';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
-import { assignDistrictUser, createDistrictUserSchema } from '@/api/operations';
+import { assignDistrictUser, createDistrictUserSchema, type DistrictUserFormInput } from '@/api/operations';
+import { toTypedSchema } from '@vee-validate/zod';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { useAuthStore } from '@/stores/auth';
 
@@ -55,9 +56,10 @@ const formError = ref('');
 const defaultDistrictUlid = computed(() => typeof route.params.district === 'string'
     ? route.params.district
     : (authStore.user?.default_district_ulid ?? null));
-const schema = computed(() => createDistrictUserSchema(t));
+const schema = computed(() => toTypedSchema(createDistrictUserSchema(t)));
 
-const { errors, defineField, handleSubmit, isSubmitting, setErrors } = useForm({
+const { errors, defineField, handleSubmit, isSubmitting } = useForm<DistrictUserFormInput>({
+    validationSchema: schema,
     initialValues: {
         email: '',
         role: 'district.user',
@@ -69,15 +71,6 @@ const [roleValue] = defineField('role');
 
 const onSubmit = handleSubmit(async (values) => {
     formError.value = '';
-    const result = schema.value.safeParse(values);
-
-    if (!result.success) {
-        const fieldErrors = result.error.flatten().fieldErrors;
-        setErrors({
-            email: fieldErrors.email?.[0],
-        });
-        return;
-    }
 
     if (defaultDistrictUlid.value === null) {
         formError.value = t('dashboard.default_district_missing');
@@ -85,7 +78,7 @@ const onSubmit = handleSubmit(async (values) => {
     }
 
     try {
-        await assignDistrictUser(defaultDistrictUlid.value, result.data);
+        await assignDistrictUser(defaultDistrictUlid.value, values);
         await router.push({ name: 'dashboard' });
     } catch (error) {
         formError.value = axios.isAxiosError(error) && typeof error.response?.data?.message === 'string'

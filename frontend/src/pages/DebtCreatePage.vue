@@ -56,7 +56,8 @@ import { useForm } from 'vee-validate';
 import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
-import { createDebt, createDebtSchema, fetchDistrictCustomers, type CustomerOption } from '@/api/operations';
+import { createDebt, createDebtSchema, fetchDistrictCustomers, type CustomerOption, type DebtFormInput } from '@/api/operations';
+import { toTypedSchema } from '@vee-validate/zod';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { useAuthStore } from '@/stores/auth';
 
@@ -69,9 +70,10 @@ const customers = ref<CustomerOption[]>([]);
 const defaultDistrictUlid = computed(() => typeof route.params.district === 'string'
     ? route.params.district
     : (authStore.user?.default_district_ulid ?? null));
-const schema = computed(() => createDebtSchema(t));
+const schema = computed(() => toTypedSchema(createDebtSchema(t)));
 
-const { errors, defineField, handleSubmit, isSubmitting, setErrors } = useForm({
+const { errors, defineField, handleSubmit, isSubmitting } = useForm<DebtFormInput>({
+    validationSchema: schema,
     initialValues: {
         customer_ulid: '',
         amount: '',
@@ -95,17 +97,6 @@ onMounted(async () => {
 
 const onSubmit = handleSubmit(async (values) => {
     formError.value = '';
-    const result = schema.value.safeParse(values);
-
-    if (!result.success) {
-        const fieldErrors = result.error.flatten().fieldErrors;
-        setErrors({
-            customer_ulid: fieldErrors.customer_ulid?.[0],
-            amount: fieldErrors.amount?.[0],
-            date: fieldErrors.date?.[0],
-        });
-        return;
-    }
 
     if (defaultDistrictUlid.value === null) {
         formError.value = t('dashboard.default_district_missing');
@@ -113,10 +104,10 @@ const onSubmit = handleSubmit(async (values) => {
     }
 
     try {
-        await createDebt(defaultDistrictUlid.value, result.data.customer_ulid, {
-            amount: result.data.amount,
-            date: result.data.date,
-            description: result.data.description || null,
+        await createDebt(defaultDistrictUlid.value, values.customer_ulid, {
+            amount: values.amount,
+            date: values.date,
+            description: values.description || null,
         });
         await router.push({ name: 'dashboard' });
     } catch (error) {

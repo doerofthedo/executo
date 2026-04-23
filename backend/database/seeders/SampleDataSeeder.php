@@ -258,7 +258,7 @@ final class SampleDataSeeder extends Seeder
             $debt = Debt::query()->create([
                 'district_id' => $customer->district_id,
                 'customer_id' => $customer->id,
-                'amount' => number_format(450 + ($debtSequence * 175.125), 4, '.', ''),
+                'amount' => $this->sampleAmount('450', (string) $debtSequence, '175.125'),
                 'date' => $baseDate->toDateString(),
                 'description' => sprintf('Sample debt %d for %s', $debtSequence, $customer->case_number ?? $customer->name ?? 'customer'),
             ]);
@@ -269,12 +269,17 @@ final class SampleDataSeeder extends Seeder
                 Payment::query()->create([
                     'customer_id' => $customer->id,
                     'debt_id' => $debt->id,
-                    'amount' => number_format(35 + ($paymentSequence * 12.5), 4, '.', ''),
+                    'amount' => $this->sampleAmount('35', (string) $paymentSequence, '12.5'),
                     'date' => $paymentDate->toDateString(),
                     'description' => sprintf('Sample payment %d for debt %s', $paymentSequence, $debt->ulid),
                 ]);
             }
         }
+    }
+
+    private function sampleAmount(string $base, string $sequence, string $step): string
+    {
+        return bcadd($base, bcmul($sequence, $step, 4), 4);
     }
 
     private function pruneLegacyDistrictCustomers(District $district): void
@@ -390,7 +395,7 @@ final class SampleDataSeeder extends Seeder
         return is_array($payload) ? $payload : null;
     }
 
-    private function nullableString(mixed $value): ?string
+    private function nullableString(\Stringable|int|float|string|null $value): ?string
     {
         if ($value === null) {
             return null;

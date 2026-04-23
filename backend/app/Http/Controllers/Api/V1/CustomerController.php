@@ -5,25 +5,31 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\V1;
 
 use App\Domain\Customer\Actions\CreateCustomerAction;
+use App\Domain\Customer\Actions\DeleteCustomerAction;
+use App\Domain\Customer\Actions\ListCustomersAction;
+use App\Domain\Customer\Actions\RestoreCustomerAction;
+use App\Domain\Customer\Actions\UpdateCustomerAction;
 use App\Domain\Customer\DTOs\CustomerData;
-use App\Domain\Customer\Services\CustomerSearchService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Customer\ListCustomersRequest;
 use App\Http\Requests\Customer\StoreCustomerRequest;
 use App\Http\Requests\Customer\UpdateCustomerRequest;
 use App\Http\Resources\CustomerResource;
+use App\Http\Resources\EmptyResource;
 use App\Models\Customer;
 use App\Models\District;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 final class CustomerController extends Controller
 {
     public function __construct(
         private readonly CreateCustomerAction $createCustomer,
-        private readonly CustomerSearchService $customerSearch,
+        private readonly ListCustomersAction $listCustomers,
+        private readonly UpdateCustomerAction $updateCustomer,
+        private readonly RestoreCustomerAction $restoreCustomer,
+        private readonly DeleteCustomerAction $deleteCustomer,
     ) {
     }
 
@@ -31,49 +37,14 @@ final class CustomerController extends Controller
     {
         $this->authorize('viewAny', Customer::class);
 
-        $validated = $request->validated();
-        $perPage = (int) ($validated['per_page'] ?? 25);
-        $search = isset($validated['search'])
-            ? $this->customerSearch->normaliseQuery($validated['search'])
-            : null;
-
-        $customers = Customer::query()
-            ->with(['district'])
-            ->where('district_id', $district->id)
-            ->when(
-                ($validated['include_trashed'] ?? false) === true,
-                static fn ($query) => $query->withTrashed(),
-            )
-            ->when(
-                isset($validated['type']),
-                static fn ($query) => $query->where('type', $validated['type']),
-            )
-            ->when($search !== null && $search !== '', function ($query) use ($search): void {
-                $query->where(function ($nestedQuery) use ($search): void {
-                    $like = '%' . $search . '%';
-
-                    $nestedQuery
-                        ->where('name', 'like', $like)
-                        ->orWhere('case_number', 'like', $like)
-                        ->orWhere('email', 'like', $like)
-                        ->orWhere('phone', 'like', $like)
-                        ->orWhere('personal_code', 'like', $like)
-                        ->orWhere('company_name', 'like', $like)
-                        ->orWhere('registration_number', 'like', $like);
-                });
-            })
-            ->orderByDesc('id')
-            ->paginate($perPage);
-
-        return CustomerResource::collection($customers);
+        return CustomerResource::collection($this->listCustomers->execute($district, $request->validated()));
     }
 
-    public function show(District $district, string $customer): CustomerResource
+    public function show(District $district, Customer $customer): CustomerResource
     {
-        $resolvedCustomer = $this->resolveCustomerInDistrict($district, $customer);
-        $this->authorize('view', $resolvedCustomer);
+        $this->authorize('view', $customer);
 
-        return new CustomerResource($resolvedCustomer->load('district'));
+        return new CustomerResource($customer->load('district'));
     }
 
     public function store(StoreCustomerRequest $request, District $district): JsonResponse
@@ -82,7 +53,7 @@ final class CustomerController extends Controller
 
         $customer = $this->createCustomer->execute(
             $district,
-            $this->customerDataFromPayload($this->normalizeCustomerPayload($request->validated())),
+            $this->customerDataFromPayload($this->updateCustomer->normalizePayload($request->validated())),
         );
 
         return (new CustomerResource($customer->load('district')))
@@ -90,126 +61,49 @@ final class CustomerController extends Controller
             ->setStatusCode(Response::HTTP_CREATED);
     }
 
-    public function update(UpdateCustomerRequest $request, District $district, string $customer): CustomerResource
+    public function update(UpdateCustomerRequest $request, District $district, Customer $customer): CustomerResource
     {
         $validated = $request->validated();
         $restore = ($validated['restore'] ?? false) === true;
-        $resolvedCustomer = $this->resolveCustomerInDistrict($district, $customer, $restore);
 
         if ($restore) {
-            if (count($validated) !== 1 || ! $resolvedCustomer->trashed()) {
+            if (count($validated) !== 1 || ! $customer->trashed()) {
                 abort(422, 'Restore requests must target a soft-deleted customer only.');
             }
 
-            $this->authorize('restore', $resolvedCustomer);
-            $resolvedCustomer->restore();
+            $this->authorize('restore', $customer);
 
-            $restoredCustomer = $resolvedCustomer->fresh();
-
-            if ($restoredCustomer === null) {
-                throw new NotFoundHttpException();
-            }
-
-            return new CustomerResource($restoredCustomer->load('district'));
+            return new CustomerResource($this->restoreCustomer->execute($customer)->load('district'));
         }
 
-        $this->authorize('update', $resolvedCustomer);
+        $this->authorize('update', $customer);
 
         if ($validated === []) {
             abort(422, 'No changes submitted.');
         }
 
-        $resolvedCustomer->fill($this->normalizeCustomerPayload($validated, $resolvedCustomer));
-
-        if ($resolvedCustomer->isDirty()) {
-            $resolvedCustomer->save();
-        }
-
-        $freshCustomer = $resolvedCustomer->fresh();
-
-        if ($freshCustomer === null) {
-            throw new NotFoundHttpException();
-        }
-
-        return new CustomerResource($freshCustomer->load('district'));
+        return new CustomerResource($this->updateCustomer->execute($customer, $validated)->load('district'));
     }
 
-    public function destroy(District $district, string $customer): JsonResponse
+    public function destroy(District $district, Customer $customer): JsonResponse
     {
         $forceDelete = request()->boolean('force');
-        $resolvedCustomer = $this->resolveCustomerInDistrict($district, $customer, $forceDelete);
 
         if ($forceDelete) {
-            $this->authorize('forceDelete', $resolvedCustomer);
-            $resolvedCustomer->forceDelete();
+            $this->authorize('forceDelete', $customer);
+            $this->deleteCustomer->execute($customer, true);
 
-            return response()->json([], 204);
+            return (new EmptyResource())
+                ->response()
+                ->setStatusCode(Response::HTTP_NO_CONTENT);
         }
 
-        $this->authorize('delete', $resolvedCustomer);
-        $resolvedCustomer->delete();
+        $this->authorize('delete', $customer);
+        $this->deleteCustomer->execute($customer, false);
 
-        return response()->json([], 204);
-    }
-
-    private function resolveCustomerInDistrict(District $district, string $customerUlid, bool $withTrashed = false): Customer
-    {
-        $query = Customer::query()
-            ->where('district_id', $district->id)
-            ->where('ulid', $customerUlid);
-
-        if ($withTrashed) {
-            $query->withTrashed();
-        }
-
-        $customer = $query->first();
-
-        if ($customer === null) {
-            throw new NotFoundHttpException();
-        }
-
-        return $customer;
-    }
-
-    /**
-     * @param  array<string, mixed>  $validated
-     * @return array<string, mixed>
-     */
-    private function normalizeCustomerPayload(array $validated, ?Customer $customer = null): array
-    {
-        if (array_key_exists('restore', $validated)) {
-            unset($validated['restore']);
-        }
-
-        $type = $validated['type'] ?? $customer?->type;
-
-        if ($type === 'physical') {
-            $firstName = $validated['first_name'] ?? null;
-            $lastName = $validated['last_name'] ?? null;
-
-            if (($validated['name'] ?? null) === null && ($firstName !== null || $lastName !== null)) {
-                $validated['name'] = trim(implode(' ', array_filter([$firstName, $lastName])));
-            }
-
-            $validated['company_name'] = null;
-            $validated['registration_number'] = null;
-            $validated['contact_person'] = null;
-        }
-
-        if ($type === 'legal') {
-            $companyName = $validated['company_name'] ?? null;
-
-            if (($validated['name'] ?? null) === null && $companyName !== null) {
-                $validated['name'] = $companyName;
-            }
-
-            $validated['first_name'] = null;
-            $validated['last_name'] = null;
-            $validated['personal_code'] = null;
-            $validated['date_of_birth'] = null;
-        }
-
-        return $validated;
+        return (new EmptyResource())
+            ->response()
+            ->setStatusCode(Response::HTTP_NO_CONTENT);
     }
 
     /**

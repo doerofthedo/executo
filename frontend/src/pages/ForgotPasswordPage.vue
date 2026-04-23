@@ -44,35 +44,29 @@ import { useForm } from 'vee-validate';
 import { useI18n } from 'vue-i18n';
 import { RouterLink } from 'vue-router';
 import { createForgotPasswordSchema, type ForgotPasswordInput, forgotPassword } from '@/api/auth';
+import { toTypedSchema } from '@vee-validate/zod';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 
 const { t } = useI18n();
 const submitError = ref('');
 const submitMessage = ref('');
-const { defineField, errors, handleSubmit, isSubmitting, setErrors, setFieldError } = useForm<ForgotPasswordInput>({
+const forgotPasswordSchema = createForgotPasswordSchema(t);
+const { defineField, errors, handleSubmit, isSubmitting, setFieldError } = useForm<ForgotPasswordInput>({
+    validationSchema: toTypedSchema(forgotPasswordSchema),
     initialValues: {
         email: '',
     },
 });
 
 const [emailValue] = defineField('email');
-const forgotPasswordSchema = createForgotPasswordSchema(t);
 
 const onSubmit = handleSubmit(async (values) => {
     submitError.value = '';
     submitMessage.value = '';
     setFieldError('email', undefined);
 
-    const result = forgotPasswordSchema.safeParse(values);
-
-    if (!result.success) {
-        setFieldError('email', result.error.flatten().fieldErrors.email?.[0]);
-
-        return;
-    }
-
     try {
-        await forgotPassword(result.data);
+        await forgotPassword(values);
         setFieldError('email', undefined);
         submitMessage.value = t('auth.forgot.success');
     } catch {

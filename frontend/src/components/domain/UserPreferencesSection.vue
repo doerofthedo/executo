@@ -88,6 +88,7 @@ import { useAuthStore } from '@/stores/auth';
 import { usePreferencesStore } from '@/stores/preferences';
 import type { UserProfile, UserPreferencesInput } from '@/api/users';
 import { createUserPreferencesSchema, updateUserPreferences } from '@/api/users';
+import { toTypedSchema } from '@vee-validate/zod';
 
 const props = withDefaults(defineProps<{
     profile: UserProfile | null;
@@ -110,9 +111,10 @@ const savedMessage = ref('');
 const formError = ref('');
 const dateFormatOptions = ['DD.MM.YYYY.', 'DD.MM.YYYY', 'DD-MM-YYYY', 'DD-MMM-YYYY', 'YYYY-MM-DD'];
 
-const preferencesSchema = computed(() => createUserPreferencesSchema(t));
+const preferencesSchema = computed(() => toTypedSchema(createUserPreferencesSchema(t)));
 
-const { errors, defineField, handleSubmit, isSubmitting, resetForm, setErrors } = useForm<UserPreferencesInput>({
+const { errors, defineField, handleSubmit, isSubmitting, resetForm } = useForm<UserPreferencesInput>({
+    validationSchema: preferencesSchema,
     initialValues: {
         default_district_ulid: null,
         locale: 'lv',
@@ -167,32 +169,15 @@ const onSubmit = handleSubmit(async (values) => {
         table_page_size: props.profile.preferences.table_page_size ?? 25,
     };
 
-    const result = preferencesSchema.value.safeParse(values);
-
-    if (! result.success) {
-        const fieldErrors = result.error.flatten().fieldErrors;
-
-        setErrors({
-            default_district_ulid: fieldErrors.default_district_ulid?.[0],
-            locale: fieldErrors.locale?.[0],
-            date_format: fieldErrors.date_format?.[0],
-            decimal_separator: fieldErrors.decimal_separator?.[0],
-            thousand_separator: fieldErrors.thousand_separator?.[0],
-            table_page_size: fieldErrors.table_page_size?.[0],
-        });
-
-        return;
-    }
-
-    if (JSON.stringify(result.data) === JSON.stringify(currentValues)) {
+    if (JSON.stringify(values) === JSON.stringify(currentValues)) {
         savedMessage.value = t('preferences.no_changes');
         return;
     }
 
     try {
         const updatedProfile = await updateUserPreferences(props.profile.ulid, {
-            ...result.data,
-            default_district_ulid: result.data.default_district_ulid === '' ? null : result.data.default_district_ulid,
+            ...values,
+            default_district_ulid: values.default_district_ulid === '' ? null : values.default_district_ulid,
         });
 
         preferencesStore.locale = updatedProfile.preferences.locale === 'en' ? 'en' : 'lv';

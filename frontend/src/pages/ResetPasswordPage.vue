@@ -60,6 +60,7 @@ import { useForm } from 'vee-validate';
 import { useI18n } from 'vue-i18n';
 import { RouterLink, useRoute } from 'vue-router';
 import { createResetPasswordSchema, type ResetPasswordInput, resetPassword } from '@/api/auth';
+import { toTypedSchema } from '@vee-validate/zod';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 
 const { t } = useI18n();
@@ -67,8 +68,10 @@ const route = useRoute();
 const submitError = ref('');
 const resetComplete = ref(false);
 const token = computed(() => (typeof route.query.token === 'string' ? route.query.token : ''));
+const resetPasswordSchema = computed(() => toTypedSchema(createResetPasswordSchema(t)));
 
-const { defineField, errors, handleSubmit, isSubmitting, setErrors, setFieldError } = useForm<ResetPasswordInput>({
+const { defineField, errors, handleSubmit, isSubmitting, setFieldError } = useForm<ResetPasswordInput>({
+    validationSchema: resetPasswordSchema,
     initialValues: {
         token: token.value,
         password: '',
@@ -78,31 +81,17 @@ const { defineField, errors, handleSubmit, isSubmitting, setErrors, setFieldErro
 
 const [passwordValue] = defineField('password');
 const [passwordConfirmationValue] = defineField('password_confirmation');
-const resetPasswordSchema = createResetPasswordSchema(t);
 
 const onSubmit = handleSubmit(async (values) => {
     submitError.value = '';
     setFieldError('password', undefined);
     setFieldError('password_confirmation', undefined);
 
-    const result = resetPasswordSchema.safeParse({
-        ...values,
-        token: token.value,
-    });
-
-    if (!result.success) {
-        const fieldErrors = result.error.flatten().fieldErrors;
-
-        setErrors({
-            password: fieldErrors.password?.[0],
-            password_confirmation: fieldErrors.password_confirmation?.[0],
-        });
-
-        return;
-    }
-
     try {
-        await resetPassword(result.data);
+        await resetPassword({
+            ...values,
+            token: token.value,
+        });
         setFieldError('password', undefined);
         setFieldError('password_confirmation', undefined);
         resetComplete.value = true;

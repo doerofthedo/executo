@@ -86,6 +86,7 @@ import { useI18n } from 'vue-i18n';
 import { RouterLink, useRoute, useRouter } from 'vue-router';
 import type { LoginInput } from '@/api/auth';
 import { createLoginSchema } from '@/api/auth';
+import { toTypedSchema } from '@vee-validate/zod';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 import { useAuthStore } from '@/stores/auth';
 import { setPreferredLocale } from '@/i18n';
@@ -96,7 +97,9 @@ const router = useRouter();
 const authStore = useAuthStore();
 const submitError = ref<string | null>(null);
 const passwordInput = ref<HTMLInputElement | null>(null);
-const { errors, defineField, handleSubmit, isSubmitting, setFieldError, setErrors } = useForm<LoginInput>({
+const loginSchema = createLoginSchema(t);
+const { errors, defineField, handleSubmit, isSubmitting, setFieldError } = useForm<LoginInput>({
+    validationSchema: toTypedSchema(loginSchema),
     initialValues: {
         login: '',
         password: '',
@@ -105,7 +108,6 @@ const { errors, defineField, handleSubmit, isSubmitting, setFieldError, setError
 
 const [loginValue] = defineField('login');
 const [passwordValue] = defineField('password');
-const loginSchema = createLoginSchema(t);
 
 function localeButtonClass(value: 'lv' | 'en'): string[] {
     return [
@@ -130,22 +132,9 @@ const onSubmit = handleSubmit(async (values) => {
     setFieldError('login', undefined);
     setFieldError('password', undefined);
 
-    const result = loginSchema.safeParse(values);
-
-    if (!result.success) {
-        const fieldErrors = result.error.flatten().fieldErrors;
-
-        setErrors({
-            login: fieldErrors.login?.[0],
-            password: fieldErrors.password?.[0],
-        });
-
-        return;
-    }
-
     try {
-        await authStore.signIn(result.data);
-        await router.push(redirectTarget.value);
+        await authStore.signIn(values);
+        window.location.assign(redirectTarget.value);
     } catch {
         const message = t('auth.form.invalid_credentials');
 

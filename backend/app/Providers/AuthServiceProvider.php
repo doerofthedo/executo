@@ -31,6 +31,15 @@ final class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
+        Gate::define('login', static fn (?User $user = null): bool => true);
+        Gate::define('logout', static fn (User $user): bool => true);
+        Gate::define('register', static fn (?User $user = null): bool => true);
+        Gate::define('viewSelf', static fn (User $user): bool => true);
+        Gate::define('requestEmailVerification', static fn (?User $user = null): bool => true);
+        Gate::define('verifyEmail', static fn (?User $currentUser = null, ?User $user = null): bool => true);
+        Gate::define('requestPasswordReset', static fn (?User $user = null): bool => true);
+        Gate::define('resetPassword', static fn (?User $user = null): bool => true);
+
         Gate::before(static function ($user, string $ability): bool|null {
             if ($user->hasRole('app.admin')) {
                 return true;

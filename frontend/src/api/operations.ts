@@ -49,16 +49,18 @@ export interface PaymentCreateInput {
 
 export function createDistrictUserSchema(t: Translate) {
     return z.object({
-        email: z.email(t('auth.validation.invalid_email')),
+        email: z.string().email(t('auth.validation.invalid_email')),
         role: z.enum(['district.admin', 'district.manager', 'district.user']),
     });
 }
+
+export type DistrictUserFormInput = z.infer<ReturnType<typeof createDistrictUserSchema>>;
 
 export function createCustomerSchema(t: Translate) {
     return z.object({
         case_number: z.string().trim().max(255).nullable(),
         type: z.enum(['physical', 'legal']),
-        email: z.email(t('auth.validation.invalid_email')).nullable().or(z.literal('')),
+        email: z.string().email(t('auth.validation.invalid_email')).nullable().or(z.literal('')),
         phone: z.string().trim().max(255).nullable(),
         first_name: z.string().trim().max(255).nullable(),
         last_name: z.string().trim().max(255).nullable(),
@@ -84,6 +86,8 @@ export function createCustomerSchema(t: Translate) {
     });
 }
 
+export type CustomerFormInput = z.infer<ReturnType<typeof createCustomerSchema>>;
+
 export function createDebtSchema(t: Translate) {
     return z.object({
         customer_ulid: z.string().trim().min(1, t('auth.validation.field_required')),
@@ -92,6 +96,8 @@ export function createDebtSchema(t: Translate) {
         description: z.string().trim().nullable(),
     });
 }
+
+export type DebtFormInput = z.infer<ReturnType<typeof createDebtSchema>>;
 
 export function createPaymentSchema(t: Translate) {
     return z.object({
@@ -102,6 +108,8 @@ export function createPaymentSchema(t: Translate) {
         description: z.string().trim().nullable(),
     });
 }
+
+export type PaymentFormInput = z.infer<ReturnType<typeof createPaymentSchema>>;
 
 export async function assignDistrictUser(districtUlid: string, input: DistrictUserInput): Promise<void> {
     await apiClient.post(`/districts/${districtUlid}/users`, input);

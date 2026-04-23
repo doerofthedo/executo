@@ -11,6 +11,22 @@ use Illuminate\Support\Facades\DB;
 
 final readonly class RegisterUserAction
 {
+    public function registerIfNew(RegisterUserData $data): ?User
+    {
+        $existingUser = User::query()
+            ->where('email', $data->email)
+            ->first();
+
+        if ($existingUser !== null) {
+            return null;
+        }
+
+        $user = $this->execute($data);
+        $user->sendEmailVerificationNotification();
+
+        return $user;
+    }
+
     public function execute(RegisterUserData $data): User
     {
         return DB::transaction(function () use ($data): User {

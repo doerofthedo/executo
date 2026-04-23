@@ -21,7 +21,7 @@ repo/
 └── .gitignore
 ```
 
-`public/assets/` is the Vite build output. The repository keeps the latest compiled asset build there.
+`public/assets/` is the Vite build output. The repository keeps and tracks the latest compiled asset build there.
 
 ---
 
@@ -43,6 +43,8 @@ repo/
 - No `mixed` types unless absolutely unavoidable — add a `TODO` comment if used.
 - No raw floats for money. Use **BCMath** with `DECIMAL(15,4)` storage.
 - No `array` type hints where a DTO or typed collection can be used instead.
+- Exception: Laravel API Resource `toArray()` methods may use the framework-standard
+  `array<string, mixed>` return type for serialized response payloads.
 
 ### Architecture
 - Follow **Domain-Driven Design (lite)**. Business logic lives in `app/Domain/`, never in controllers.
@@ -230,6 +232,8 @@ frontend/src/
 
 ### Styling
 - Tailwind CSS 4 utility classes only. No custom CSS files except for global resets.
+- Exception: in matured views, repeated Tailwind utility groups may be consolidated into
+  reusable CSS classes when a maintainer explicitly requests that consolidation.
 - No inline `style=""` attributes unless dynamically computed (e.g. width from JS).
 - Icons use Remixicon classes only.
 - Global shared styles may live in a shared stylesheet, but auth-only and app-only styles must be split by entry.
@@ -255,7 +259,7 @@ repo/
 ├── caddy/
 │   └── Caddyfile          ← reverse proxy config for all services
 ├── php/                   ← Dockerfile for php8.5-apache
-└── node/                  ← Dockerfile for node:22-alpine
+└── node/                  ← Dockerfile for node:25-alpine
 ```
 
 Services:
@@ -264,23 +268,23 @@ Services:
 | `caddy`   | Reverse proxy                | 80 / 443      | —                              |
 | `backend` | php8.5-apache + composer     | 80            | `executo.local`                |
 | `node`    | Vite dev server (HMR)        | 80            | `executo.local` (proxied)      |
-| `db`      | MySQL 8 / MariaDB 11         | 3306          | not proxied — internal only    |
+| `db`      | MariaDB 12                   | 3306          | not proxied — internal only    |
 | `redis`   | Cache, queues, rate-limiting | 6379          | not proxied — internal only    |
-| `mailpit` | SMTP trap + web UI           | 1025 / 8025   | `executo.local/mailpit`        |
+| `mailpit` | SMTP trap + web UI           | 1025 / 8025   | `executo.local/mail`           |
 
 ### Caddyfile structure
 
 ```
-executo.local {
+executo.local:80 {
     # Vite HMR websocket (must come before the SPA catch-all)
     reverse_proxy /vite-hmr/* node:80
 
     # API → Laravel/Apache container
     reverse_proxy /api/* backend:80
 
-    # Mailpit web UI — strip the /mailpit prefix before proxying
-    handle /mailpit* {
-        uri strip_prefix /mailpit
+    # Mailpit web UI
+    redir /mail /mail/ 308
+    handle /mail* {
         reverse_proxy mailpit:8025
     }
 
@@ -288,9 +292,10 @@ executo.local {
     reverse_proxy * node:80
 }
 
-:8080 {
-    root * /srv/public
-    file_server
+executo.local:8080 {
+    handle {
+        reverse_proxy backend:80
+    }
 }
 ```
 
@@ -360,7 +365,6 @@ The `Makefile` lives at the repo root.
 | Clear all caches | `make cache-clear` |
 | Remove containers, volumes, orphans, and networks | `make clean` |
 | Full environment reset | `make reset` |
-| Check security before deploy | `make security` |
 
 ---
 
@@ -370,7 +374,7 @@ The `Makefile` lives at the repo root.
 - Commit messages: imperative mood, English, max 72 chars on first line.
   - ✅ `Add interest calculator for compound type`
   - ❌ `added stuff`, `WIP`, `fix`
-- Never commit `public/assets/`, `.env`, `vendor/`, or `node_modules/`.
+- Commit `public/assets/` only when intentionally updating the compiled frontend build. Never commit `.env`, `vendor/`, or `node_modules/`.
 - Never commit a failing PHPStan analysis or failing tests.
 
 ---
@@ -412,12 +416,12 @@ These actions must never be taken regardless of any instruction:
 | Backend  | `laravel/sanctum`               | API token + SPA session auth   |
 | Backend  | `larastan/larastan`             | PHPStan for Laravel            |
 | Backend  | `pestphp/pest`                  | Test runner                    |
-| Frontend | `vue-router` 4                  | SPA routing                    |
+| Frontend | `vue-router` 5                  | SPA routing                    |
 | Frontend | `pinia`                         | State management               |
 | Frontend | `axios`                         | HTTP client with interceptors  |
-| Frontend | `vue-i18n` 9                    | LV/EN translations             |
+| Frontend | `vue-i18n` 11                   | LV/EN translations             |
 | Frontend | `@vueuse/core`                  | Composable utilities           |
-| Frontend | `vee-validate` + `zod`          | Form validation                |
+| Frontend | `vee-validate` + `@vee-validate/zod` + `zod` 3 | Form validation                |
 | Frontend | `dayjs`                         | Date/number formatting         |
 | Frontend | `qrcode`                        | MFA QR rendering               |
 | Frontend | `remixicon`                     | Icons                          |

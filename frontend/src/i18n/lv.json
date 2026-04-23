@@ -142,6 +142,24 @@
         "date": "Datums",
         "description": "Apraksts"
     },
+    "debt": {
+        "interest_breakdown": {
+            "columns": {
+                "payment_date": "Datums",
+                "payment_amount": "Maksājuma summa",
+                "days_since_last_payment": "Dienas kopš pēdējā maksājuma",
+                "interest_per_day": "Procenti dienā",
+                "interest_accrued": "Uzkrātie procenti",
+                "interest_rollover": "Pārnestie procenti",
+                "interest_total": "Procenti kopā",
+                "interest_paid": "Samaksātie procenti",
+                "principal_paid": "Samaksātā pamatsumma",
+                "remaining_interest": "Atlikušie procenti",
+                "remaining_principal": "Atlikusī pamatsumma",
+                "total_debt": "Parāds kopā"
+            }
+        }
+    },
     "auth": {
         "hero": {
             "eyebrow": "Tiesu izpildītāju darba vide",

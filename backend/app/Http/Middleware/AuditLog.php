@@ -135,6 +135,9 @@ final class AuditLog
     }
 
     /**
+     * TODO: recursive request sanitization must accept and return arbitrary
+     * request payload values after removing sensitive keys.
+     *
      * @param  mixed  $value
      * @return mixed
      */
@@ -157,7 +160,7 @@ final class AuditLog
         return $value;
     }
 
-    private function routeModelUlid(mixed $model): ?string
+    private function routeModelUlid(object|string|null $model): ?string
     {
         return match (true) {
             $model instanceof Customer => $model->ulid,

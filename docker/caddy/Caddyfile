@@ -27,6 +27,11 @@ executo.local:80 {
         reverse_proxy backend:80
     }
 
+    handle /assets/* {
+        root * /srv/public
+        file_server
+    }
+
     redir /mail /mail/ 308
 
     handle /mail* {

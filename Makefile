@@ -12,7 +12,7 @@ PHPSTAN_MEMORY ?= 512M
 
 .DEFAULT_GOAL := help
 
-.PHONY: help dev init-dev build rebuild stop down restart logs logs-app assets-dev assets-build assets-clean migrate migrate-fresh migrate-fresh-seed seed rollback cache-clear cache-build queue-work tinker test test-coverage analyse lint security composer-install composer-update npm-install npm-update clean reset
+.PHONY: help dev init-dev build rebuild stop down restart logs logs-app assets-dev assets-build assets-clean migrate migrate-fresh migrate-fresh-seed seed rollback cache-clear cache-build queue-work tinker test test-coverage analyse lint composer-install composer-update npm-install npm-update clean reset
 
 define run-artisan-if-installed
 	@if [ -f backend/vendor/autoload.php ]; then \
@@ -75,7 +75,7 @@ dev: ## Bootstrap everything: dependencies, assets, containers, migrations, seed
 	@$(COMPOSE) exec -T backend php artisan db:seed --force
 	@echo "[executo] Dev stack is up."
 	@echo "→ App:     http://executo.local"
-	@echo "→ Mailpit: http://executo.local/mailpit"
+	@echo "→ Mailpit: http://executo.local/mail/"
 	@echo "[executo] Attaching to container logs. Press Ctrl+C to stop log tailing."
 	@$(COMPOSE) logs --tail=100 -f
 

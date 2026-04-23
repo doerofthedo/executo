@@ -459,12 +459,32 @@ return new class extends Migration
         };
     }
 
-    private function decimal(mixed $value): string
+    private function decimal(\Stringable|int|float|string|null $value): string
     {
-        return number_format((float) $value, 4, '.', '');
+        $rawValue = $this->nullableString($value) ?? '0';
+        $normalized = str_replace([" ", "\xC2\xA0"], '', $rawValue);
+
+        if (str_contains($normalized, ',') && ! str_contains($normalized, '.')) {
+            $normalized = str_replace(',', '.', $normalized);
+        }
+
+        if (preg_match('/^[+-]?\d+(?:\.\d+)?$/', $normalized) !== 1) {
+            throw new \RuntimeException(sprintf('Invalid legacy decimal value "%s".', $rawValue));
+        }
+
+        $isNegative = str_starts_with($normalized, '-');
+        $absolute = ltrim($normalized, '+-');
+        [$integer, $fraction] = array_pad(explode('.', $absolute, 2), 2, '');
+        $roundingDigit = (int) ($fraction[4] ?? '0');
+        $decimal = $integer . '.' . str_pad(substr($fraction, 0, 4), 4, '0');
+        $rounded = $roundingDigit >= 5
+            ? bcadd($decimal, '0.0001', 4)
+            : bcadd($decimal, '0', 4);
+
+        return $isNegative ? bcsub('0', $rounded, 4) : $rounded;
     }
 
-    private function normalizeDate(mixed $value): ?string
+    private function normalizeDate(\Stringable|int|float|string|null $value): ?string
     {
         $date = $this->nullableString($value);
 
@@ -473,7 +493,7 @@ return new class extends Migration
             : null;
     }
 
-    private function nullableString(mixed $value): ?string
+    private function nullableString(\Stringable|int|float|string|null $value): ?string
     {
         if ($value === null) {
             return null;
