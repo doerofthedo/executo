@@ -148,7 +148,7 @@
     "src": "node_modules/remixicon/fonts/remixicon.eot"
   },
   "node_modules/remixicon/fonts/remixicon.svg": {
-    "file": "assets/remixicon-BTtOSOPh.svg",
+    "file": "icons/remixicon-BTtOSOPh.svg",
     "src": "node_modules/remixicon/fonts/remixicon.svg"
   },
   "node_modules/remixicon/fonts/remixicon.ttf": {
@@ -164,38 +164,12 @@
     "src": "node_modules/remixicon/fonts/remixicon.woff2"
   },
   "src/entries/app.ts": {
-    "file": "js/app-M5UjV06c.js",
+    "file": "js/app-B8dXksMs.js",
     "name": "app",
     "src": "src/entries/app.ts",
     "isEntry": true,
-    "imports": [
-      "src/entries/shared.ts",
-      "src/entries/shared.ts"
-    ],
     "css": [
-      "css/app-CmZPADQk.css"
-    ]
-  },
-  "src/entries/login.ts": {
-    "file": "js/login-CIw__pXW.js",
-    "name": "login",
-    "src": "src/entries/login.ts",
-    "isEntry": true,
-    "imports": [
-      "src/entries/shared.ts",
-      "src/entries/shared.ts"
-    ],
-    "css": [
-      "css/login-x1XGuNl0.css"
-    ]
-  },
-  "src/entries/shared.ts": {
-    "file": "js/shared-CMd6k67G.js",
-    "name": "shared",
-    "src": "src/entries/shared.ts",
-    "isEntry": true,
-    "css": [
-      "css/shared-BCf-7AWU.css"
+      "css/app-9-69KiEO.css"
     ],
     "assets": [
       "fonts/ibm-plex-sans-cyrillic-ext-400-normal-g30qAdWV.woff2",
@@ -238,7 +212,59 @@
       "fonts/remixicon-CZw4FkzQ.woff2",
       "fonts/remixicon-S6an_USy.woff",
       "fonts/remixicon-sqouR8Ox.ttf",
-      "assets/remixicon-BTtOSOPh.svg"
+      "icons/remixicon-BTtOSOPh.svg"
+    ]
+  },
+  "src/entries/login.ts": {
+    "file": "js/login-DQWOwkV8.js",
+    "name": "login",
+    "src": "src/entries/login.ts",
+    "isEntry": true,
+    "css": [
+      "css/login-KFjOeBC8.css"
+    ],
+    "assets": [
+      "fonts/ibm-plex-sans-cyrillic-ext-400-normal-g30qAdWV.woff2",
+      "fonts/ibm-plex-sans-cyrillic-ext-400-normal-Dsrv2Tcn.woff",
+      "fonts/ibm-plex-sans-cyrillic-400-normal-DZqxrq2p.woff2",
+      "fonts/ibm-plex-sans-cyrillic-400-normal-BTotfTJu.woff",
+      "fonts/ibm-plex-sans-greek-400-normal-_efipK4i.woff2",
+      "fonts/ibm-plex-sans-greek-400-normal-D9ESIMu3.woff",
+      "fonts/ibm-plex-sans-vietnamese-400-normal-DG4YqDda.woff2",
+      "fonts/ibm-plex-sans-vietnamese-400-normal-fK1oJ5dG.woff",
+      "fonts/ibm-plex-sans-latin-ext-400-normal-C5H60-Va.woff2",
+      "fonts/ibm-plex-sans-latin-ext-400-normal-RBey6euL.woff",
+      "fonts/ibm-plex-sans-latin-400-normal-CDDApCn2.woff2",
+      "fonts/ibm-plex-sans-latin-400-normal-CYLoc0-x.woff",
+      "fonts/ibm-plex-sans-cyrillic-ext-500-normal-Cs5J6C77.woff2",
+      "fonts/ibm-plex-sans-cyrillic-ext-500-normal-DB5PtV2g.woff",
+      "fonts/ibm-plex-sans-cyrillic-500-normal-CocWQlwt.woff2",
+      "fonts/ibm-plex-sans-cyrillic-500-normal-ByOcLdNv.woff",
+      "fonts/ibm-plex-sans-greek-500-normal-JMMifIXV.woff2",
+      "fonts/ibm-plex-sans-greek-500-normal-CuWXN6rf.woff",
+      "fonts/ibm-plex-sans-vietnamese-500-normal-e4dixQRQ.woff2",
+      "fonts/ibm-plex-sans-vietnamese-500-normal-BEb3_waV.woff",
+      "fonts/ibm-plex-sans-latin-ext-500-normal-DakdToA3.woff2",
+      "fonts/ibm-plex-sans-latin-ext-500-normal-D0aIdm-b.woff",
+      "fonts/ibm-plex-sans-latin-500-normal-6ng42L7E.woff2",
+      "fonts/ibm-plex-sans-latin-500-normal-BgVn5rGT.woff",
+      "fonts/ibm-plex-sans-cyrillic-ext-700-normal-BmRLXWpJ.woff2",
+      "fonts/ibm-plex-sans-cyrillic-ext-700-normal-DCQwxkRk.woff",
+      "fonts/ibm-plex-sans-cyrillic-700-normal-D_uavGvn.woff2",
+      "fonts/ibm-plex-sans-cyrillic-700-normal-RFb1v-CK.woff",
+      "fonts/ibm-plex-sans-greek-700-normal-wyJ6jzdA.woff2",
+      "fonts/ibm-plex-sans-greek-700-normal-CkZN0sRy.woff",
+      "fonts/ibm-plex-sans-vietnamese-700-normal-CkEo6LDy.woff2",
+      "fonts/ibm-plex-sans-vietnamese-700-normal-BV5B8Are.woff",
+      "fonts/ibm-plex-sans-latin-ext-700-normal-aMgXseD4.woff2",
+      "fonts/ibm-plex-sans-latin-ext-700-normal-DZH6Xh-4.woff",
+      "fonts/ibm-plex-sans-latin-700-normal-Bxkt5Cjx.woff2",
+      "fonts/ibm-plex-sans-latin-700-normal-Bth3BMcD.woff",
+      "fonts/remixicon-B25hvfAs.eot",
+      "fonts/remixicon-CZw4FkzQ.woff2",
+      "fonts/remixicon-S6an_USy.woff",
+      "fonts/remixicon-sqouR8Ox.ttf",
+      "icons/remixicon-BTtOSOPh.svg"
     ]
   }
 }

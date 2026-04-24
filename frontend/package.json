@@ -5,7 +5,7 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "build": "vite build && node ./scripts/strip-css-banner.mjs",
+        "build": "node ./scripts/build-assets.ts",
         "preview": "vite preview"
     },
     "dependencies": {
@@ -20,7 +20,7 @@
         "remixicon": "^4.9",
         "vee-validate": "^4.15",
         "vue": "^3.5",
-        "vue-i18n": "^11.3",
+        "vue-i18n": "^11.4.0",
         "vue-router": "^5.0",
         "zod": "^3.25"
     },

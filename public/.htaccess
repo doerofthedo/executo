@@ -1,6 +1,8 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
+    RewriteRule ^assets/manifest\.json$ - [R=404,L]
+
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 

@@ -3,9 +3,31 @@ import tailwindcss from '@tailwindcss/vite';
 import vue from '@vitejs/plugin-vue';
 import { fileURLToPath, URL } from 'node:url';
 import { resolve } from 'node:path';
+import { splitLoginCss } from './scripts/vite-plugin-split-css';
 
-export default defineConfig({
-    plugins: [vue(), tailwindcss()],
+const buildTarget = process.env.EXECUTO_BUILD_TARGET;
+const isSingleEntryBuild = buildTarget === 'app' || buildTarget === 'login';
+const appInput = resolve(__dirname, 'src/entries/app.ts');
+const loginInput = resolve(__dirname, 'src/entries/login.ts');
+
+function buildInput(): Record<string, string> {
+    if (buildTarget === 'app') {
+        return { app: appInput };
+    }
+
+    if (buildTarget === 'login') {
+        return { login: loginInput };
+    }
+
+    return {
+        app: appInput,
+        login: loginInput,
+    };
+}
+
+export default defineConfig(({ command }) => ({
+    base: command === 'build' ? '/assets/' : '/',
+    plugins: [vue(), tailwindcss(), splitLoginCss()],
     resolve: {
         alias: {
             '@': fileURLToPath(new URL('./src', import.meta.url)),
@@ -21,15 +43,12 @@ export default defineConfig({
     },
     build: {
         outDir: '../public/assets',
-        emptyOutDir: true,
+        emptyOutDir: process.env.EXECUTO_BUILD_EMPTY !== 'false',
         manifest: 'manifest.json',
         rollupOptions: {
-            input: {
-                shared: resolve(__dirname, 'src/entries/shared.ts'),
-                app: resolve(__dirname, 'src/entries/app.ts'),
-                login: resolve(__dirname, 'src/entries/login.ts'),
-            },
+            input: buildInput(),
             output: {
+                ...(isSingleEntryBuild ? { codeSplitting: false } : {}),
                 entryFileNames: 'js/[name]-[hash].js',
                 chunkFileNames: 'js/[name]-[hash].js',
                 assetFileNames: (assetInfo) => {
@@ -41,9 +60,13 @@ export default defineConfig({
                         return 'fonts/[name]-[hash][extname]';
                     }
 
+                    if (assetInfo.name !== undefined && /\.svg$/i.test(assetInfo.name)) {
+                        return 'icons/[name]-[hash][extname]';
+                    }
+
                     return 'assets/[name]-[hash][extname]';
                 },
             },
         },
     },
-});
+}));

@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { useAuthStore } from '@/stores/auth';
-import { router } from '@/router';
 
 export const apiClient = axios.create({
     baseURL: '/api/v1',
@@ -24,7 +23,10 @@ apiClient.interceptors.response.use(
             const authStore = useAuthStore();
 
             authStore.clearSession();
-            await router.push({ name: 'login' });
+
+            if (window.location.pathname !== '/login') {
+                window.location.assign('/login');
+            }
         }
 
         return Promise.reject(error);

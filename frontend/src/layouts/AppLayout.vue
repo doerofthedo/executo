@@ -193,6 +193,6 @@ onBeforeUnmount(() => {
 async function onSignOut(): Promise<void> {
     closeAccountMenu();
     await authStore.signOut();
-    await router.push({ name: 'login' });
+    window.location.assign('/login');
 }
 </script>

@@ -120,6 +120,18 @@ const savedMessage = ref('');
 const formError = ref('');
 const dateFormatOptions = ['DD.MM.YYYY.', 'DD.MM.YYYY', 'DD-MM-YYYY', 'DD-MMM-YYYY', 'YYYY-MM-DD'];
 
+function normalizeTimezone(value: string | null): UserPreferencesInput['timezone'] {
+    return value === 'UTC' ? 'UTC' : 'Europe/Riga';
+}
+
+function normalizeDecimalSeparator(value: string | null): UserPreferencesInput['decimal_separator'] {
+    return value === '.' ? '.' : ',';
+}
+
+function normalizeThousandSeparator(value: string | null): UserPreferencesInput['thousand_separator'] {
+    return value === '.' || value === ',' || value === "'" ? value : ' ';
+}
+
 const preferencesSchema = computed(() => toTypedSchema(createUserPreferencesSchema(t)));
 
 const { errors, defineField, handleSubmit, isSubmitting, resetForm } = useForm<UserPreferencesInput>({
@@ -154,10 +166,10 @@ watch(
             values: {
                 default_district_ulid: profile.preferences.default_district_ulid,
                 locale: (profile.preferences.locale === 'en' ? 'en' : 'lv'),
-                timezone: profile.preferences.timezone ?? 'Europe/Riga',
+                timezone: normalizeTimezone(profile.preferences.timezone),
                 date_format: profile.preferences.date_format ?? 'DD.MM.YYYY.',
-                decimal_separator: profile.preferences.decimal_separator === '.' ? '.' : ',',
-                thousand_separator: profile.preferences.thousand_separator ?? ' ',
+                decimal_separator: normalizeDecimalSeparator(profile.preferences.decimal_separator),
+                thousand_separator: normalizeThousandSeparator(profile.preferences.thousand_separator),
                 table_page_size: profile.preferences.table_page_size ?? 25,
             },
         });
@@ -175,10 +187,10 @@ const onSubmit = handleSubmit(async (values) => {
     const currentValues: UserPreferencesInput = {
         default_district_ulid: props.profile.preferences.default_district_ulid,
         locale: (props.profile.preferences.locale === 'en' ? 'en' : 'lv'),
-        timezone: props.profile.preferences.timezone ?? 'Europe/Riga',
+        timezone: normalizeTimezone(props.profile.preferences.timezone),
         date_format: props.profile.preferences.date_format ?? 'DD.MM.YYYY.',
-        decimal_separator: props.profile.preferences.decimal_separator === '.' ? '.' : ',',
-        thousand_separator: props.profile.preferences.thousand_separator ?? ' ',
+        decimal_separator: normalizeDecimalSeparator(props.profile.preferences.decimal_separator),
+        thousand_separator: normalizeThousandSeparator(props.profile.preferences.thousand_separator),
         table_page_size: props.profile.preferences.table_page_size ?? 25,
     };
 

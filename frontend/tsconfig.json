@@ -8,8 +8,14 @@
         "resolveJsonModule": true,
         "isolatedModules": true,
         "esModuleInterop": true,
+        "allowImportingTsExtensions": true,
+        "ignoreDeprecations": "6.0",
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["src/*"]
+        },
         "lib": ["ES2022", "DOM", "DOM.Iterable"],
-        "types": ["node"]
+        "types": ["node", "vite/client"]
     },
-    "include": ["src/**/*.ts", "src/**/*.vue", "vite.config.ts"]
+    "include": ["src/**/*.ts", "src/**/*.vue", "scripts/**/*.ts", "vite.config.ts"]
 }

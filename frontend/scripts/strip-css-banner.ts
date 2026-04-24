@@ -1,12 +1,13 @@
 import { readdir, readFile, writeFile } from 'node:fs/promises';
-import { fileURLToPath } from 'node:url';
-import path from 'node:path';
+import { join } from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import type { Dirent } from 'node:fs';
 
 const cssDir = fileURLToPath(new URL('../../public/assets/css', import.meta.url));
 const bannerPattern = /^\/\*! tailwindcss v[\d.]+ \| MIT License \| https:\/\/tailwindcss\.com \*\/\s*/u;
 
-async function main() {
-    let entries = [];
+export async function stripCssBanner(): Promise<void> {
+    let entries: Dirent[] = [];
 
     try {
         entries = await readdir(cssDir, { withFileTypes: true });
@@ -18,7 +19,7 @@ async function main() {
         entries
             .filter((entry) => entry.isFile() && entry.name.endsWith('.css'))
             .map(async (entry) => {
-                const filePath = path.join(cssDir, entry.name);
+                const filePath = join(cssDir, entry.name);
                 const source = await readFile(filePath, 'utf8');
                 const updated = source.replace(bannerPattern, '');
 
@@ -29,4 +30,6 @@ async function main() {
     );
 }
 
-await main();
+if (process.argv[1] !== undefined && import.meta.url === pathToFileURL(process.argv[1]).href) {
+    await stripCssBanner();
+}

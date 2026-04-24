@@ -27,6 +27,10 @@ executo.local:80 {
         reverse_proxy backend:80
     }
 
+    handle /assets/manifest.json {
+        respond 404
+    }
+
     handle /assets/* {
         root * /srv/public
         file_server
@@ -43,7 +47,11 @@ executo.local:80 {
     }
 }
 
-executo.local:8080 {
+http://executo.local:8080 {
+    handle /assets/manifest.json {
+        respond 404
+    }
+
     handle {
         reverse_proxy backend:80
     }
