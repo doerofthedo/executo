@@ -88,7 +88,6 @@
 </template>
 
 <script setup lang="ts">
-import axios from 'axios';
 import { useForm } from 'vee-validate';
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -97,6 +96,7 @@ import { useAuthStore } from '@/stores/auth';
 import { usePreferencesStore } from '@/stores/preferences';
 import type { UserProfile, UserPreferencesInput } from '@/api/users';
 import { createUserPreferencesSchema, updateUserPreferences } from '@/api/users';
+import { isApiError } from '@/api/client';
 import { toTypedSchema } from '@vee-validate/zod';
 
 const props = withDefaults(defineProps<{
@@ -219,7 +219,7 @@ const onSubmit = handleSubmit(async (values) => {
         savedMessage.value = t('preferences.saved');
         emit('saved', updatedProfile);
     } catch (error) {
-        if (axios.isAxiosError(error) && error.response?.status === 422) {
+        if (isApiError(error) && error.response?.status === 422) {
             formError.value = typeof error.response.data?.message === 'string'
                 ? error.response.data.message
                 : t('preferences.save_error');

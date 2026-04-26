@@ -119,3 +119,13 @@ export async function updateUserPreferences(userUlid: string, input: UserPrefere
 
     return 'data' in response.data ? response.data.data : response.data;
 }
+
+export async function updateUserProfile(userUlid: string, input: { name: string; surname: string }): Promise<UserProfile> {
+    const response = await apiClient.patch<{ data: UserProfile } | UserProfile>(`/users/${userUlid}`, input);
+
+    return 'data' in response.data ? response.data.data : response.data;
+}
+
+export async function saveDefaultDistrict(userUlid: string, districtUlid: string): Promise<void> {
+    await apiClient.patch(`/users/${userUlid}`, { default_district_ulid: districtUlid });
+}

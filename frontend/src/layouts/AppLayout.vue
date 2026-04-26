@@ -15,6 +15,26 @@
                             <a v-if="showMailpit" href="/mail/" class="lex-button lex-button-secondary">
                                 {{ t('app.mailpit') }}
                             </a>
+
+                            <div ref="notifRoot" class="lex-notif-bell">
+                                <button
+                                    type="button"
+                                    class="lex-button lex-button-secondary lex-notif-trigger"
+                                    :aria-label="t('notifications.menu_label')"
+                                    :aria-expanded="isNotifOpen ? 'true' : 'false'"
+                                    @click="toggleNotifDropdown"
+                                >
+                                    <i class="ri-notification-3-line" aria-hidden="true" />
+                                    <span v-if="notificationsStore.unreadCount > 0" class="lex-notif-badge">
+                                        {{ notificationsStore.unreadCount > 99 ? '99+' : notificationsStore.unreadCount }}
+                                    </span>
+                                </button>
+
+                                <NotificationDropdown
+                                    v-if="isNotifOpen"
+                                    @close="isNotifOpen = false"
+                                />
+                            </div>
                         </div>
                         <div ref="accountMenuRoot" class="lex-app-account-menu">
                             <button
@@ -111,6 +131,9 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { RouterLink, useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useBreadcrumbStore } from '@/stores/breadcrumb';
+import NotificationDropdown from '@/components/ui/NotificationDropdown.vue';
 
 const { t } = useI18n();
 const route = useRoute();
@@ -121,26 +144,53 @@ const isAccountMenuOpen = ref(false);
 const accountMenuRoot = ref<HTMLElement | null>(null);
 const menuTrigger = ref<HTMLButtonElement | null>(null);
 const firstMenuItem = ref<HTMLButtonElement | null>(null);
+const notificationsStore = useNotificationsStore();
+const breadcrumbStore = useBreadcrumbStore();
+const isNotifOpen = ref(false);
+const notifRoot = ref<HTMLElement | null>(null);
 
 const displayName = computed(() => [authStore.user?.name, authStore.user?.surname].filter((value): value is string => typeof value === 'string' && value !== '').join(' '));
-const breadcrumbs = computed(() => {
-    const items: Array<{ label: string; to?: { name: 'dashboard' | 'user-management'; params?: { district: string } } }> = [
-        { label: t('navigation.dashboard'), to: { name: 'dashboard' } },
-    ];
+
+type BreadcrumbItem = { label: string; to?: object };
+
+const breadcrumbs = computed((): BreadcrumbItem[] => {
+    const items: BreadcrumbItem[] = [{ label: t('navigation.dashboard'), to: { name: 'dashboard' } }];
+    const districtParam = String(route.params.district ?? '');
+    const districtLabel = breadcrumbStore.districtLabel ?? districtParam;
 
     if (route.name === 'profile') {
         items.push({ label: t('navigation.profile') });
     } else if (route.name === 'preferences') {
         items.push({ label: t('navigation.preferences') });
     } else if (route.name === 'district') {
-        items.push({ label: String(route.params.district ?? '') });
+        items.push({ label: districtLabel });
+    } else if (route.name === 'customers' || route.name === 'customer-create') {
+        items.push({ label: districtLabel, to: { name: 'district', params: { district: districtParam } } });
+        items.push({ label: t('navigation.customers') });
+    } else if (route.name === 'customer') {
+        items.push({ label: districtLabel, to: { name: 'district', params: { district: districtParam } } });
+        items.push({ label: t('navigation.customers'), to: { name: 'customers', params: { district: districtParam } } });
+        items.push({ label: breadcrumbStore.customerLabel ?? '...' });
+    } else if (route.name === 'debt') {
+        const customerParam = String(route.params.customer ?? '');
+        items.push({ label: districtLabel, to: { name: 'district', params: { district: districtParam } } });
+        items.push({ label: t('navigation.customers'), to: { name: 'customers', params: { district: districtParam } } });
+        items.push({ label: breadcrumbStore.customerLabel ?? '...', to: { name: 'customer', params: { district: districtParam, customer: customerParam } } });
+        items.push({ label: breadcrumbStore.debtLabel ?? t('navigation.debt') });
+    } else if (route.name === 'payments') {
+        const customerParam = String(route.params.customer ?? '');
+        const debtParam = String(route.params.debt ?? '');
+        items.push({ label: districtLabel, to: { name: 'district', params: { district: districtParam } } });
+        items.push({ label: t('navigation.customers'), to: { name: 'customers', params: { district: districtParam } } });
+        items.push({ label: breadcrumbStore.customerLabel ?? '...', to: { name: 'customer', params: { district: districtParam, customer: customerParam } } });
+        items.push({ label: breadcrumbStore.debtLabel ?? t('navigation.debt'), to: { name: 'debt', params: { district: districtParam, customer: customerParam, debt: debtParam } } });
+        items.push({ label: t('navigation.payments') });
     } else if (route.name === 'user-management') {
-        items.push({ label: String(route.params.district ?? '') });
+        items.push({ label: districtLabel, to: { name: 'district', params: { district: districtParam } } });
         items.push({ label: t('navigation.user_management') });
     } else if (route.name === 'district-user-create') {
-        const district = String(route.params.district ?? '');
-        items.push({ label: district });
-        items.push({ label: t('navigation.user_management'), to: { name: 'user-management', params: { district } } });
+        items.push({ label: districtLabel, to: { name: 'district', params: { district: districtParam } } });
+        items.push({ label: t('navigation.user_management'), to: { name: 'user-management', params: { district: districtParam } } });
         items.push({ label: t('user_management.invite_title') });
     }
 
@@ -170,6 +220,10 @@ async function navigateToAccountRoute(name: 'profile' | 'preferences'): Promise<
     await router.push({ name });
 }
 
+function toggleNotifDropdown(): void {
+    isNotifOpen.value = !isNotifOpen.value;
+}
+
 function onDocumentPointerDown(event: MouseEvent): void {
     const target = event.target;
 
@@ -180,14 +234,20 @@ function onDocumentPointerDown(event: MouseEvent): void {
     if (accountMenuRoot.value?.contains(target) !== true) {
         closeAccountMenu();
     }
+
+    if (notifRoot.value?.contains(target) !== true) {
+        isNotifOpen.value = false;
+    }
 }
 
 onMounted(() => {
     document.addEventListener('mousedown', onDocumentPointerDown);
+    notificationsStore.startPolling();
 });
 
 onBeforeUnmount(() => {
     document.removeEventListener('mousedown', onDocumentPointerDown);
+    notificationsStore.stopPolling();
 });
 
 async function onSignOut(): Promise<void> {

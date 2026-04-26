@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Auth\Actions;
 
+use App\Domain\Auth\Events\UserProfileUpdated;
 use App\Models\District;
 use App\Models\User;
 use App\Models\UserPreference;
@@ -28,6 +29,8 @@ final readonly class UpdateUserProfileAction
             abort(422, 'No changes submitted.');
         }
 
+        $oldName = trim(($user->name ?? '') . ' ' . ($user->surname ?? ''));
+
         DB::transaction(function () use ($payload, $user): void {
             $this->updateUser($user, $payload);
             $this->updatePreferences($user, $payload);
@@ -37,6 +40,12 @@ final readonly class UpdateUserProfileAction
 
         if ($freshUser === null) {
             throw new NotFoundHttpException();
+        }
+
+        $newName = trim(($freshUser->name ?? '') . ' ' . ($freshUser->surname ?? ''));
+
+        if ($oldName !== $newName) {
+            UserProfileUpdated::dispatch($freshUser, $oldName, $newName);
         }
 
         return $freshUser;

@@ -32,3 +32,7 @@ apiClient.interceptors.response.use(
         return Promise.reject(error);
     },
 );
+
+export function isApiError(error: unknown): error is import('axios').AxiosError<any, any> {
+    return axios.isAxiosError(error);
+}

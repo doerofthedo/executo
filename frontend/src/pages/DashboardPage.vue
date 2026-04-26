@@ -94,16 +94,7 @@
                         <h2 class="lex-page-title lex-dashboard-section-title">{{ t('dashboard.quick_actions_title') }}</h2>
                     </div>
 
-                    <div v-if="effectiveDefaultDistrict === null && districtCards.length > 1" class="lex-dashboard-empty">
-                        <p class="lex-page-copy lex-page-copy-full">{{ t('dashboard.default_district_missing') }}</p>
-                        <div class="lex-section-actions">
-                            <RouterLink :to="{ name: 'preferences' }" class="lex-button lex-button-secondary">
-                                {{ t('dashboard.open_preferences') }}
-                            </RouterLink>
-                        </div>
-                    </div>
-
-                    <div v-else-if="effectiveDefaultDistrict === null" class="lex-dashboard-empty">
+                    <div v-if="effectiveDefaultDistrict === null" class="lex-dashboard-empty">
                         {{ t('dashboard.no_districts') }}
                     </div>
 
@@ -161,6 +152,7 @@ import { useI18n } from 'vue-i18n';
 import { RouterLink } from 'vue-router';
 import type { DashboardDistrictCard, DashboardStats } from '@/api/dashboard';
 import { getDashboardStats } from '@/api/dashboard';
+import { saveDefaultDistrict } from '@/api/users';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { useAuthStore } from '@/stores/auth';
 import { usePreferencesStore } from '@/stores/preferences';
@@ -227,18 +219,16 @@ const heroStats = computed(() => [
 const districtCards = computed(() => {
     return [...stats.value.data].sort((left, right) => left.district.number - right.district.number);
 });
+const validDistrictCards = computed(() => districtCards.value.filter((card) => !card.district.disabled));
 const effectiveDefaultDistrict = computed(() => {
-    const preferredDistrictUlid = authStore.user?.default_district_ulid ?? null;
+    const preferredUlid = authStore.user?.default_district_ulid ?? null;
 
-    if (preferredDistrictUlid !== null) {
-        return districtCards.value.find((card) => card.district.ulid === preferredDistrictUlid) ?? null;
+    if (preferredUlid !== null) {
+        const preferred = validDistrictCards.value.find((card) => card.district.ulid === preferredUlid);
+        if (preferred) return preferred;
     }
 
-    if (districtCards.value.length === 1) {
-        return districtCards.value[0];
-    }
-
-    return null;
+    return validDistrictCards.value[0] ?? null;
 });
 
 function districtLabel(card: DashboardDistrictCard): string {
@@ -261,6 +251,22 @@ onMounted(async () => {
 
     try {
         stats.value = await getDashboardStats();
+
+        const user = authStore.user;
+        const preferredUlid = user?.default_district_ulid ?? null;
+        const isPreferredValid = preferredUlid !== null
+            && validDistrictCards.value.some((card) => card.district.ulid === preferredUlid);
+
+        if (!isPreferredValid && effectiveDefaultDistrict.value !== null && user?.ulid) {
+            const newUlid = effectiveDefaultDistrict.value.district.ulid;
+
+            try {
+                await saveDefaultDistrict(user.ulid, newUlid);
+                user.default_district_ulid = newUlid;
+            } catch {
+                // silent — will retry next load
+            }
+        }
     } catch {
         loadError.value = t('dashboard.load_error');
     } finally {

@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\V1\DistrictUserController;
 use App\Http\Controllers\Api\V1\DebtController;
 use App\Http\Controllers\Api\V1\PaymentController;
 use App\Http\Controllers\Api\V1\CustomerController;
+use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\Auth\AuthSessionController;
 use App\Http\Controllers\Api\V1\Auth\CurrentUserController;
@@ -130,6 +131,15 @@ Route::post('/auth/email/verify-token', [EmailVerificationController::class, 've
 Route::middleware(['auth:sanctum', 'district.scope'])->group(static function (): void {
     Route::get('/auth/me', CurrentUserController::class)
         ->name('api.v1.auth.me');
+
+    Route::get('/notifications', [NotificationController::class, 'index'])
+        ->name('api.v1.notifications.index');
+
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markRead'])
+        ->name('api.v1.notifications.read');
+
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead'])
+        ->name('api.v1.notifications.read-all');
 
     Route::post('/auth/logout', [AuthSessionController::class, 'destroy'])
         ->name('api.v1.auth.logout');

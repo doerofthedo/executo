@@ -173,11 +173,11 @@
 </template>
 
 <script setup lang="ts">
-import axios from 'axios';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 import { getDashboardStats, type DashboardDistrictCard } from '@/api/dashboard';
+import { isApiError } from '@/api/client';
 import {
     getDistrictUsers,
     inviteDistrictUser,
@@ -363,7 +363,7 @@ async function loadUsers(): Promise<void> {
     try {
         users.value = await getDistrictUsers(selectedDistrictUlid.value);
     } catch (error) {
-        loadError.value = axios.isAxiosError(error) && error.response?.status === 403
+        loadError.value = isApiError(error) && error.response?.status === 403
             ? t('user_management.forbidden')
             : t('user_management.load_error');
         users.value = [];
@@ -427,7 +427,7 @@ async function confirmRoleChange(): Promise<void> {
         cancelEditRole(updatedUser.ulid);
         closeRoleChangeConfirmation();
     } catch (error) {
-        loadError.value = axios.isAxiosError(error) && typeof error.response?.data?.message === 'string'
+        loadError.value = isApiError(error) && typeof error.response?.data?.message === 'string'
             ? error.response.data.message
             : t('user_management.role_save_error');
     } finally {
@@ -462,7 +462,7 @@ async function confirmRemoveUser(): Promise<void> {
         flashMessage.value = t('user_management.user_removed');
         closeRemoveConfirmation();
     } catch (error) {
-        loadError.value = axios.isAxiosError(error) && typeof error.response?.data?.message === 'string'
+        loadError.value = isApiError(error) && typeof error.response?.data?.message === 'string'
             ? error.response.data.message
             : t('user_management.remove_error');
     } finally {
@@ -487,7 +487,7 @@ async function submitInvite(payload: DistrictUserFormInput): Promise<void> {
         flashMessage.value = t('user_management.invite_success');
         closeInviteModal();
     } catch (error) {
-        inviteError.value = axios.isAxiosError(error) && typeof error.response?.data?.message === 'string'
+        inviteError.value = isApiError(error) && typeof error.response?.data?.message === 'string'
             ? error.response.data.message
             : t('user_management.invite_error');
     } finally {

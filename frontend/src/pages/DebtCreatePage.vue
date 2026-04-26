@@ -51,12 +51,12 @@
 </template>
 
 <script setup lang="ts">
-import axios from 'axios';
 import { useForm } from 'vee-validate';
 import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 import { createDebt, createDebtSchema, fetchDistrictCustomers, type CustomerOption, type DebtFormInput } from '@/api/operations';
+import { isApiError } from '@/api/client';
 import { toTypedSchema } from '@vee-validate/zod';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { useAuthStore } from '@/stores/auth';
@@ -111,7 +111,7 @@ const onSubmit = handleSubmit(async (values) => {
         });
         await router.push({ name: 'dashboard' });
     } catch (error) {
-        formError.value = axios.isAxiosError(error) && typeof error.response?.data?.message === 'string'
+        formError.value = isApiError(error) && typeof error.response?.data?.message === 'string'
             ? error.response.data.message
             : t('operations.save_error');
     }

@@ -89,11 +89,11 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
-import axios from 'axios';
 import { useForm } from 'vee-validate';
 import { useI18n } from 'vue-i18n';
 import { RouterLink, useRoute } from 'vue-router';
 import { createRegisterSchema, register, requestEmailVerification, verifyEmail, verifyEmailToken, type RegisterInput } from '@/api/auth';
+import { isApiError } from '@/api/client';
 import { toTypedSchema } from '@vee-validate/zod';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 import { useAuthStore } from '@/stores/auth';
@@ -148,7 +148,7 @@ const onRegister = handleSubmit(async (values) => {
         submittedEmail.value = payload.email;
         infoMessage.value = t('auth.register.success');
     } catch (error: unknown) {
-        if (axios.isAxiosError(error) && error.response?.status === 422 && typeof error.response.data === 'object' && error.response.data !== null && 'errors' in error.response.data) {
+        if (isApiError(error) && error.response?.status === 422 && typeof error.response.data === 'object' && error.response.data !== null && 'errors' in error.response.data) {
             const responseErrors = error.response.data.errors as Record<string, string[]>;
             messages.value = Object.values(responseErrors).flat();
             return;

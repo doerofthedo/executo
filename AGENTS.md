@@ -187,19 +187,17 @@ backend/app/
 - Use dedicated Vite entry files for each shell:
   - `frontend/src/entries/app.ts` for authenticated application assets
   - `frontend/src/entries/login.ts` for unauthenticated authentication assets
-  - `frontend/src/entries/shared.ts` for shared bootstrap and shared styles used by both shells
 - Auth-only styles and code must not be bundled into the authenticated entry by default.
 - App-only styles and code must not be bundled into the unauthenticated entry by default.
-- The production build output in `public/assets/` must contain exactly three logical bundles for both JS and CSS:
+- The production build output in `public/assets/` must contain exactly two logical bundles for both JS and CSS:
   - `app`
   - `login`
-  - `shared`
 - Production asset filenames must include content hashes.
 
 ### Directory Reference
 ```
 frontend/src/
-├── entries/      ← dedicated Vite entry files for app, login, and shared bundles
+├── entries/      ← dedicated Vite entry files for app and login bundles
 ├── api/          ← typed axios client + per-domain API functions
 ├── components/
 │   ├── domain/   ← feature-specific components
@@ -232,8 +230,9 @@ frontend/src/
 
 ### Styling
 - Tailwind CSS 4 utility classes only. No custom CSS files except for global resets.
-- Exception: in matured views, repeated Tailwind utility groups may be consolidated into
-  reusable CSS classes when a maintainer explicitly requests that consolidation.
+- Exception: when views and components are mature enough, consolidated reusable CSS classes
+  (e.g. design-system component selectors) are permitted, but only at the project owner's
+  explicit discretion. Such classes should live in a single stylesheet (e.g. `app.css`).
 - No inline `style=""` attributes unless dynamically computed (e.g. width from JS).
 - Icons use Remixicon classes only.
 - Global shared styles may live in a shared stylesheet, but auth-only and app-only styles must be split by entry.

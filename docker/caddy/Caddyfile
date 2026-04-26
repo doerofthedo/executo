@@ -8,10 +8,15 @@ executo.local:80 {
         format filter {
             wrap console
             fields {
-                request>headers delete
-                resp_headers delete
-                duration delete
-                size delete
+                request>headers   delete
+                request>remote_port delete
+                request>client_ip delete
+                request>host      delete
+                resp_headers      delete
+                duration          delete
+                size              delete
+                bytes_read        delete
+                user_id           delete
             }
         }
     }
@@ -25,10 +30,6 @@ executo.local:80 {
 
     handle /api/* {
         reverse_proxy backend:80
-    }
-
-    handle /assets/manifest.json {
-        respond 404
     }
 
     handle /assets/* {
@@ -48,10 +49,6 @@ executo.local:80 {
 }
 
 http://executo.local:8080 {
-    handle /assets/manifest.json {
-        respond 404
-    }
-
     handle {
         reverse_proxy backend:80
     }

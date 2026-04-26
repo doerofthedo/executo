@@ -42,7 +42,7 @@ export default defineConfig(({ command }) => ({
         },
     },
     build: {
-        outDir: '../public/assets',
+        outDir: './dist',
         emptyOutDir: process.env.EXECUTO_BUILD_EMPTY !== 'false',
         manifest: 'manifest.json',
         rollupOptions: {

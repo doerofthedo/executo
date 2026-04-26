@@ -1,17 +1,17 @@
 /backend/vendor/
-/backend/.env
 /backend/storage/
+/backend/.env
 /backend/bootstrap/cache/*
 !/backend/bootstrap/cache/.gitkeep
 /backend/.phpunit.result.cache
 
 /frontend/node_modules/
 /frontend/dist/
-
-/.idea/
-/.vscode/
-/.DS_Store
+!/frontend/dist/manifest.json
 
 /data/export.json
 /old/*
+
+/.vscode/
+/.claude/
 /.codex

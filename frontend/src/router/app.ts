@@ -1,10 +1,15 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import type { Component } from 'vue';
 import CustomerCreatePage from '@/pages/CustomerCreatePage.vue';
+import CustomerDetailPage from '@/pages/CustomerDetailPage.vue';
+import CustomerListPage from '@/pages/CustomerListPage.vue';
 import DebtCreatePage from '@/pages/DebtCreatePage.vue';
+import DebtDetailPage from '@/pages/DebtDetailPage.vue';
 import DashboardPage from '@/pages/DashboardPage.vue';
+import DistrictPage from '@/pages/DistrictPage.vue';
 import DistrictUserCreatePage from '@/pages/DistrictUserCreatePage.vue';
 import PaymentCreatePage from '@/pages/PaymentCreatePage.vue';
+import PaymentListPage from '@/pages/PaymentListPage.vue';
 import PreferencesPage from '@/pages/PreferencesPage.vue';
 import ProfilePage from '@/pages/ProfilePage.vue';
 import UserManagementPage from '@/pages/UserManagementPage.vue';
@@ -35,12 +40,32 @@ export const appRouter = createRouter({
         {
             path: '/districts/:district',
             name: 'district',
-            component: DashboardPage,
+            component: DistrictPage,
+        },
+        {
+            path: '/districts/:district/customers',
+            name: 'customers',
+            component: CustomerListPage,
         },
         {
             path: '/districts/:district/customers/create',
             name: 'customer-create',
             component: CustomerCreatePage,
+        },
+        {
+            path: '/districts/:district/customers/:customer',
+            name: 'customer',
+            component: CustomerDetailPage,
+        },
+        {
+            path: '/districts/:district/customers/:customer/debts/:debt',
+            name: 'debt',
+            component: DebtDetailPage,
+        },
+        {
+            path: '/districts/:district/customers/:customer/debts/:debt/payments',
+            name: 'payments',
+            component: PaymentListPage,
         },
         {
             path: '/districts/:district/debts/create',
