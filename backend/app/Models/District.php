@@ -37,7 +37,7 @@ final class District extends Model
 
     protected static function booted(): void
     {
-        static::creating(static fn (self $district): string => $district->ulid ??= (string) Str::ulid());
+        static::creating(static fn(self $district): string => $district->ulid ??= (string) Str::ulid());
 
         static::updated(static function (self $district): void {
             if (! $district->wasChanged('disabled') || ! $district->disabled) {
@@ -59,7 +59,7 @@ final class District extends Model
             $users = $users->unique('id');
 
             $users
-                ->reject(static fn (User $user): bool => $user->hasRole('app.admin'))
+                ->reject(static fn(User $user): bool => $user->hasRole('app.admin'))
                 ->each(static function (User $user): void {
                     if ($user->disabled) {
                         return;
@@ -76,11 +76,11 @@ final class District extends Model
     }
 
     /**
-     * @return HasMany<Customer, $this>
+     * @return HasMany<Debtor, $this>
      */
-    public function customers(): HasMany
+    public function debtors(): HasMany
     {
-        return $this->hasMany(Customer::class);
+        return $this->hasMany(Debtor::class);
     }
 
     /**

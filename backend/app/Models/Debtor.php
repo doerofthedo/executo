@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
-final class Customer extends Model
+final class Debtor extends Model
 {
     use SoftDeletes;
 
@@ -40,7 +40,7 @@ final class Customer extends Model
 
     protected static function booted(): void
     {
-        static::creating(static fn (self $customer): string => $customer->ulid ??= (string) Str::ulid());
+        static::creating(static fn(self $debtor): string => $debtor->ulid ??= (string) Str::ulid());
     }
 
     public function getRouteKeyName(): string

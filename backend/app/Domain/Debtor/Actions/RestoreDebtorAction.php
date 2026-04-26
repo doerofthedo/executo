@@ -2,23 +2,23 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Customer\Actions;
+namespace App\Domain\Debtor\Actions;
 
-use App\Models\Customer;
+use App\Models\Debtor;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-final readonly class RestoreCustomerAction
+final readonly class RestoreDebtorAction
 {
-    public function execute(Customer $customer): Customer
+    public function execute(Debtor $debtor): Debtor
     {
-        $customer->restore();
+        $debtor->restore();
 
-        $freshCustomer = $customer->fresh();
+        $freshDebtor = $debtor->fresh();
 
-        if ($freshCustomer === null) {
+        if ($freshDebtor === null) {
             throw new NotFoundHttpException();
         }
 
-        return $freshCustomer;
+        return $freshDebtor;
     }
 }

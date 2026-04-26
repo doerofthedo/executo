@@ -20,7 +20,7 @@ final readonly class UpdatePaymentAction
             $payment->save();
         }
 
-        $freshPayment = $payment->fresh(['customer', 'debt']);
+        $freshPayment = $payment->fresh(['debtor', 'debt']);
 
         if ($freshPayment === null) {
             throw new NotFoundHttpException();

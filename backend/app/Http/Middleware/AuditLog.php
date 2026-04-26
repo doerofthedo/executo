@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
-use App\Models\Customer;
+use App\Models\Debtor;
 use App\Models\Debt;
 use App\Models\District;
 use App\Models\Payment;
@@ -55,7 +55,7 @@ final class AuditLog
             'status_code' => $statusCode,
             'outcome' => $outcome,
             'district_ulid' => $this->routeModelUlid($request->route('district')),
-            'customer_ulid' => $this->routeModelUlid($request->route('customer')),
+            'debtor_ulid' => $this->routeModelUlid($request->route('debtor')),
             'debt_ulid' => $this->routeModelUlid($request->route('debt')),
             'payment_ulid' => $this->routeModelUlid($request->route('payment')),
             'subject_user_ulid' => $this->routeModelUlid($request->route('user')),
@@ -163,7 +163,7 @@ final class AuditLog
     private function routeModelUlid(object|string|null $model): ?string
     {
         return match (true) {
-            $model instanceof Customer => $model->ulid,
+            $model instanceof Debtor => $model->ulid,
             $model instanceof Debt => $model->ulid,
             $model instanceof District => $model->ulid,
             $model instanceof Payment => $model->ulid,

@@ -18,6 +18,8 @@
                 </div>
             </section>
 
+            <EmailVerificationBanner />
+
             <section class="lex-dashboard-main-grid">
                 <div class="lex-panel lex-dashboard-section">
                     <div class="lex-dashboard-section-header">
@@ -56,8 +58,8 @@
                                     <dd class="lex-overview-metric-value">{{ card.users_count ?? 0 }}</dd>
                                 </div>
                                 <div class="lex-overview-metric-card">
-                                    <dt class="lex-overview-metric-label">{{ t('dashboard.stats_customers') }}</dt>
-                                    <dd class="lex-overview-metric-value">{{ card.customers_count }}</dd>
+                                    <dt class="lex-overview-metric-label">{{ t('dashboard.stats_debtors') }}</dt>
+                                    <dd class="lex-overview-metric-value">{{ card.debtors_count }}</dd>
                                 </div>
                                 <div class="lex-overview-metric-card">
                                     <dt class="lex-overview-metric-label">{{ t('dashboard.stats_debts') }}</dt>
@@ -110,11 +112,11 @@
                         </RouterLink>
 
                         <RouterLink
-                            v-if="effectiveDefaultDistrict.can_create_customer"
-                            :to="{ name: 'customer-create', params: { district: effectiveDefaultDistrict.district.ulid } }"
+                            v-if="effectiveDefaultDistrict.can_create_debtor"
+                            :to="{ name: 'debtor-create', params: { district: effectiveDefaultDistrict.district.ulid } }"
                             class="lex-button lex-button-secondary lex-dashboard-action-button"
                         >
-                            {{ t('dashboard.add_customer') }}
+                            {{ t('dashboard.add_debtor') }}
                         </RouterLink>
 
                         <RouterLink
@@ -133,9 +135,7 @@
                             {{ t('dashboard.add_payment') }}
                         </RouterLink>
 
-                        <a v-if="showMailpit" href="/mail/" class="lex-button lex-button-inline lex-dashboard-action-button">
-                            {{ t('dashboard.open_mailpit') }}
-                        </a>
+
                     </div>
                 </aside>
             </section>
@@ -154,6 +154,7 @@ import type { DashboardDistrictCard, DashboardStats } from '@/api/dashboard';
 import { getDashboardStats } from '@/api/dashboard';
 import { saveDefaultDistrict } from '@/api/users';
 import AppLayout from '@/layouts/AppLayout.vue';
+import EmailVerificationBanner from '@/components/domain/EmailVerificationBanner.vue';
 import { useAuthStore } from '@/stores/auth';
 import { usePreferencesStore } from '@/stores/preferences';
 import { formatLatvianVocativeFirstName } from '@/utils/latvianNameDeclension';
@@ -164,12 +165,12 @@ dayjs.extend(timezone);
 const { locale, t } = useI18n();
 const authStore = useAuthStore();
 const preferencesStore = usePreferencesStore();
-const showMailpit = import.meta.env.DEV;
+
 
 const stats = ref<DashboardStats>({
     data: [],
     districts_count: 0,
-    customers_count: 0,
+    debtors_count: 0,
     debts_count: 0,
     payments_count: 0,
 });
@@ -212,7 +213,7 @@ const heroTitle = computed(() => {
 });
 const heroStats = computed(() => [
     { label: 'dashboard.stats_districts', value: String(stats.value.districts_count) },
-    { label: 'dashboard.stats_customers', value: String(stats.value.customers_count) },
+    { label: 'dashboard.stats_debtors', value: String(stats.value.debtors_count) },
     { label: 'dashboard.stats_debts', value: String(stats.value.debts_count) },
     { label: 'dashboard.stats_payments', value: String(stats.value.payments_count) },
 ]);

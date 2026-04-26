@@ -15,7 +15,7 @@ use App\Http\Requests\Debt\UpdateDebtRequest;
 use App\Http\Resources\DebtDetailResource;
 use App\Http\Resources\DebtResource;
 use App\Http\Resources\EmptyResource;
-use App\Models\Customer;
+use App\Models\Debtor;
 use App\Models\Debt;
 use App\Models\District;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -29,40 +29,39 @@ final class DebtController extends Controller
         private readonly BuildDebtDetailAction $buildDebtDetail,
         private readonly UpdateDebtAction $updateDebt,
         private readonly DeleteDebtAction $deleteDebt,
-    ) {
-    }
+    ) {}
 
-    public function index(District $district, Customer $customer): AnonymousResourceCollection
+    public function index(District $district, Debtor $debtor): AnonymousResourceCollection
     {
         $this->authorize('viewAny', Debt::class);
 
-        return DebtResource::collection($this->listDebts->execute($customer));
+        return DebtResource::collection($this->listDebts->execute($debtor));
     }
 
-    public function store(StoreDebtRequest $request, District $district, Customer $customer): DebtResource
+    public function store(StoreDebtRequest $request, District $district, Debtor $debtor): DebtResource
     {
         $this->authorize('create', Debt::class);
 
-        $debt = $this->createDebt->execute($district, $customer, $request->validated());
+        $debt = $this->createDebt->execute($district, $debtor, $request->validated());
 
-        return new DebtResource($debt->load(['district', 'customer']));
+        return new DebtResource($debt->load(['district', 'debtor']));
     }
 
-    public function show(District $district, Customer $customer, Debt $debt): DebtDetailResource
+    public function show(District $district, Debtor $debtor, Debt $debt): DebtDetailResource
     {
         $this->authorize('view', $debt);
 
         return new DebtDetailResource($debt, $this->buildDebtDetail->execute($debt));
     }
 
-    public function update(UpdateDebtRequest $request, District $district, Customer $customer, Debt $debt): DebtResource
+    public function update(UpdateDebtRequest $request, District $district, Debtor $debtor, Debt $debt): DebtResource
     {
         $this->authorize('update', $debt);
 
         return new DebtResource($this->updateDebt->execute($debt, $request->validated()));
     }
 
-    public function destroy(District $district, Customer $customer, Debt $debt): \Illuminate\Http\JsonResponse
+    public function destroy(District $district, Debtor $debtor, Debt $debt): \Illuminate\Http\JsonResponse
     {
         $this->authorize('delete', $debt);
 

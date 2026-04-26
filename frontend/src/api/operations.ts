@@ -3,129 +3,129 @@ import { apiClient } from './client';
 
 type Translate = (key: string, params?: Record<string, string | number>) => string;
 
-export interface CustomerOption {
-    ulid: string;
-    name: string | null;
-    case_number: string | null;
+export interface DebtorOption {
+  ulid: string;
+  name: string | null;
+  case_number: string | null;
 }
 
 export interface DebtOption {
-    ulid: string;
-    amount: string;
-    date: string;
-    description: string | null;
+  ulid: string;
+  amount: string;
+  date: string;
+  description: string | null;
 }
 
-export interface CustomerCreateInput {
-    case_number: string | null;
-    type: 'physical' | 'legal';
-    email: string | null;
-    phone: string | null;
-    first_name: string | null;
-    last_name: string | null;
-    personal_code: string | null;
-    date_of_birth: string | null;
-    company_name: string | null;
-    registration_number: string | null;
-    contact_person: string | null;
+export interface DebtorCreateInput {
+  case_number: string | null;
+  type: 'physical' | 'legal';
+  email: string | null;
+  phone: string | null;
+  first_name: string | null;
+  last_name: string | null;
+  personal_code: string | null;
+  date_of_birth: string | null;
+  company_name: string | null;
+  registration_number: string | null;
+  contact_person: string | null;
 }
 
 export interface DebtCreateInput {
-    amount: string;
-    date: string;
-    description: string | null;
+  amount: string;
+  date: string;
+  description: string | null;
 }
 
 export interface PaymentCreateInput {
-    amount: string;
-    date: string;
-    description: string | null;
+  amount: string;
+  date: string;
+  description: string | null;
 }
 
-export function createCustomerSchema(t: Translate) {
-    return z.object({
-        case_number: z.string().trim().max(255).nullable(),
-        type: z.enum(['physical', 'legal']),
-        email: z.string().email(t('auth.validation.invalid_email')).nullable().or(z.literal('')),
-        phone: z.string().trim().max(255).nullable(),
-        first_name: z.string().trim().max(255).nullable(),
-        last_name: z.string().trim().max(255).nullable(),
-        personal_code: z.string().trim().max(255).nullable(),
-        date_of_birth: z.string().trim().nullable(),
-        company_name: z.string().trim().max(255).nullable(),
-        registration_number: z.string().trim().max(255).nullable(),
-        contact_person: z.string().trim().max(255).nullable(),
-    }).superRefine((data, context) => {
-        if (data.type === 'physical') {
-            if (!data.first_name) {
-                context.addIssue({ code: z.ZodIssueCode.custom, path: ['first_name'], message: t('auth.validation.field_required') });
-            }
+export function createDebtorSchema(t: Translate) {
+  return z.object({
+    case_number: z.string().trim().max(255).nullable(),
+    type: z.enum(['physical', 'legal']),
+    email: z.string().email(t('auth.validation.invalid_email')).nullable().or(z.literal('')),
+    phone: z.string().trim().max(255).nullable(),
+    first_name: z.string().trim().max(255).nullable(),
+    last_name: z.string().trim().max(255).nullable(),
+    personal_code: z.string().trim().max(255).nullable(),
+    date_of_birth: z.string().trim().nullable(),
+    company_name: z.string().trim().max(255).nullable(),
+    registration_number: z.string().trim().max(255).nullable(),
+    contact_person: z.string().trim().max(255).nullable(),
+  }).superRefine((data, context) => {
+    if (data.type === 'physical') {
+      if (!data.first_name) {
+        context.addIssue({ code: z.ZodIssueCode.custom, path: ['first_name'], message: t('auth.validation.field_required') });
+      }
 
-            if (!data.last_name) {
-                context.addIssue({ code: z.ZodIssueCode.custom, path: ['last_name'], message: t('auth.validation.field_required') });
-            }
-        }
+      if (!data.last_name) {
+        context.addIssue({ code: z.ZodIssueCode.custom, path: ['last_name'], message: t('auth.validation.field_required') });
+      }
+    }
 
-        if (data.type === 'legal' && !data.company_name) {
-            context.addIssue({ code: z.ZodIssueCode.custom, path: ['company_name'], message: t('auth.validation.field_required') });
-        }
-    });
+    if (data.type === 'legal' && !data.company_name) {
+      context.addIssue({ code: z.ZodIssueCode.custom, path: ['company_name'], message: t('auth.validation.field_required') });
+    }
+  });
 }
 
-export type CustomerFormInput = z.infer<ReturnType<typeof createCustomerSchema>>;
+export type DebtorFormInput = z.infer<ReturnType<typeof createDebtorSchema>>;
 
 export function createDebtSchema(t: Translate) {
-    return z.object({
-        customer_ulid: z.string().trim().min(1, t('auth.validation.field_required')),
-        amount: z.string().trim().min(1, t('auth.validation.field_required')),
-        date: z.string().trim().min(1, t('auth.validation.field_required')),
-        description: z.string().trim().nullable(),
-    });
+  return z.object({
+    debtor_ulid: z.string().trim().min(1, t('auth.validation.field_required')),
+    amount: z.string().trim().min(1, t('auth.validation.field_required')),
+    date: z.string().trim().min(1, t('auth.validation.field_required')),
+    description: z.string().trim().nullable(),
+  });
 }
 
 export type DebtFormInput = z.infer<ReturnType<typeof createDebtSchema>>;
 
 export function createPaymentSchema(t: Translate) {
-    return z.object({
-        customer_ulid: z.string().trim().min(1, t('auth.validation.field_required')),
-        debt_ulid: z.string().trim().min(1, t('auth.validation.field_required')),
-        amount: z.string().trim().min(1, t('auth.validation.field_required')),
-        date: z.string().trim().min(1, t('auth.validation.field_required')),
-        description: z.string().trim().nullable(),
-    });
+  return z.object({
+    debtor_ulid: z.string().trim().min(1, t('auth.validation.field_required')),
+    debt_ulid: z.string().trim().min(1, t('auth.validation.field_required')),
+    amount: z.string().trim().min(1, t('auth.validation.field_required')),
+    date: z.string().trim().min(1, t('auth.validation.field_required')),
+    description: z.string().trim().nullable(),
+  });
 }
 
 export type PaymentFormInput = z.infer<ReturnType<typeof createPaymentSchema>>;
 
-export async function createCustomer(districtUlid: string, input: CustomerCreateInput): Promise<void> {
-    await apiClient.post(`/districts/${districtUlid}/customers`, input);
+export async function createDebtor(districtUlid: string, input: DebtorCreateInput): Promise<void> {
+  await apiClient.post(`/districts/${districtUlid}/debtors`, input);
 }
 
-export async function fetchDistrictCustomers(districtUlid: string): Promise<CustomerOption[]> {
-    const response = await apiClient.get<{ data: CustomerOption[] } | CustomerOption[]>(`/districts/${districtUlid}/customers`, {
-        params: {
-            per_page: 100,
-        },
-    });
+export async function fetchDistrictDebtors(districtUlid: string): Promise<DebtorOption[]> {
+  const response = await apiClient.get<{ data: DebtorOption[] } | DebtorOption[]>(`/districts/${districtUlid}/debtors`, {
+    params: {
+      per_page: 100,
+    },
+  });
 
-    return 'data' in response.data ? response.data.data : response.data;
+  return 'data' in response.data ? response.data.data : response.data;
 }
 
-export async function createDebt(districtUlid: string, customerUlid: string, input: DebtCreateInput): Promise<void> {
-    await apiClient.post(`/districts/${districtUlid}/customers/${customerUlid}/debts`, input);
+export async function createDebt(districtUlid: string, debtorUlid: string, input: DebtCreateInput): Promise<void> {
+  await apiClient.post(`/districts/${districtUlid}/debtors/${debtorUlid}/debts`, input);
 }
 
-export async function fetchCustomerDebts(districtUlid: string, customerUlid: string): Promise<DebtOption[]> {
-    const response = await apiClient.get<{ data: DebtOption[] } | DebtOption[]>(`/districts/${districtUlid}/customers/${customerUlid}/debts`);
+export async function fetchDebtorDebts(districtUlid: string, debtorUlid: string): Promise<DebtOption[]> {
+  const response = await apiClient.get<{ data: DebtOption[] } | DebtOption[]>(`/districts/${districtUlid}/debtors/${debtorUlid}/debts`);
 
-    return 'data' in response.data ? response.data.data : response.data;
+  return 'data' in response.data ? response.data.data : response.data;
 }
 
 export async function createPayment(
-    districtUlid: string,
-    customerUlid: string,
-    debtUlid: string,
-    input: PaymentCreateInput,
+  districtUlid: string,
+  debtorUlid: string,
+  debtUlid: string,
+  input: PaymentCreateInput,
 ): Promise<void> {
-    await apiClient.post(`/districts/${districtUlid}/customers/${customerUlid}/debts/${debtUlid}/payments`, input);
+  await apiClient.post(`/districts/${districtUlid}/debtors/${debtorUlid}/debts/${debtUlid}/payments`, input);
 }

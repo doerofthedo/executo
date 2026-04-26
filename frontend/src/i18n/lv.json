@@ -9,11 +9,12 @@
         "mailpit_hint": "Izstrādes e-pasti ir pieejami Mailpit"
     },
     "navigation": {
+        "home": "Sākums",
         "dashboard": "Pārskats",
         "profile": "Profils",
         "preferences": "Iestatījumi",
         "user_management": "Lietotāju pārvaldība",
-        "customers": "Debitori",
+        "debtors": "Debitori",
         "debts": "Parādi",
         "debt": "Parāds",
         "payments": "Maksājumi",
@@ -51,7 +52,10 @@
         "send_password_reset": "Nosūtīt paroles atjaunošanas e-pastu",
         "password_reset_sent": "Ja šis konts eksistē, paroles atjaunošanas e-pasts ir nosūtīts.",
         "password_reset_error": "Paroles atjaunošanas e-pastu šobrīd nevarēja nosūtīt.",
-        "working": "Apstrādā..."
+        "working": "Apstrādā...",
+        "email_verification_pending": "Jūsu e-pasta adrese nav apstiprināta. Apstipriniet to, lai nodrošinātu netraucētu piekļuvi kontam.",
+        "verify_email_button": "Apstiprināt",
+        "dismiss_button": "Aizvērt"
     },
     "preferences": {
         "eyebrow": "Darba vide",
@@ -117,7 +121,7 @@
         "quick_actions_context": "Darbības iecirknim: {district}",
         "add_user": "+ Pievienot lietotāju",
         "manage_users": "Pārvaldīt lietotājus",
-        "add_customer": "+ Pievienot klientu",
+        "add_debtor": "+ Pievienot klientu",
         "add_debt": "+ Pievienot parādu",
         "add_payment": "+ Pievienot maksājumu",
         "open_preferences": "Atvērt iestatījumus",
@@ -130,7 +134,7 @@
         "default_district_missing": "Lai izmantotu ātrās darbības, iestatiet noklusēto iecirkni savos iestatījumos.",
         "stats_districts": "Apgabali",
         "stats_users": "Lietotāji",
-        "stats_customers": "Klienti",
+        "stats_debtors": "Parādnieki",
         "stats_debts": "Parādi",
         "stats_payments": "Maksājumi"
     },
@@ -142,9 +146,9 @@
         "role_district_admin": "Iecirkņa administrators",
         "role_district_manager": "Iecirkņa pārvaldnieks",
         "role_district_user": "Iecirkņa lietotājs",
-        "customer_create_eyebrow": "Jauns klients",
-        "customer_create_title": "Pievienot klientu",
-        "create_customer": "Izveidot klientu",
+        "debtor_create_eyebrow": "Jauns klients",
+        "debtor_create_title": "Pievienot klientu",
+        "create_debtor": "Izveidot klientu",
         "debt_create_eyebrow": "Jauns parāds",
         "debt_create_title": "Pievienot parādu",
         "create_debt": "Izveidot parādu",
@@ -155,7 +159,7 @@
         "user_create_title": "Pievienot lietotāju iecirknim",
         "create_user": "Pievienot lietotāju",
         "case_number": "Lietas numurs",
-        "customer_type": "Klienta tips",
+        "debtor_type": "Klienta tips",
         "type_physical": "Fiziska persona",
         "type_legal": "Juridiska persona",
         "first_name": "Vārds",
@@ -166,8 +170,8 @@
         "company_name": "Uzņēmuma nosaukums",
         "registration_number": "Reģistrācijas numurs",
         "contact_person": "Kontaktpersona",
-        "customer": "Klients",
-        "select_customer": "Izvēlieties klientu",
+        "debtor": "Klients",
+        "select_debtor": "Izvēlieties klientu",
         "debt": "Parāds",
         "select_debt": "Izvēlieties parādu",
         "amount": "Summa",
@@ -240,16 +244,16 @@
         "bailiff": "Tiesu izpildītājs",
         "court": "Tiesa",
         "address": "Adrese",
-        "stats_customers": "Debitori",
+        "stats_debtors": "Debitori",
         "stats_debts": "Parādi",
         "stats_payments": "Maksājumi",
         "stats_users": "Lietotāji",
-        "open_customers": "Debitori",
+        "open_debtors": "Debitori",
         "open_users": "Lietotāju pārvaldība",
-        "create_customer": "+ Pievienot debitoru",
+        "create_debtor": "+ Pievienot debitoru",
         "none": "—"
     },
-    "customers": {
+    "debtors": {
         "eyebrow": "Debitori",
         "title": "Debitori",
         "loading": "Ielādē debitorus...",
@@ -277,7 +281,7 @@
         "next": "Nākamā",
         "none": "—"
     },
-    "customer_detail": {
+    "debtor_detail": {
         "eyebrow": "Debitors",
         "loading": "Ielādē debitoru...",
         "load_error": "Neizdevās ielādēt debitoru.",

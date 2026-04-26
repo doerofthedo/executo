@@ -17,7 +17,7 @@ final class DebtResource extends JsonResource
         return [
             'ulid' => $this->resource->ulid,
             'district_ulid' => $this->resource->district?->ulid,
-            'customer_ulid' => $this->resource->customer?->ulid,
+            'debtor_ulid' => $this->resource->debtor?->ulid,
             'amount' => (string) $this->resource->amount,
             'date' => $this->resource->date?->toDateString(),
             'description' => $this->resource->description,

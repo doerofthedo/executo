@@ -2,16 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Customer\Events;
+namespace App\Domain\Debtor\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 
-final class CustomerCreated
+final class DebtorCreated
 {
     use Dispatchable;
 
     public function __construct(
-        public readonly string $customerUlid,
-    ) {
-    }
+        public readonly string $debtorUlid,
+    ) {}
 }

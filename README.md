@@ -1,6 +1,6 @@
 # Executo
 
-Initial monorepo scaffold for the Executo bailiff district customer manager platform.
+Initial monorepo scaffold for the Executo bailiff district debtor manager platform.
 
 ## Structure
 

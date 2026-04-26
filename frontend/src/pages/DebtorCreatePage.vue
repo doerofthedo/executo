@@ -2,8 +2,8 @@
     <AppLayout>
         <div class="lex-overview-page">
             <section class="lex-panel lex-panel-header p-8">
-                <p class="lex-page-eyebrow">{{ t('operations.customer_create_eyebrow') }}</p>
-                <h1 class="lex-page-title">{{ t('operations.customer_create_title') }}</h1>
+                <p class="lex-page-eyebrow">{{ t('operations.debtor_create_eyebrow') }}</p>
+                <h1 class="lex-page-title">{{ t('operations.debtor_create_title') }}</h1>
             </section>
 
             <section class="lex-panel p-8">
@@ -15,7 +15,7 @@
                         </label>
 
                         <label class="lex-form-field">
-                            <span class="lex-input-label">{{ t('operations.customer_type') }}</span>
+                            <span class="lex-input-label">{{ t('operations.debtor_type') }}</span>
                             <select v-model="typeValue" class="lex-input">
                                 <option value="physical">{{ t('operations.type_physical') }}</option>
                                 <option value="legal">{{ t('operations.type_legal') }}</option>
@@ -74,7 +74,7 @@
 
                     <div class="lex-section-actions">
                         <button type="submit" class="lex-button lex-button-primary" :disabled="isSubmitting">
-                            {{ isSubmitting ? t('operations.saving') : t('operations.create_customer') }}
+                            {{ isSubmitting ? t('operations.saving') : t('operations.create_debtor') }}
                         </button>
                         <p v-if="formError !== ''" class="lex-form-message lex-form-message-error">{{ formError }}</p>
                     </div>
@@ -89,7 +89,7 @@ import { useForm } from 'vee-validate';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
-import { createCustomer, createCustomerSchema, type CustomerFormInput } from '@/api/operations';
+import { createDebtor, createDebtorSchema, type DebtorFormInput } from '@/api/operations';
 import { isApiError } from '@/api/client';
 import { toTypedSchema } from '@vee-validate/zod';
 import AppLayout from '@/layouts/AppLayout.vue';
@@ -104,9 +104,9 @@ const formError = ref('');
 const defaultDistrictUlid = computed(() => typeof route.params.district === 'string'
     ? route.params.district
     : (authStore.user?.default_district_ulid ?? null));
-const schema = computed(() => toTypedSchema(createCustomerSchema(t)));
+const schema = computed(() => toTypedSchema(createDebtorSchema(t)));
 
-const { errors, defineField, handleSubmit, isSubmitting } = useForm<CustomerFormInput>({
+const { errors, defineField, handleSubmit, isSubmitting } = useForm<DebtorFormInput>({
     validationSchema: schema,
     initialValues: {
         case_number: '',
@@ -144,7 +144,7 @@ const onSubmit = handleSubmit(async (values) => {
     }
 
     try {
-        await createCustomer(defaultDistrictUlid.value, {
+        await createDebtor(defaultDistrictUlid.value, {
             ...values,
             case_number: values.case_number || null,
             email: values.email || null,

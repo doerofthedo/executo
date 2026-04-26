@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Resources;
 
 use App\Domain\District\Services\DistrictPermissionResolver;
-use App\Models\Customer;
+use App\Models\Debtor;
 use App\Models\Debt;
 use App\Models\District;
 use App\Models\Payment;
@@ -36,16 +36,16 @@ final class DistrictStatsResource extends JsonResource
             'users_count' => $this->canViewUsersCount ? $district->users()->distinct('users.id')->count('users.id') : null,
             'can_view_users_count' => $this->canViewUsersCount,
             'can_manage_users' => $this->canViewUsersCount,
-            'can_create_customer' => $request->user() !== null
-                && app(DistrictPermissionResolver::class)->hasPermission($request->user(), 'district.customer.create', $district->id),
+            'can_create_debtor' => $request->user() !== null
+                && app(DistrictPermissionResolver::class)->hasPermission($request->user(), 'district.debtor.create', $district->id),
             'can_create_debt' => $request->user() !== null
                 && app(DistrictPermissionResolver::class)->hasPermission($request->user(), 'district.debt.create', $district->id),
             'can_create_payment' => $request->user() !== null
                 && app(DistrictPermissionResolver::class)->hasPermission($request->user(), 'district.payment.create', $district->id),
-            'customers_count' => Customer::query()->where('district_id', $district->id)->count(),
+            'debtors_count' => Debtor::query()->where('district_id', $district->id)->count(),
             'debts_count' => Debt::query()->where('district_id', $district->id)->count(),
             'payments_count' => Payment::query()
-                ->whereHas('debt', static fn ($query) => $query->where('district_id', $district->id))
+                ->whereHas('debt', static fn($query) => $query->where('district_id', $district->id))
                 ->count(),
         ];
     }

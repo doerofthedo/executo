@@ -13,14 +13,14 @@ return new class extends Migration
         Schema::create('payments', static function (Blueprint $table): void {
             $table->id();
             $table->char('ulid', 26)->unique();
-            $table->foreignId('customer_id')->constrained('customers')->cascadeOnDelete();
+            $table->foreignId('debtor_id')->constrained('debtors')->cascadeOnDelete();
             $table->foreignId('debt_id')->constrained('debts')->cascadeOnDelete();
             $table->decimal('amount', 15, 4);
             $table->date('date');
             $table->text('description')->nullable();
             $table->timestamps();
 
-            $table->index(['customer_id', 'debt_id']);
+            $table->index(['debtor_id', 'debt_id']);
             $table->index('date');
         });
     }

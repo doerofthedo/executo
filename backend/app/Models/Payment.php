@@ -12,7 +12,7 @@ final class Payment extends Model
 {
     protected $fillable = [
         'ulid',
-        'customer_id',
+        'debtor_id',
         'debt_id',
         'amount',
         'date',
@@ -29,7 +29,7 @@ final class Payment extends Model
 
     protected static function booted(): void
     {
-        static::creating(static fn (self $payment): string => $payment->ulid ??= (string) Str::ulid());
+        static::creating(static fn(self $payment): string => $payment->ulid ??= (string) Str::ulid());
     }
 
     public function getRouteKeyName(): string
@@ -38,11 +38,11 @@ final class Payment extends Model
     }
 
     /**
-     * @return BelongsTo<Customer, $this>
+     * @return BelongsTo<Debtor, $this>
      */
-    public function customer(): BelongsTo
+    public function debtor(): BelongsTo
     {
-        return $this->belongsTo(Customer::class);
+        return $this->belongsTo(Debtor::class);
     }
 
     /**

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Customer\DTOs;
+namespace App\Domain\Debtor\DTOs;
 
 use Spatie\LaravelData\Data;
 
-final class CustomerData extends Data
+final class DebtorData extends Data
 {
     public function __construct(
         public string $name,
@@ -21,6 +21,5 @@ final class CustomerData extends Data
         public ?string $companyName,
         public ?string $registrationNumber,
         public ?string $contactPerson,
-    ) {
-    }
+    ) {}
 }

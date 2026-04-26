@@ -13,7 +13,7 @@ use App\Http\Requests\Payment\StorePaymentRequest;
 use App\Http\Requests\Payment\UpdatePaymentRequest;
 use App\Http\Resources\EmptyResource;
 use App\Http\Resources\PaymentResource;
-use App\Models\Customer;
+use App\Models\Debtor;
 use App\Models\Debt;
 use App\Models\District;
 use App\Models\Payment;
@@ -27,36 +27,35 @@ final class PaymentController extends Controller
         private readonly CreatePaymentAction $createPayment,
         private readonly UpdatePaymentAction $updatePayment,
         private readonly DeletePaymentAction $deletePayment,
-    ) {
-    }
+    ) {}
 
-    public function index(District $district, Customer $customer, Debt $debt): AnonymousResourceCollection
+    public function index(District $district, Debtor $debtor, Debt $debt): AnonymousResourceCollection
     {
         $this->authorize('viewAny', Payment::class);
 
         return PaymentResource::collection($this->listPayments->execute($debt));
     }
 
-    public function store(StorePaymentRequest $request, District $district, Customer $customer, Debt $debt): PaymentResource
+    public function store(StorePaymentRequest $request, District $district, Debtor $debtor, Debt $debt): PaymentResource
     {
         $this->authorize('create', Payment::class);
 
-        $payment = $this->createPayment->execute($customer, $debt, $request->validated());
+        $payment = $this->createPayment->execute($debtor, $debt, $request->validated());
 
-        return new PaymentResource($payment->load(['customer', 'debt']));
+        return new PaymentResource($payment->load(['debtor', 'debt']));
     }
 
-    public function show(District $district, Customer $customer, Debt $debt, Payment $payment): PaymentResource
+    public function show(District $district, Debtor $debtor, Debt $debt, Payment $payment): PaymentResource
     {
         $this->authorize('view', $payment);
 
-        return new PaymentResource($payment->load(['customer', 'debt']));
+        return new PaymentResource($payment->load(['debtor', 'debt']));
     }
 
     public function update(
         UpdatePaymentRequest $request,
         District $district,
-        Customer $customer,
+        Debtor $debtor,
         Debt $debt,
         Payment $payment,
     ): PaymentResource {
@@ -65,7 +64,7 @@ final class PaymentController extends Controller
         return new PaymentResource($this->updatePayment->execute($payment, $request->validated()));
     }
 
-    public function destroy(District $district, Customer $customer, Debt $debt, Payment $payment): \Illuminate\Http\JsonResponse
+    public function destroy(District $district, Debtor $debtor, Debt $debt, Payment $payment): \Illuminate\Http\JsonResponse
     {
         $this->authorize('delete', $payment);
 

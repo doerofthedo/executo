@@ -14,8 +14,8 @@
 
                         <div v-if="stats" class="lex-overview-metric-grid-dark">
                             <article class="lex-overview-metric-card-dark">
-                                <p class="lex-overview-metric-label">{{ t('district.stats_customers') }}</p>
-                                <p class="lex-overview-metric-value">{{ stats.customers_count }}</p>
+                                <p class="lex-overview-metric-label">{{ t('district.stats_debtors') }}</p>
+                                <p class="lex-overview-metric-value">{{ stats.debtors_count }}</p>
                             </article>
                             <article class="lex-overview-metric-card-dark">
                                 <p class="lex-overview-metric-label">{{ t('district.stats_debts') }}</p>
@@ -46,10 +46,10 @@
                 <section class="lex-panel p-8">
                     <div class="flex flex-wrap gap-3">
                         <RouterLink
-                            :to="{ name: 'customers', params: { district: districtUlid } }"
+                            :to="{ name: 'debtors', params: { district: districtUlid } }"
                             class="lex-button lex-button-primary"
                         >
-                            {{ t('district.open_customers') }}
+                            {{ t('district.open_debtors') }}
                         </RouterLink>
 
                         <RouterLink
@@ -61,11 +61,11 @@
                         </RouterLink>
 
                         <RouterLink
-                            v-if="stats.can_create_customer"
-                            :to="{ name: 'customer-create', params: { district: districtUlid } }"
+                            v-if="stats.can_create_debtor"
+                            :to="{ name: 'debtor-create', params: { district: districtUlid } }"
                             class="lex-button lex-button-secondary"
                         >
-                            {{ t('district.create_customer') }}
+                            {{ t('district.create_debtor') }}
                         </RouterLink>
                     </div>
                 </section>

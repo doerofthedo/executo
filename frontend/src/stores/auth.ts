@@ -19,6 +19,7 @@ export const useAuthStore = defineStore('auth', {
     }),
     getters: {
         isAuthenticated: (state): boolean => state.token !== null && state.user !== null,
+        isAppAdmin: (state): boolean => state.user?.is_app_admin === true,
     },
     actions: {
         async signIn(input: LoginInput): Promise<void> {

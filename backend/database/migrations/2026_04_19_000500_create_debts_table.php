@@ -14,13 +14,13 @@ return new class extends Migration
             $table->id();
             $table->char('ulid', 26)->unique();
             $table->foreignId('district_id')->constrained('districts')->cascadeOnDelete();
-            $table->foreignId('customer_id')->constrained('customers')->cascadeOnDelete();
+            $table->foreignId('debtor_id')->constrained('debtors')->cascadeOnDelete();
             $table->decimal('amount', 15, 4);
             $table->date('date');
             $table->text('description')->nullable();
             $table->timestamps();
 
-            $table->index(['district_id', 'customer_id']);
+            $table->index(['district_id', 'debtor_id']);
             $table->index('date');
         });
     }

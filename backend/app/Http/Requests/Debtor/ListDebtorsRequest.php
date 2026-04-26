@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Requests\Customer;
+namespace App\Http\Requests\Debtor;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\In;
 use Illuminate\Validation\Rule;
 
-final class ListCustomersRequest extends FormRequest
+final class ListDebtorsRequest extends FormRequest
 {
     public function authorize(): bool
     {

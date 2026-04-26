@@ -5,23 +5,23 @@ declare(strict_types=1);
 namespace App\Policies;
 
 use App\Domain\District\Services\DistrictPermissionResolver;
-use App\Models\Customer;
+use App\Models\Debtor;
 use App\Models\District;
 use App\Models\User;
 
-final class CustomerPolicy
+final class DebtorPolicy
 {
     public function viewAny(User $user): bool
     {
         $districtId = $this->currentDistrictId();
 
         return is_int($districtId)
-            && app(DistrictPermissionResolver::class)->hasPermission($user, 'district.customer.view', $districtId);
+            && app(DistrictPermissionResolver::class)->hasPermission($user, 'district.debtor.view', $districtId);
     }
 
-    public function view(User $user, Customer $customer): bool
+    public function view(User $user, Debtor $debtor): bool
     {
-        return app(DistrictPermissionResolver::class)->hasPermission($user, 'district.customer.view', $customer->district_id);
+        return app(DistrictPermissionResolver::class)->hasPermission($user, 'district.debtor.view', $debtor->district_id);
     }
 
     public function create(User $user): bool
@@ -29,27 +29,27 @@ final class CustomerPolicy
         $districtId = $this->currentDistrictId();
 
         return is_int($districtId)
-            && app(DistrictPermissionResolver::class)->hasPermission($user, 'district.customer.create', $districtId);
+            && app(DistrictPermissionResolver::class)->hasPermission($user, 'district.debtor.create', $districtId);
     }
 
-    public function update(User $user, Customer $customer): bool
+    public function update(User $user, Debtor $debtor): bool
     {
-        return app(DistrictPermissionResolver::class)->hasPermission($user, 'district.customer.update', $customer->district_id);
+        return app(DistrictPermissionResolver::class)->hasPermission($user, 'district.debtor.update', $debtor->district_id);
     }
 
-    public function delete(User $user, Customer $customer): bool
+    public function delete(User $user, Debtor $debtor): bool
     {
-        return app(DistrictPermissionResolver::class)->hasPermission($user, 'district.customer.delete', $customer->district_id);
+        return app(DistrictPermissionResolver::class)->hasPermission($user, 'district.debtor.delete', $debtor->district_id);
     }
 
-    public function restore(User $user, Customer $customer): bool
+    public function restore(User $user, Debtor $debtor): bool
     {
-        return app(DistrictPermissionResolver::class)->hasPermission($user, 'district.customer.update', $customer->district_id);
+        return app(DistrictPermissionResolver::class)->hasPermission($user, 'district.debtor.update', $debtor->district_id);
     }
 
-    public function forceDelete(User $user, Customer $customer): bool
+    public function forceDelete(User $user, Debtor $debtor): bool
     {
-        return app(DistrictPermissionResolver::class)->hasPermission($user, 'district.customer.delete', $customer->district_id);
+        return app(DistrictPermissionResolver::class)->hasPermission($user, 'district.debtor.delete', $debtor->district_id);
     }
 
     private function currentDistrictId(): ?int

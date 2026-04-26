@@ -25,8 +25,8 @@ final class DebtDetailResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'debt' => (new DebtResource($this->resource->loadMissing(['district', 'customer'])))->resolve($request),
-            'payments' => PaymentResource::collection($this->resource->payments->loadMissing(['customer', 'debt']))->resolve($request),
+            'debt' => (new DebtResource($this->resource->loadMissing(['district', 'debtor'])))->resolve($request),
+            'payments' => PaymentResource::collection($this->resource->payments->loadMissing(['debtor', 'debt']))->resolve($request),
             'interest' => [
                 'columns' => [
                     ['key' => 'payment_date', 'label_key' => 'debt.interest_breakdown.columns.payment_date', 'align' => 'left'],
@@ -43,7 +43,7 @@ final class DebtDetailResource extends JsonResource
                     ['key' => 'total_debt', 'label_key' => 'debt.interest_breakdown.columns.total_debt', 'align' => 'right'],
                 ],
                 'rows' => array_map(
-                    fn (InterestScheduleRowData $row): array => $this->formatRow($row),
+                    fn(InterestScheduleRowData $row): array => $this->formatRow($row),
                     $this->interestSchedule->rows,
                 ),
                 'total_row' => $this->formatRow($this->interestSchedule->totalRow),

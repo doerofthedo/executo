@@ -8,7 +8,7 @@ Read this file fully before making any changes.
 
 ## Repo Overview
 
-**Executo** is a bailiff district customer manager platform for Latvia.  
+**Executo** is a bailiff district debtor manager platform for Latvia.  
 Monorepo with a Laravel 13.2+ REST API backend and a Vue 3 SPA frontend.
 
 ```
@@ -48,7 +48,7 @@ repo/
 
 ### Architecture
 - Follow **Domain-Driven Design (lite)**. Business logic lives in `app/Domain/`, never in controllers.
-- Each domain (`Auth`, `District`, `Customer`, `Debt`, `Payment`) contains:
+- Each domain (`Auth`, `District`, `Debtor`, `Debt`, `Payment`) contains:
   - `Actions/` — single-responsibility classes. One action does one thing.
   - `DTOs/` — readonly classes using `spatie/laravel-data`.
   - `Events/` — domain events.
@@ -62,7 +62,7 @@ repo/
 backend/app/
 ├── Domain/
 │   ├── Auth/
-│   ├── Customer/
+│   ├── Debtor/
 │   ├── Debt/
 │   │   └── Services/InterestCalculatorService.php
 │   ├── District/
@@ -120,7 +120,7 @@ backend/app/
 ```
 - Route model binding on API routes must resolve by `ulid`, not `id`:
 ```php
-  // app/Models/Customer.php
+  // app/Models/Debtor.php
   public function getRouteKeyName(): string
   {
       return 'ulid';

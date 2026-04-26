@@ -13,12 +13,11 @@ final readonly class BuildDebtDetailAction
 {
     public function __construct(
         private BuildInterestScheduleAction $buildInterestSchedule,
-    ) {
-    }
+    ) {}
 
     public function execute(Debt $debt): InterestScheduleData
     {
-        $debt->load(['district', 'customer', 'payments.customer', 'payments.debt']);
+        $debt->load(['district', 'debtor', 'payments.debtor', 'payments.debt']);
         /** @var EloquentCollection<int, Payment> $payments */
         $payments = $debt->payments;
 

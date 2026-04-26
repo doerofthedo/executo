@@ -6,12 +6,11 @@
 /backend/.phpunit.result.cache
 
 /frontend/node_modules/
-/frontend/dist/
+/frontend/dist/*
 !/frontend/dist/manifest.json
 
 /data/export.json
-/old/*
-
+/old/
 /.vscode/
 /.claude/
 /.codex

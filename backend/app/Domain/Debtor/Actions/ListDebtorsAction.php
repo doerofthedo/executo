@@ -2,41 +2,40 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Customer\Actions;
+namespace App\Domain\Debtor\Actions;
 
-use App\Domain\Customer\Services\CustomerSearchService;
-use App\Models\Customer;
+use App\Domain\Debtor\Services\DebtorSearchService;
+use App\Models\Debtor;
 use App\Models\District;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
-final readonly class ListCustomersAction
+final readonly class ListDebtorsAction
 {
     public function __construct(
-        private CustomerSearchService $customerSearch,
-    ) {
-    }
+        private DebtorSearchService $debtorSearch,
+    ) {}
 
     /**
      * @param  array<string, mixed>  $filters
-     * @return LengthAwarePaginator<int, Customer>
+     * @return LengthAwarePaginator<int, Debtor>
      */
     public function execute(District $district, array $filters): LengthAwarePaginator
     {
         $perPage = (int) ($filters['per_page'] ?? 25);
         $search = isset($filters['search'])
-            ? $this->customerSearch->normaliseQuery($filters['search'])
+            ? $this->debtorSearch->normaliseQuery($filters['search'])
             : null;
 
-        return Customer::query()
+        return Debtor::query()
             ->with(['district'])
             ->where('district_id', $district->id)
             ->when(
                 ($filters['include_trashed'] ?? false) === true,
-                static fn ($query) => $query->withTrashed(),
+                static fn($query) => $query->withTrashed(),
             )
             ->when(
                 isset($filters['type']),
-                static fn ($query) => $query->where('type', $filters['type']),
+                static fn($query) => $query->where('type', $filters['type']),
             )
             ->when($search !== null && $search !== '', function ($query) use ($search): void {
                 $query->where(function ($nestedQuery) use ($search): void {

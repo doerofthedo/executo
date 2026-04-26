@@ -100,10 +100,12 @@
                         <li v-if="index > 0">/</li>
                         <li v-if="item.to">
                             <RouterLink :to="item.to" class="lex-app-breadcrumb-link">
+                                <i v-if="item.icon" :class="item.icon" aria-hidden="true" />
                                 {{ item.label }}
                             </RouterLink>
                         </li>
                         <li v-else class="lex-app-breadcrumb-current">
+                            <i v-if="item.icon" :class="item.icon" aria-hidden="true" />
                             {{ item.label }}
                         </li>
                     </template>
@@ -127,7 +129,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watchEffect } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { RouterLink, useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
@@ -139,7 +141,7 @@ const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
-const showMailpit = import.meta.env.DEV;
+const showMailpit = computed(() => import.meta.env.DEV && authStore.isAppAdmin);
 const isAccountMenuOpen = ref(false);
 const accountMenuRoot = ref<HTMLElement | null>(null);
 const menuTrigger = ref<HTMLButtonElement | null>(null);
@@ -151,12 +153,12 @@ const notifRoot = ref<HTMLElement | null>(null);
 
 const displayName = computed(() => [authStore.user?.name, authStore.user?.surname].filter((value): value is string => typeof value === 'string' && value !== '').join(' '));
 
-type BreadcrumbItem = { label: string; to?: object };
+type BreadcrumbItem = { label: string; to?: object; icon?: string };
 
 const breadcrumbs = computed((): BreadcrumbItem[] => {
-    const items: BreadcrumbItem[] = [{ label: t('navigation.dashboard'), to: { name: 'dashboard' } }];
+    const items: BreadcrumbItem[] = [{ label: t('navigation.home'), to: { name: 'dashboard' }, icon: 'ri-home-line' }];
     const districtParam = String(route.params.district ?? '');
-    const districtLabel = breadcrumbStore.districtLabel ?? districtParam;
+    const districtLabel = breadcrumbStore.districtLabel ?? '...';
 
     if (route.name === 'profile') {
         items.push({ label: t('navigation.profile') });
@@ -164,26 +166,26 @@ const breadcrumbs = computed((): BreadcrumbItem[] => {
         items.push({ label: t('navigation.preferences') });
     } else if (route.name === 'district') {
         items.push({ label: districtLabel });
-    } else if (route.name === 'customers' || route.name === 'customer-create') {
+    } else if (route.name === 'debtors' || route.name === 'debtor-create') {
         items.push({ label: districtLabel, to: { name: 'district', params: { district: districtParam } } });
-        items.push({ label: t('navigation.customers') });
-    } else if (route.name === 'customer') {
+        items.push({ label: t('navigation.debtors') });
+    } else if (route.name === 'debtor') {
         items.push({ label: districtLabel, to: { name: 'district', params: { district: districtParam } } });
-        items.push({ label: t('navigation.customers'), to: { name: 'customers', params: { district: districtParam } } });
-        items.push({ label: breadcrumbStore.customerLabel ?? '...' });
+        items.push({ label: t('navigation.debtors'), to: { name: 'debtors', params: { district: districtParam } } });
+        items.push({ label: breadcrumbStore.debtorLabel ?? '...' });
     } else if (route.name === 'debt') {
-        const customerParam = String(route.params.customer ?? '');
+        const debtorParam = String(route.params.debtor ?? '');
         items.push({ label: districtLabel, to: { name: 'district', params: { district: districtParam } } });
-        items.push({ label: t('navigation.customers'), to: { name: 'customers', params: { district: districtParam } } });
-        items.push({ label: breadcrumbStore.customerLabel ?? '...', to: { name: 'customer', params: { district: districtParam, customer: customerParam } } });
+        items.push({ label: t('navigation.debtors'), to: { name: 'debtors', params: { district: districtParam } } });
+        items.push({ label: breadcrumbStore.debtorLabel ?? '...', to: { name: 'debtor', params: { district: districtParam, debtor: debtorParam } } });
         items.push({ label: breadcrumbStore.debtLabel ?? t('navigation.debt') });
     } else if (route.name === 'payments') {
-        const customerParam = String(route.params.customer ?? '');
+        const debtorParam = String(route.params.debtor ?? '');
         const debtParam = String(route.params.debt ?? '');
         items.push({ label: districtLabel, to: { name: 'district', params: { district: districtParam } } });
-        items.push({ label: t('navigation.customers'), to: { name: 'customers', params: { district: districtParam } } });
-        items.push({ label: breadcrumbStore.customerLabel ?? '...', to: { name: 'customer', params: { district: districtParam, customer: customerParam } } });
-        items.push({ label: breadcrumbStore.debtLabel ?? t('navigation.debt'), to: { name: 'debt', params: { district: districtParam, customer: customerParam, debt: debtParam } } });
+        items.push({ label: t('navigation.debtors'), to: { name: 'debtors', params: { district: districtParam } } });
+        items.push({ label: breadcrumbStore.debtorLabel ?? '...', to: { name: 'debtor', params: { district: districtParam, debtor: debtorParam } } });
+        items.push({ label: breadcrumbStore.debtLabel ?? t('navigation.debt'), to: { name: 'debt', params: { district: districtParam, debtor: debtorParam, debt: debtParam } } });
         items.push({ label: t('navigation.payments') });
     } else if (route.name === 'user-management') {
         items.push({ label: districtLabel, to: { name: 'district', params: { district: districtParam } } });
@@ -195,6 +197,13 @@ const breadcrumbs = computed((): BreadcrumbItem[] => {
     }
 
     return items;
+});
+
+watchEffect(() => {
+    const last = breadcrumbs.value[breadcrumbs.value.length - 1];
+    if (last && last.label !== '...') {
+        document.title = `Executo | ${last.label}`;
+    }
 });
 
 function closeAccountMenu(): void {

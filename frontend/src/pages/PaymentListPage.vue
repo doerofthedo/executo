@@ -6,13 +6,13 @@
                     <div class="space-y-2">
                         <p class="lex-page-eyebrow">{{ t('payment_list.eyebrow') }}</p>
                         <h1 class="lex-page-title">{{ pageTitle }}</h1>
-                        <p v-if="customerName" class="lex-page-copy lex-page-copy-full text-sm">
-                            {{ customerName }}
+                        <p v-if="debtorName" class="lex-page-copy lex-page-copy-full text-sm">
+                            {{ debtorName }}
                         </p>
                     </div>
 
                     <RouterLink
-                        :to="{ name: 'debt', params: { district: districtUlid, customer: customerUlid, debt: debtUlid } }"
+                        :to="{ name: 'debt', params: { district: districtUlid, debtor: debtorUlid, debt: debtUlid } }"
                         class="lex-button lex-button-secondary"
                     >
                         {{ t('payment_list.back') }}
@@ -116,7 +116,7 @@
                                     <td class="border-b border-slate-100 px-4 py-3 text-sm text-slate-600">
                                         {{ payment.date ? formatDate(payment.date) : t('payment_list.none') }}
                                     </td>
-                                    <td class="border-b border-slate-100 px-4 py-3 text-right font-mono text-sm font-medium text-slate-800">
+                                    <td class="border-b border-slate-100 px-4 py-3 text-right text-sm font-medium text-slate-800">
                                         {{ formatAmount(payment.amount) }}
                                     </td>
                                     <td class="border-b border-slate-100 px-4 py-3 text-sm text-slate-600">
@@ -179,7 +179,7 @@ import {
     deletePayment,
     type Payment,
 } from '@/api/payments';
-import { fetchCustomer, customerDisplayName } from '@/api/customers';
+import { fetchDebtor, debtorDisplayName } from '@/api/debtors';
 import { fetchDebtDetail } from '@/api/debts';
 import { fetchDistrictStats } from '@/api/districts';
 import { useBreadcrumbStore } from '@/stores/breadcrumb';
@@ -191,13 +191,13 @@ const breadcrumbStore = useBreadcrumbStore();
 const { formatDate, formatAmount } = useUserFormatting();
 
 const districtUlid = computed(() => String(route.params.district ?? ''));
-const customerUlid = computed(() => String(route.params.customer ?? ''));
+const debtorUlid = computed(() => String(route.params.debtor ?? ''));
 const debtUlid = computed(() => String(route.params.debt ?? ''));
 
 const loading = ref(true);
 const loadError = ref(false);
 const payments = ref<Payment[]>([]);
-const customerName = ref<string | null>(null);
+const debtorName = ref<string | null>(null);
 const debtDescription = ref<string | null>(null);
 const caseNumber = ref<string | null>(null);
 const canCreatePayment = ref(false);
@@ -283,12 +283,12 @@ const onSubmit = handleSubmit(async (values) => {
         };
 
         if (mode.value === 'edit' && editingUlid.value !== null) {
-            const updated = await updatePayment(districtUlid.value, customerUlid.value, debtUlid.value, editingUlid.value, input);
+            const updated = await updatePayment(districtUlid.value, debtorUlid.value, debtUlid.value, editingUlid.value, input);
             payments.value = sortPayments(payments.value.map((p) => (p.ulid === updated.ulid ? updated : p)));
             formSuccess.value = t('payment_list.updated');
             cancelEdit();
         } else {
-            const created = await createPayment(districtUlid.value, customerUlid.value, debtUlid.value, input);
+            const created = await createPayment(districtUlid.value, debtorUlid.value, debtUlid.value, input);
             payments.value = sortPayments([created, ...payments.value]);
             formSuccess.value = t('payment_list.created');
             resetForm();
@@ -310,7 +310,7 @@ async function confirmDelete(): Promise<void> {
     deleting.value = true;
 
     try {
-        await deletePayment(districtUlid.value, customerUlid.value, debtUlid.value, pendingDeleteUlid.value);
+        await deletePayment(districtUlid.value, debtorUlid.value, debtUlid.value, pendingDeleteUlid.value);
         payments.value = payments.value.filter((p) => p.ulid !== pendingDeleteUlid.value);
 
         if (editingUlid.value === pendingDeleteUlid.value) {
@@ -330,25 +330,25 @@ async function load(): Promise<void> {
     loadError.value = false;
 
     try {
-        const [paymentList, customerData, debtDetail, statsData] = await Promise.all([
-            listPayments(districtUlid.value, customerUlid.value, debtUlid.value),
-            fetchCustomer(districtUlid.value, customerUlid.value),
-            fetchDebtDetail(districtUlid.value, customerUlid.value, debtUlid.value),
+        const [paymentList, debtorData, debtDetail, statsData] = await Promise.all([
+            listPayments(districtUlid.value, debtorUlid.value, debtUlid.value),
+            fetchDebtor(districtUlid.value, debtorUlid.value),
+            fetchDebtDetail(districtUlid.value, debtorUlid.value, debtUlid.value),
             fetchDistrictStats(districtUlid.value),
         ]);
 
         payments.value = sortPayments(paymentList);
-        customerName.value = customerDisplayName(customerData);
+        debtorName.value = debtorDisplayName(debtorData);
         debtDescription.value = debtDetail.debt.description;
-        caseNumber.value = customerData.case_number;
+        caseNumber.value = debtorData.case_number;
         canCreatePayment.value = statsData.can_create_payment;
 
-        const debtBreadcrumb = customerData.case_number
-            ? t('debt_detail.title', { number: customerData.case_number })
+        const debtBreadcrumb = debtorData.case_number
+            ? t('debt_detail.title', { number: debtorData.case_number })
             : debtDetail.debt.description || t('debt_detail.title_fallback');
 
         breadcrumbStore.districtLabel = t('district.number_label', { number: statsData.district.number });
-        breadcrumbStore.customerLabel = customerDisplayName(customerData);
+        breadcrumbStore.debtorLabel = debtorDisplayName(debtorData);
         breadcrumbStore.debtLabel = debtBreadcrumb;
     } catch {
         loadError.value = true;
@@ -360,7 +360,7 @@ async function load(): Promise<void> {
 onMounted(load);
 
 onUnmounted(() => {
-    breadcrumbStore.customerLabel = null;
+    breadcrumbStore.debtorLabel = null;
     breadcrumbStore.debtLabel = null;
     breadcrumbStore.districtLabel = null;
 });

@@ -29,7 +29,7 @@ return new class extends Migration
             $this->attachDistrictUsers($payload['users_by_email'] ?? [], $districtId, $ownerEmail);
             $this->createUserPreferences($userEmails);
             $this->createDistrictSettings($districtId);
-            $this->upsertCustomers($payload['debtors'] ?? [], $districtId);
+            $this->upsertDebtors($payload['debtors'] ?? [], $districtId);
             $this->logImportSummary($districtNumber, $userEmails, $payload['debtors'] ?? []);
         });
     }
@@ -58,10 +58,10 @@ return new class extends Migration
                     continue;
                 }
 
-                $customerId = $this->findExistingCustomerId($districtId, $debtor);
+                $debtorId = $this->findExistingDebtorId($districtId, $debtor);
 
-                if ($customerId !== null) {
-                    DB::table('customers')->where('id', $customerId)->delete();
+                if ($debtorId !== null) {
+                    DB::table('debtors')->where('id', $debtorId)->delete();
                 }
             }
 
@@ -87,11 +87,11 @@ return new class extends Migration
                 ->where('district_id', $districtId)
                 ->delete();
 
-            $remainingCustomers = DB::table('customers')
+            $remainingDebtors = DB::table('debtors')
                 ->where('district_id', $districtId)
                 ->exists();
 
-            if (! $remainingCustomers) {
+            if (! $remainingDebtors) {
                 DB::table('districts')->where('id', $districtId)->delete();
             }
         });
@@ -327,25 +327,25 @@ return new class extends Migration
         }
     }
 
-    private function upsertCustomers(array $debtors, int $districtId): void
+    private function upsertDebtors(array $debtors, int $districtId): void
     {
         foreach ($debtors as $debtor) {
             if (! is_array($debtor)) {
                 continue;
             }
 
-            $existingCustomerId = $this->findExistingCustomerId($districtId, $debtor);
+            $existingDebtorId = $this->findExistingDebtorId($districtId, $debtor);
 
-            if ($existingCustomerId !== null) {
-                DB::table('customers')->where('id', $existingCustomerId)->delete();
+            if ($existingDebtorId !== null) {
+                DB::table('debtors')->where('id', $existingDebtorId)->delete();
             }
 
-            $customerId = DB::table('customers')->insertGetId([
+            $debtorId = DB::table('debtors')->insertGetId([
                 'ulid' => (string) Str::ulid(),
                 'district_id' => $districtId,
                 'name' => $this->nullableString($debtor['name'] ?? null),
                 'case_number' => $this->nullableString($debtor['case_number'] ?? null),
-                'type' => $this->mapCustomerType($debtor),
+                'type' => $this->mapDebtorType($debtor),
                 'email' => $this->nullableString($debtor['email'] ?? null),
                 'phone' => $this->nullableString($debtor['phone'] ?? null),
                 'first_name' => $this->nullableString($debtor['first_name'] ?? null),
@@ -367,7 +367,7 @@ return new class extends Migration
                 $debtId = DB::table('debts')->insertGetId([
                     'ulid' => (string) Str::ulid(),
                     'district_id' => $districtId,
-                    'customer_id' => $customerId,
+                    'debtor_id' => $debtorId,
                     'amount' => $this->decimal($debt['amount'] ?? 0),
                     'date' => $this->normalizeDate($debt['date'] ?? null) ?? now()->toDateString(),
                     'description' => $this->nullableString($debt['description'] ?? null),
@@ -382,7 +382,7 @@ return new class extends Migration
 
                     DB::table('payments')->insert([
                         'ulid' => (string) Str::ulid(),
-                        'customer_id' => $customerId,
+                        'debtor_id' => $debtorId,
                         'debt_id' => $debtId,
                         'amount' => $this->decimal($payment['amount'] ?? 0),
                         'date' => $this->normalizeDate($payment['date'] ?? null) ?? now()->toDateString(),
@@ -395,12 +395,12 @@ return new class extends Migration
         }
     }
 
-    private function findExistingCustomerId(int $districtId, array $debtor): ?int
+    private function findExistingDebtorId(int $districtId, array $debtor): ?int
     {
         $caseNumber = $this->nullableString($debtor['case_number'] ?? null);
 
         if ($caseNumber !== null) {
-            $id = DB::table('customers')
+            $id = DB::table('debtors')
                 ->where('district_id', $districtId)
                 ->where('case_number', $caseNumber)
                 ->value('id');
@@ -414,7 +414,7 @@ return new class extends Migration
             return null;
         }
 
-        $id = DB::table('customers')
+        $id = DB::table('debtors')
             ->where('district_id', $districtId)
             ->where('name', $name)
             ->value('id');
@@ -445,7 +445,7 @@ return new class extends Migration
         return [$name, 'Imported'];
     }
 
-    private function mapCustomerType(array $legacyDebtor): string
+    private function mapDebtorType(array $legacyDebtor): string
     {
         $legacyType = $this->nullableString($legacyDebtor['type'] ?? null);
 
@@ -640,7 +640,7 @@ return new class extends Migration
             'properties' => json_encode([
                 'district_number' => $districtNumber,
                 'user_count' => count($userEmails),
-                'customer_count' => $debtorCount,
+                'debtor_count' => $debtorCount,
                 'debt_count' => $debtCount,
                 'payment_count' => $paymentCount,
             ]),

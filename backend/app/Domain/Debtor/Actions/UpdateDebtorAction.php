@@ -2,42 +2,42 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Customer\Actions;
+namespace App\Domain\Debtor\Actions;
 
-use App\Models\Customer;
+use App\Models\Debtor;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-final readonly class UpdateCustomerAction
+final readonly class UpdateDebtorAction
 {
     /**
      * @param  array<string, mixed>  $payload
      */
-    public function execute(Customer $customer, array $payload): Customer
+    public function execute(Debtor $debtor, array $payload): Debtor
     {
-        $customer->fill($this->normalizePayload($payload, $customer));
+        $debtor->fill($this->normalizePayload($payload, $debtor));
 
-        if ($customer->isDirty()) {
-            $customer->save();
+        if ($debtor->isDirty()) {
+            $debtor->save();
         }
 
-        $freshCustomer = $customer->fresh();
+        $freshDebtor = $debtor->fresh();
 
-        if ($freshCustomer === null) {
+        if ($freshDebtor === null) {
             throw new NotFoundHttpException();
         }
 
-        return $freshCustomer;
+        return $freshDebtor;
     }
 
     /**
      * @param  array<string, mixed>  $payload
      * @return array<string, mixed>
      */
-    public function normalizePayload(array $payload, ?Customer $customer = null): array
+    public function normalizePayload(array $payload, ?Debtor $debtor = null): array
     {
         unset($payload['restore']);
 
-        $type = $payload['type'] ?? $customer?->type;
+        $type = $payload['type'] ?? $debtor?->type;
 
         if ($type === 'physical') {
             $firstName = $payload['first_name'] ?? null;

@@ -26,7 +26,7 @@ final class DistrictStatsSummaryResource extends JsonResource
         return [
             'data' => $cards->all(),
             'districts_count' => $cards->count(),
-            'customers_count' => $cards->sum('customers_count'),
+            'debtors_count' => $cards->sum('debtors_count'),
             'debts_count' => $cards->sum('debts_count'),
             'payments_count' => $cards->sum('payments_count'),
         ];

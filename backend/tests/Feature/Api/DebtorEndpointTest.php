@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Models\Customer;
+use App\Models\Debtor;
 use App\Models\Debt;
 use App\Models\District;
 use App\Models\Payment;
@@ -51,14 +51,14 @@ function apiDistrict(User $owner, int $number = 777): District
     ]);
 }
 
-test('authenticated customer creation returns a resource with public identifiers only', function (): void {
-    $owner = apiUser('customer-owner@executo.local');
-    $admin = apiUser('customer-admin@executo.local', true);
+test('authenticated debtor creation returns a resource with public identifiers only', function (): void {
+    $owner = apiUser('debtor-owner@executo.local');
+    $admin = apiUser('debtor-admin@executo.local', true);
     $district = apiDistrict($owner);
 
     Sanctum::actingAs($admin, ['*']);
 
-    $response = $this->postJson(sprintf('/api/v1/districts/%s/customers', $district->ulid), [
+    $response = $this->postJson(sprintf('/api/v1/districts/%s/debtors', $district->ulid), [
         'type' => 'physical',
         'first_name' => 'Ilze',
         'last_name' => 'Ozolina',
@@ -71,17 +71,17 @@ test('authenticated customer creation returns a resource with public identifiers
         ->assertJsonPath('data.type', 'physical')
         ->assertJsonMissingPath('data.id');
 
-    expect(Customer::query()->where('email', 'ilze.ozolina@example.com')->exists())->toBeTrue();
+    expect(Debtor::query()->where('email', 'ilze.ozolina@example.com')->exists())->toBeTrue();
 });
 
-test('customer creation validation failures return 422', function (): void {
+test('debtor creation validation failures return 422', function (): void {
     $owner = apiUser('validation-owner@executo.local');
     $admin = apiUser('validation-admin@executo.local', true);
     $district = apiDistrict($owner, 778);
 
     Sanctum::actingAs($admin, ['*']);
 
-    $response = $this->postJson(sprintf('/api/v1/districts/%s/customers', $district->ulid), [
+    $response = $this->postJson(sprintf('/api/v1/districts/%s/debtors', $district->ulid), [
         'type' => 'legal',
         'email' => 'not-an-email',
     ]);
@@ -91,49 +91,49 @@ test('customer creation validation failures return 422', function (): void {
         ->assertJsonValidationErrors(['email', 'company_name']);
 });
 
-test('customer listing requires authentication', function (): void {
+test('debtor listing requires authentication', function (): void {
     $owner = apiUser('auth-owner@executo.local');
     $district = apiDistrict($owner, 779);
 
-    $this->getJson(sprintf('/api/v1/districts/%s/customers', $district->ulid))
+    $this->getJson(sprintf('/api/v1/districts/%s/debtors', $district->ulid))
         ->assertUnauthorized();
 });
 
-test('nested customer route binding rejects customers from another district', function (): void {
+test('nested debtor route binding rejects debtors from another district', function (): void {
     $owner = apiUser('binding-owner@executo.local');
     $admin = apiUser('binding-admin@executo.local', true);
     $firstDistrict = apiDistrict($owner, 780);
     $secondDistrict = apiDistrict($owner, 781);
-    $customer = Customer::query()->create([
+    $debtor = Debtor::query()->create([
         'district_id' => $firstDistrict->id,
-        'name' => 'Bound Customer',
+        'name' => 'Bound Debtor',
         'type' => 'physical',
         'email' => 'bound@example.com',
     ]);
 
     Sanctum::actingAs($admin, ['*']);
 
-    $this->getJson(sprintf('/api/v1/districts/%s/customers/%s', $secondDistrict->ulid, $customer->ulid))
+    $this->getJson(sprintf('/api/v1/districts/%s/debtors/%s', $secondDistrict->ulid, $debtor->ulid))
         ->assertNotFound();
 });
 
-test('nested debt route binding rejects debts from another customer', function (): void {
+test('nested debt route binding rejects debts from another debtor', function (): void {
     $owner = apiUser('debt-binding-owner@executo.local');
     $admin = apiUser('debt-binding-admin@executo.local', true);
     $district = apiDistrict($owner, 782);
-    $firstCustomer = Customer::query()->create([
+    $firstDebtor = Debtor::query()->create([
         'district_id' => $district->id,
-        'name' => 'First Customer',
+        'name' => 'First Debtor',
         'type' => 'physical',
     ]);
-    $secondCustomer = Customer::query()->create([
+    $secondDebtor = Debtor::query()->create([
         'district_id' => $district->id,
-        'name' => 'Second Customer',
+        'name' => 'Second Debtor',
         'type' => 'physical',
     ]);
     $debt = Debt::query()->create([
         'district_id' => $district->id,
-        'customer_id' => $firstCustomer->id,
+        'debtor_id' => $firstDebtor->id,
         'amount' => '100.0000',
         'date' => '2026-04-01',
     ]);
@@ -141,9 +141,9 @@ test('nested debt route binding rejects debts from another customer', function (
     Sanctum::actingAs($admin, ['*']);
 
     $this->getJson(sprintf(
-        '/api/v1/districts/%s/customers/%s/debts/%s',
+        '/api/v1/districts/%s/debtors/%s/debts/%s',
         $district->ulid,
-        $secondCustomer->ulid,
+        $secondDebtor->ulid,
         $debt->ulid,
     ))->assertNotFound();
 });
@@ -152,25 +152,25 @@ test('nested payment route binding rejects payments from another debt', function
     $owner = apiUser('payment-binding-owner@executo.local');
     $admin = apiUser('payment-binding-admin@executo.local', true);
     $district = apiDistrict($owner, 783);
-    $customer = Customer::query()->create([
+    $debtor = Debtor::query()->create([
         'district_id' => $district->id,
-        'name' => 'Payment Customer',
+        'name' => 'Payment Debtor',
         'type' => 'physical',
     ]);
     $firstDebt = Debt::query()->create([
         'district_id' => $district->id,
-        'customer_id' => $customer->id,
+        'debtor_id' => $debtor->id,
         'amount' => '100.0000',
         'date' => '2026-04-01',
     ]);
     $secondDebt = Debt::query()->create([
         'district_id' => $district->id,
-        'customer_id' => $customer->id,
+        'debtor_id' => $debtor->id,
         'amount' => '200.0000',
         'date' => '2026-04-02',
     ]);
     $payment = Payment::query()->create([
-        'customer_id' => $customer->id,
+        'debtor_id' => $debtor->id,
         'debt_id' => $firstDebt->id,
         'amount' => '25.0000',
         'date' => '2026-04-03',
@@ -179,9 +179,9 @@ test('nested payment route binding rejects payments from another debt', function
     Sanctum::actingAs($admin, ['*']);
 
     $this->getJson(sprintf(
-        '/api/v1/districts/%s/customers/%s/debts/%s/payments/%s',
+        '/api/v1/districts/%s/debtors/%s/debts/%s/payments/%s',
         $district->ulid,
-        $customer->ulid,
+        $debtor->ulid,
         $secondDebt->ulid,
         $payment->ulid,
     ))->assertNotFound();

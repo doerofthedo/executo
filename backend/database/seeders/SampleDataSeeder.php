@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
-use App\Models\Customer;
+use App\Models\Debtor;
 use App\Models\Debt;
 use App\Models\District;
 use App\Models\Payment;
@@ -109,10 +109,10 @@ final class SampleDataSeeder extends Seeder
             }
 
             if ($districtData['number'] === 69) {
-                $this->pruneLegacyDistrictCustomers($district);
+                $this->pruneLegacyDistrictDebtors($district);
             } else {
-                foreach ($this->customersForDistrict($district, $districtIndex) as $customer) {
-                    $this->seedDebtsAndPayments($customer, $districtIndex);
+                foreach ($this->debtorsForDistrict($district, $districtIndex) as $debtor) {
+                    $this->seedDebtsAndPayments($debtor, $districtIndex);
                 }
             }
         }
@@ -169,40 +169,40 @@ final class SampleDataSeeder extends Seeder
     }
 
     /**
-     * @return Collection<int, Customer>
+     * @return Collection<int, Debtor>
      */
-    private function customersForDistrict(District $district, int $districtIndex): Collection
+    private function debtorsForDistrict(District $district, int $districtIndex): Collection
     {
-        $customers = collect();
+        $debtors = collect();
 
         foreach (range(0, 3) as $offset) {
             if ($offset % 2 === 0) {
                 $person = self::PEOPLE[($districtIndex * 2 + $offset) % count(self::PEOPLE)];
-                $customers->push($this->upsertPhysicalCustomer($district, $person, $offset + 1));
+                $debtors->push($this->upsertPhysicalDebtor($district, $person, $offset + 1));
                 continue;
             }
 
             $company = self::COMPANIES[($districtIndex * 2 + $offset) % count(self::COMPANIES)];
-            $customers->push($this->upsertLegalCustomer($district, $company, $offset + 1));
+            $debtors->push($this->upsertLegalDebtor($district, $company, $offset + 1));
         }
 
-        return $customers;
+        return $debtors;
     }
 
     /**
      * @param  array{first: string, last: string}  $person
      */
-    private function upsertPhysicalCustomer(District $district, array $person, int $sequence): Customer
+    private function upsertPhysicalDebtor(District $district, array $person, int $sequence): Debtor
     {
         $caseNumber = sprintf('%d/%03d/2026', 1000 + $sequence, $district->number);
         $email = sprintf(
-            '%s.%s.%d@customer.executo.local',
+            '%s.%s.%d@debtor.executo.local',
             strtolower($person['first']),
             strtolower($person['last']),
             $district->number,
         );
 
-        return Customer::query()->updateOrCreate(
+        return Debtor::query()->updateOrCreate(
             [
                 'district_id' => $district->id,
                 'case_number' => $caseNumber,
@@ -223,11 +223,11 @@ final class SampleDataSeeder extends Seeder
         );
     }
 
-    private function upsertLegalCustomer(District $district, string $companyName, int $sequence): Customer
+    private function upsertLegalDebtor(District $district, string $companyName, int $sequence): Debtor
     {
         $caseNumber = sprintf('%d/%03d/2026', 2000 + $sequence, $district->number);
 
-        return Customer::query()->updateOrCreate(
+        return Debtor::query()->updateOrCreate(
             [
                 'district_id' => $district->id,
                 'case_number' => $caseNumber,
@@ -249,29 +249,29 @@ final class SampleDataSeeder extends Seeder
         );
     }
 
-    private function seedDebtsAndPayments(Customer $customer, int $districtIndex): void
+    private function seedDebtsAndPayments(Debtor $debtor, int $districtIndex): void
     {
-        Payment::query()->where('customer_id', $customer->id)->delete();
-        Debt::query()->where('customer_id', $customer->id)->delete();
+        Payment::query()->where('debtor_id', $debtor->id)->delete();
+        Debt::query()->where('debtor_id', $debtor->id)->delete();
 
         foreach (range(1, 2) as $debtSequence) {
             $baseDate = CarbonImmutable::parse('2025-01-15')
                 ->addMonths($districtIndex + $debtSequence)
-                ->addDays($customer->id % 12);
+                ->addDays($debtor->id % 12);
 
             $debt = Debt::query()->create([
-                'district_id' => $customer->district_id,
-                'customer_id' => $customer->id,
+                'district_id' => $debtor->district_id,
+                'debtor_id' => $debtor->id,
                 'amount' => $this->sampleAmount('450', (string) $debtSequence, '175.125'),
                 'date' => $baseDate->toDateString(),
-                'description' => sprintf('Sample debt %d for %s', $debtSequence, $customer->case_number ?? $customer->name ?? 'customer'),
+                'description' => sprintf('Sample debt %d for %s', $debtSequence, $debtor->case_number ?? $debtor->name ?? 'debtor'),
             ]);
 
             foreach (range(1, 3) as $paymentSequence) {
                 $paymentDate = $baseDate->addDays($paymentSequence * 21);
 
                 Payment::query()->create([
-                    'customer_id' => $customer->id,
+                    'debtor_id' => $debtor->id,
                     'debt_id' => $debt->id,
                     'amount' => $this->sampleAmount('35', (string) $paymentSequence, '12.5'),
                     'date' => $paymentDate->toDateString(),
@@ -286,7 +286,7 @@ final class SampleDataSeeder extends Seeder
         return bcadd($base, bcmul($sequence, $step, 4), 4);
     }
 
-    private function pruneLegacyDistrictCustomers(District $district): void
+    private function pruneLegacyDistrictDebtors(District $district): void
     {
         $payload = $this->legacyExportPayload();
 
@@ -315,36 +315,36 @@ final class SampleDataSeeder extends Seeder
             }
         }
 
-        $customers = DB::table('customers')
+        $debtors = DB::table('debtors')
             ->select('id', 'case_number', 'name')
             ->where('district_id', $district->id)
             ->get();
 
-        $staleCustomerIds = [];
+        $staleDebtorIds = [];
 
-        foreach ($customers as $customer) {
-            $caseNumber = is_string($customer->case_number) && $customer->case_number !== ''
-                ? $customer->case_number
+        foreach ($debtors as $debtor) {
+            $caseNumber = is_string($debtor->case_number) && $debtor->case_number !== ''
+                ? $debtor->case_number
                 : null;
-            $name = is_string($customer->name) && $customer->name !== ''
-                ? $customer->name
+            $name = is_string($debtor->name) && $debtor->name !== ''
+                ? $debtor->name
                 : null;
 
-            $isLegacyCustomer = $caseNumber !== null
+            $isLegacyDebtor = $caseNumber !== null
                 ? in_array($caseNumber, $validCaseNumbers, true)
                 : ($name !== null && in_array($name, $validNamesWithoutCaseNumber, true));
 
-            if (! $isLegacyCustomer && is_int($customer->id)) {
-                $staleCustomerIds[] = $customer->id;
+            if (! $isLegacyDebtor && is_int($debtor->id)) {
+                $staleDebtorIds[] = $debtor->id;
             }
         }
 
-        if ($staleCustomerIds === []) {
+        if ($staleDebtorIds === []) {
             return;
         }
 
-        DB::table('customers')
-            ->whereIn('id', $staleCustomerIds)
+        DB::table('debtors')
+            ->whereIn('id', $staleDebtorIds)
             ->delete();
     }
 

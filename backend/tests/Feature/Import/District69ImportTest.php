@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use App\Domain\Debt\Services\InterestCalculatorService;
-use App\Models\Customer;
+use App\Models\Debtor;
 use App\Models\District;
 use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -15,12 +15,12 @@ beforeEach(function (): void {
     $this->seed();
 });
 
-test('district 69 import contains twelve customers', function (): void {
+test('district 69 import contains twelve debtors', function (): void {
     $district = District::query()
         ->where('number', 69)
         ->firstOrFail();
 
-    expect($district->customers()->count())->toBe(12);
+    expect($district->debtors()->count())->toBe(12);
 });
 
 test('Birkenfelde Ilze total debt on 2024-05-15 matches the legacy calculation', function (): void {
@@ -28,12 +28,12 @@ test('Birkenfelde Ilze total debt on 2024-05-15 matches the legacy calculation',
         ->where('number', 69)
         ->firstOrFail();
 
-    $customer = Customer::query()
+    $debtor = Debtor::query()
         ->where('district_id', $district->id)
         ->where('name', 'Birkenfelde Ilze')
         ->firstOrFail();
 
-    $debt = $customer->debts()
+    $debt = $debtor->debts()
         ->with('payments')
         ->firstOrFail();
 

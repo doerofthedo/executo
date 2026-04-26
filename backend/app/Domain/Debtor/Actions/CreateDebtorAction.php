@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Customer\Actions;
+namespace App\Domain\Debtor\Actions;
 
-use App\Domain\Customer\DTOs\CustomerData;
-use App\Models\Customer;
+use App\Domain\Debtor\DTOs\DebtorData;
+use App\Models\Debtor;
 use App\Models\District;
 
-final readonly class CreateCustomerAction
+final readonly class CreateDebtorAction
 {
-    public function execute(District $district, CustomerData $data): Customer
+    public function execute(District $district, DebtorData $data): Debtor
     {
-        return Customer::query()->create([
+        return Debtor::query()->create([
             'district_id' => $district->id,
             'name' => $data->name,
             'case_number' => $data->caseNumber,

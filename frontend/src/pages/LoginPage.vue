@@ -126,11 +126,7 @@ const onSubmit = handleSubmit(async (values) => {
 
     try {
         await authStore.signIn(values);
-        const destination = authStore.user?.is_email_verified === false
-            ? '/profile?verification=required'
-            : '/dashboard';
-
-        window.location.assign(destination);
+        window.location.assign('/dashboard');
     } catch {
         const message = t('auth.form.invalid_credentials');
 

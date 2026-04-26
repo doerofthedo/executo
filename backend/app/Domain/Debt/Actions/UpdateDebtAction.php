@@ -20,7 +20,7 @@ final readonly class UpdateDebtAction
             $debt->save();
         }
 
-        $freshDebt = $debt->fresh(['district', 'customer']);
+        $freshDebt = $debt->fresh(['district', 'debtor']);
 
         if ($freshDebt === null) {
             throw new NotFoundHttpException();

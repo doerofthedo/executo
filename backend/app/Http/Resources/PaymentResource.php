@@ -16,7 +16,7 @@ final class PaymentResource extends JsonResource
     {
         return [
             'ulid' => $this->resource->ulid,
-            'customer_ulid' => $this->resource->customer?->ulid,
+            'debtor_ulid' => $this->resource->debtor?->ulid,
             'debt_ulid' => $this->resource->debt?->ulid,
             'amount' => (string) $this->resource->amount,
             'date' => $this->resource->date?->toDateString(),

@@ -4,102 +4,101 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Domain\Customer\Actions\CreateCustomerAction;
-use App\Domain\Customer\Actions\DeleteCustomerAction;
-use App\Domain\Customer\Actions\ListCustomersAction;
-use App\Domain\Customer\Actions\RestoreCustomerAction;
-use App\Domain\Customer\Actions\UpdateCustomerAction;
-use App\Domain\Customer\DTOs\CustomerData;
+use App\Domain\Debtor\Actions\CreateDebtorAction;
+use App\Domain\Debtor\Actions\DeleteDebtorAction;
+use App\Domain\Debtor\Actions\ListDebtorsAction;
+use App\Domain\Debtor\Actions\RestoreDebtorAction;
+use App\Domain\Debtor\Actions\UpdateDebtorAction;
+use App\Domain\Debtor\DTOs\DebtorData;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Customer\ListCustomersRequest;
-use App\Http\Requests\Customer\StoreCustomerRequest;
-use App\Http\Requests\Customer\UpdateCustomerRequest;
-use App\Http\Resources\CustomerResource;
+use App\Http\Requests\Debtor\ListDebtorsRequest;
+use App\Http\Requests\Debtor\StoreDebtorRequest;
+use App\Http\Requests\Debtor\UpdateDebtorRequest;
+use App\Http\Resources\DebtorResource;
 use App\Http\Resources\EmptyResource;
-use App\Models\Customer;
+use App\Models\Debtor;
 use App\Models\District;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Symfony\Component\HttpFoundation\Response;
 
-final class CustomerController extends Controller
+final class DebtorController extends Controller
 {
     public function __construct(
-        private readonly CreateCustomerAction $createCustomer,
-        private readonly ListCustomersAction $listCustomers,
-        private readonly UpdateCustomerAction $updateCustomer,
-        private readonly RestoreCustomerAction $restoreCustomer,
-        private readonly DeleteCustomerAction $deleteCustomer,
-    ) {
+        private readonly CreateDebtorAction $createDebtor,
+        private readonly ListDebtorsAction $listDebtors,
+        private readonly UpdateDebtorAction $updateDebtor,
+        private readonly RestoreDebtorAction $restoreDebtor,
+        private readonly DeleteDebtorAction $deleteDebtor,
+    ) {}
+
+    public function index(ListDebtorsRequest $request, District $district): AnonymousResourceCollection
+    {
+        $this->authorize('viewAny', Debtor::class);
+
+        return DebtorResource::collection($this->listDebtors->execute($district, $request->validated()));
     }
 
-    public function index(ListCustomersRequest $request, District $district): AnonymousResourceCollection
+    public function show(District $district, Debtor $debtor): DebtorResource
     {
-        $this->authorize('viewAny', Customer::class);
+        $this->authorize('view', $debtor);
 
-        return CustomerResource::collection($this->listCustomers->execute($district, $request->validated()));
+        return new DebtorResource($debtor->load('district'));
     }
 
-    public function show(District $district, Customer $customer): CustomerResource
+    public function store(StoreDebtorRequest $request, District $district): JsonResponse
     {
-        $this->authorize('view', $customer);
+        $this->authorize('create', Debtor::class);
 
-        return new CustomerResource($customer->load('district'));
-    }
-
-    public function store(StoreCustomerRequest $request, District $district): JsonResponse
-    {
-        $this->authorize('create', Customer::class);
-
-        $customer = $this->createCustomer->execute(
+        $debtor = $this->createDebtor->execute(
             $district,
-            $this->customerDataFromPayload($this->updateCustomer->normalizePayload($request->validated())),
+            $this->debtorDataFromPayload($this->updateDebtor->normalizePayload($request->validated())),
         );
 
-        return (new CustomerResource($customer->load('district')))
+        return (new DebtorResource($debtor->load('district')))
             ->response()
             ->setStatusCode(Response::HTTP_CREATED);
     }
 
-    public function update(UpdateCustomerRequest $request, District $district, Customer $customer): CustomerResource
+    public function update(UpdateDebtorRequest $request, District $district, Debtor $debtor): DebtorResource
     {
         $validated = $request->validated();
         $restore = ($validated['restore'] ?? false) === true;
 
         if ($restore) {
-            if (count($validated) !== 1 || ! $customer->trashed()) {
-                abort(422, 'Restore requests must target a soft-deleted customer only.');
+            if (count($validated) !== 1 || ! $debtor->trashed()) {
+                abort(422, 'Restore requests must target a soft-deleted debtor only.');
             }
 
-            $this->authorize('restore', $customer);
+            $this->authorize('restore', $debtor);
 
-            return new CustomerResource($this->restoreCustomer->execute($customer)->load('district'));
+            return new DebtorResource($this->restoreDebtor->execute($debtor)->load('district'));
         }
 
-        $this->authorize('update', $customer);
+        $this->authorize('update', $debtor);
 
         if ($validated === []) {
             abort(422, 'No changes submitted.');
         }
 
-        return new CustomerResource($this->updateCustomer->execute($customer, $validated)->load('district'));
+        return new DebtorResource($this->updateDebtor->execute($debtor, $validated)->load('district'));
     }
 
-    public function destroy(District $district, Customer $customer): JsonResponse
+    public function destroy(District $district, Debtor $debtor): JsonResponse
     {
         $forceDelete = request()->boolean('force');
 
         if ($forceDelete) {
-            $this->authorize('forceDelete', $customer);
-            $this->deleteCustomer->execute($customer, true);
+            $this->authorize('forceDelete', $debtor);
+            $this->deleteDebtor->execute($debtor, true);
 
             return (new EmptyResource())
                 ->response()
                 ->setStatusCode(Response::HTTP_NO_CONTENT);
         }
 
-        $this->authorize('delete', $customer);
-        $this->deleteCustomer->execute($customer, false);
+        $this->authorize('delete', $debtor);
+        $this->deleteDebtor->execute($debtor, false);
 
         return (new EmptyResource())
             ->response()
@@ -109,9 +108,9 @@ final class CustomerController extends Controller
     /**
      * @param  array<string, mixed>  $payload
      */
-    private function customerDataFromPayload(array $payload): CustomerData
+    private function debtorDataFromPayload(array $payload): DebtorData
     {
-        return new CustomerData(
+        return new DebtorData(
             name: (string) ($payload['name'] ?? ''),
             caseNumber: $payload['case_number'] ?? null,
             type: (string) $payload['type'],

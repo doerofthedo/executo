@@ -10,14 +10,14 @@
                 <form class="lex-form" @submit.prevent="onSubmit">
                     <div class="lex-settings-grid">
                         <label class="lex-form-field">
-                            <span class="lex-input-label">{{ t('operations.customer') }}</span>
-                            <select v-model="customerUlidValue" class="lex-input" @change="onCustomerChange">
-                                <option value="">{{ t('operations.select_customer') }}</option>
-                                <option v-for="customer in customers" :key="customer.ulid" :value="customer.ulid">
-                                    {{ customer.name ?? customer.case_number ?? customer.ulid }}
+                            <span class="lex-input-label">{{ t('operations.debtor') }}</span>
+                            <select v-model="debtorUlidValue" class="lex-input" @change="onDebtorChange">
+                                <option value="">{{ t('operations.select_debtor') }}</option>
+                                <option v-for="debtor in debtors" :key="debtor.ulid" :value="debtor.ulid">
+                                    {{ debtor.name ?? debtor.case_number ?? debtor.ulid }}
                                 </option>
                             </select>
-                            <p v-if="errors.customer_ulid" class="lex-input-error-message">{{ errors.customer_ulid }}</p>
+                            <p v-if="errors.debtor_ulid" class="lex-input-error-message">{{ errors.debtor_ulid }}</p>
                         </label>
 
                         <label class="lex-form-field">
@@ -69,9 +69,9 @@ import { useRoute, useRouter } from 'vue-router';
 import {
     createPayment,
     createPaymentSchema,
-    fetchCustomerDebts,
-    fetchDistrictCustomers,
-    type CustomerOption,
+    fetchDebtorDebts,
+    fetchDistrictDebtors,
+    type DebtorOption,
     type DebtOption,
     type PaymentFormInput,
 } from '@/api/operations';
@@ -85,7 +85,7 @@ const authStore = useAuthStore();
 const route = useRoute();
 const router = useRouter();
 const formError = ref('');
-const customers = ref<CustomerOption[]>([]);
+const debtors = ref<DebtorOption[]>([]);
 const debts = ref<DebtOption[]>([]);
 const defaultDistrictUlid = computed(() => typeof route.params.district === 'string'
     ? route.params.district
@@ -95,7 +95,7 @@ const schema = computed(() => toTypedSchema(createPaymentSchema(t)));
 const { errors, defineField, handleSubmit, isSubmitting } = useForm<PaymentFormInput>({
     validationSchema: schema,
     initialValues: {
-        customer_ulid: '',
+        debtor_ulid: '',
         debt_ulid: '',
         amount: '',
         date: '',
@@ -103,7 +103,7 @@ const { errors, defineField, handleSubmit, isSubmitting } = useForm<PaymentFormI
     },
 });
 
-const [customerUlidValue] = defineField('customer_ulid');
+const [debtorUlidValue] = defineField('debtor_ulid');
 const [debtUlidValue] = defineField('debt_ulid');
 const [amountValue] = defineField('amount');
 const [dateValue] = defineField('date');
@@ -114,18 +114,18 @@ onMounted(async () => {
         return;
     }
 
-    customers.value = await fetchDistrictCustomers(defaultDistrictUlid.value);
+    debtors.value = await fetchDistrictDebtors(defaultDistrictUlid.value);
 });
 
-async function onCustomerChange(): Promise<void> {
+async function onDebtorChange(): Promise<void> {
     debtUlidValue.value = '';
 
-    if (defaultDistrictUlid.value === null || customerUlidValue.value === '') {
+    if (defaultDistrictUlid.value === null || debtorUlidValue.value === '') {
         debts.value = [];
         return;
     }
 
-    debts.value = await fetchCustomerDebts(defaultDistrictUlid.value, customerUlidValue.value);
+    debts.value = await fetchDebtorDebts(defaultDistrictUlid.value, debtorUlidValue.value);
 }
 
 const onSubmit = handleSubmit(async (values) => {
@@ -137,7 +137,7 @@ const onSubmit = handleSubmit(async (values) => {
     }
 
     try {
-        await createPayment(defaultDistrictUlid.value, values.customer_ulid, values.debt_ulid, {
+        await createPayment(defaultDistrictUlid.value, values.debtor_ulid, values.debt_ulid, {
             amount: values.amount,
             date: values.date,
             description: values.description || null,

@@ -47,7 +47,7 @@ test('failed login attempt is written to the security audit log', function (): v
         ->and(isset($properties['input']['password']))->toBeFalse();
 });
 
-test('customer creation writes a successful security audit entry', function (): void {
+test('debtor creation writes a successful security audit entry', function (): void {
     $owner = User::query()->create([
         'name' => 'District',
         'surname' => 'Owner',
@@ -82,7 +82,7 @@ test('customer creation writes a successful security audit entry', function (): 
 
     Sanctum::actingAs($admin, ['*']);
 
-    $response = $this->postJson(sprintf('/api/v1/districts/%s/customers', $district->ulid), [
+    $response = $this->postJson(sprintf('/api/v1/districts/%s/debtors', $district->ulid), [
         'type' => 'physical',
         'first_name' => 'Ilze',
         'last_name' => 'Ozolina',
@@ -95,8 +95,8 @@ test('customer creation writes a successful security audit entry', function (): 
     $properties = $activity->properties->toArray();
 
     expect($activity->log_name)->toBe('security')
-        ->and($activity->event)->toBe('api.v1.customers.store.success')
-        ->and($properties['route_name'])->toBe('api.v1.customers.store')
+        ->and($activity->event)->toBe('api.v1.debtors.store.success')
+        ->and($properties['route_name'])->toBe('api.v1.debtors.store')
         ->and($properties['status_code'])->toBe(201)
         ->and($properties['outcome'])->toBe('success')
         ->and($properties['district_ulid'])->toBe($district->ulid)

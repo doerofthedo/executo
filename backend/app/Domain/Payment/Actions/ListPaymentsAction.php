@@ -16,7 +16,7 @@ final readonly class ListPaymentsAction
     public function execute(Debt $debt): Collection
     {
         return $debt->payments()
-            ->with(['customer', 'debt'])
+            ->with(['debtor', 'debt'])
             ->orderByDesc('date')
             ->get();
     }

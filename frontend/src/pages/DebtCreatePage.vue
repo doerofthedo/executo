@@ -10,14 +10,14 @@
                 <form class="lex-form" @submit.prevent="onSubmit">
                     <div class="lex-settings-grid">
                         <label class="lex-form-field">
-                            <span class="lex-input-label">{{ t('operations.customer') }}</span>
-                            <select v-model="customerUlidValue" class="lex-input">
-                                <option value="">{{ t('operations.select_customer') }}</option>
-                                <option v-for="customer in customers" :key="customer.ulid" :value="customer.ulid">
-                                    {{ customer.name ?? customer.case_number ?? customer.ulid }}
+                            <span class="lex-input-label">{{ t('operations.debtor') }}</span>
+                            <select v-model="debtorUlidValue" class="lex-input">
+                                <option value="">{{ t('operations.select_debtor') }}</option>
+                                <option v-for="debtor in debtors" :key="debtor.ulid" :value="debtor.ulid">
+                                    {{ debtor.name ?? debtor.case_number ?? debtor.ulid }}
                                 </option>
                             </select>
-                            <p v-if="errors.customer_ulid" class="lex-input-error-message">{{ errors.customer_ulid }}</p>
+                            <p v-if="errors.debtor_ulid" class="lex-input-error-message">{{ errors.debtor_ulid }}</p>
                         </label>
 
                         <label class="lex-form-field">
@@ -55,7 +55,7 @@ import { useForm } from 'vee-validate';
 import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
-import { createDebt, createDebtSchema, fetchDistrictCustomers, type CustomerOption, type DebtFormInput } from '@/api/operations';
+import { createDebt, createDebtSchema, fetchDistrictDebtors, type DebtorOption, type DebtFormInput } from '@/api/operations';
 import { isApiError } from '@/api/client';
 import { toTypedSchema } from '@vee-validate/zod';
 import AppLayout from '@/layouts/AppLayout.vue';
@@ -66,7 +66,7 @@ const authStore = useAuthStore();
 const route = useRoute();
 const router = useRouter();
 const formError = ref('');
-const customers = ref<CustomerOption[]>([]);
+const debtors = ref<DebtorOption[]>([]);
 const defaultDistrictUlid = computed(() => typeof route.params.district === 'string'
     ? route.params.district
     : (authStore.user?.default_district_ulid ?? null));
@@ -75,14 +75,14 @@ const schema = computed(() => toTypedSchema(createDebtSchema(t)));
 const { errors, defineField, handleSubmit, isSubmitting } = useForm<DebtFormInput>({
     validationSchema: schema,
     initialValues: {
-        customer_ulid: '',
+        debtor_ulid: '',
         amount: '',
         date: '',
         description: '',
     },
 });
 
-const [customerUlidValue] = defineField('customer_ulid');
+const [debtorUlidValue] = defineField('debtor_ulid');
 const [amountValue] = defineField('amount');
 const [dateValue] = defineField('date');
 const [descriptionValue] = defineField('description');
@@ -92,7 +92,7 @@ onMounted(async () => {
         return;
     }
 
-    customers.value = await fetchDistrictCustomers(defaultDistrictUlid.value);
+    debtors.value = await fetchDistrictDebtors(defaultDistrictUlid.value);
 });
 
 const onSubmit = handleSubmit(async (values) => {
@@ -104,7 +104,7 @@ const onSubmit = handleSubmit(async (values) => {
     }
 
     try {
-        await createDebt(defaultDistrictUlid.value, values.customer_ulid, {
+        await createDebt(defaultDistrictUlid.value, values.debtor_ulid, {
             amount: values.amount,
             date: values.date,
             description: values.description || null,

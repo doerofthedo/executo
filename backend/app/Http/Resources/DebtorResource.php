@@ -7,7 +7,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-final class CustomerResource extends JsonResource
+final class DebtorResource extends JsonResource
 {
     /**
      * @return array<string, bool|string|null>

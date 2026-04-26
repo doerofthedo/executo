@@ -4,16 +4,16 @@
             <section class="lex-panel lex-panel-header p-8">
                 <div class="flex flex-wrap items-start justify-between gap-4">
                     <div class="space-y-2">
-                        <p class="lex-page-eyebrow">{{ t('customers.eyebrow') }}</p>
-                        <h1 class="lex-page-title">{{ t('customers.title') }}</h1>
+                        <p class="lex-page-eyebrow">{{ t('debtors.eyebrow') }}</p>
+                        <h1 class="lex-page-title">{{ t('debtors.title') }}</h1>
                     </div>
 
                     <RouterLink
-                        v-if="stats?.can_create_customer"
-                        :to="{ name: 'customer-create', params: { district: districtUlid } }"
+                        v-if="stats?.can_create_debtor"
+                        :to="{ name: 'debtor-create', params: { district: districtUlid } }"
                         class="lex-button lex-button-primary"
                     >
-                        {{ t('customers.add') }}
+                        {{ t('debtors.add') }}
                     </RouterLink>
                 </div>
             </section>
@@ -21,20 +21,20 @@
             <section class="lex-panel p-8">
                 <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     <label class="lex-form-field">
-                        <span class="lex-input-label">{{ t('customers.search_label') }}</span>
+                        <span class="lex-input-label">{{ t('debtors.search_label') }}</span>
                         <input
                             v-model="searchInput"
                             type="search"
                             class="lex-input"
-                            :placeholder="t('customers.search_placeholder')"
+                            :placeholder="t('debtors.search_placeholder')"
                             @input="onSearchInput"
                         />
                     </label>
 
                     <label class="lex-form-field">
-                        <span class="lex-input-label">{{ t('customers.type_filter') }}</span>
+                        <span class="lex-input-label">{{ t('debtors.type_filter') }}</span>
                         <select v-model="typeFilter" class="lex-input" @change="onFilterChange">
-                            <option value="">{{ t('customers.type_all') }}</option>
+                            <option value="">{{ t('debtors.type_all') }}</option>
                             <option value="physical">{{ t('operations.type_physical') }}</option>
                             <option value="legal">{{ t('operations.type_legal') }}</option>
                         </select>
@@ -45,18 +45,18 @@
             <section class="lex-panel p-8">
                 <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
                     <p class="text-sm text-slate-500">
-                        {{ t('customers.total_count', { count: meta.total }) }}
+                        {{ t('debtors.total_count', { count: meta.total }) }}
                     </p>
                     <p v-if="loadError !== ''" class="lex-form-message lex-form-message-error">{{ loadError }}</p>
                 </div>
 
                 <div v-if="loading" class="py-8 text-center text-sm text-slate-500">
-                    {{ t('customers.loading') }}
+                    {{ t('debtors.loading') }}
                 </div>
 
                 <template v-else>
-                    <div v-if="customers.length === 0" class="lex-dashboard-empty">
-                        {{ searchInput || typeFilter ? t('customers.empty_filtered') : t('customers.empty') }}
+                    <div v-if="debtors.length === 0" class="lex-dashboard-empty">
+                        {{ searchInput || typeFilter ? t('debtors.empty_filtered') : t('debtors.empty') }}
                     </div>
 
                     <div v-else class="overflow-x-auto">
@@ -64,59 +64,59 @@
                             <thead>
                                 <tr class="text-left">
                                     <th class="border-b border-slate-200 px-4 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-                                        {{ t('customers.columns.case_number') }}
+                                        {{ t('debtors.columns.case_number') }}
                                     </th>
                                     <th class="border-b border-slate-200 px-4 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-                                        {{ t('customers.columns.type') }}
+                                        {{ t('debtors.columns.type') }}
                                     </th>
                                     <th class="border-b border-slate-200 px-4 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-                                        {{ t('customers.columns.name') }}
+                                        {{ t('debtors.columns.name') }}
                                     </th>
                                     <th class="border-b border-slate-200 px-4 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-                                        {{ t('customers.columns.identifier') }}
+                                        {{ t('debtors.columns.identifier') }}
                                     </th>
                                     <th class="border-b border-slate-200 px-4 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-                                        {{ t('customers.columns.phone') }}
+                                        {{ t('debtors.columns.phone') }}
                                     </th>
                                     <th class="border-b border-slate-200 px-4 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-                                        {{ t('customers.columns.actions') }}
+                                        {{ t('debtors.columns.actions') }}
                                     </th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr
-                                    v-for="customer in customers"
-                                    :key="customer.ulid"
+                                    v-for="debtor in debtors"
+                                    :key="debtor.ulid"
                                     class="hover:bg-slate-50"
-                                    :class="{ 'opacity-50': customer.is_deleted }"
+                                    :class="{ 'opacity-50': debtor.is_deleted }"
                                 >
                                     <td class="border-b border-slate-100 px-4 py-3 text-sm font-medium text-slate-800">
-                                        {{ customer.case_number || t('customers.none') }}
+                                        {{ debtor.case_number || t('debtors.none') }}
                                     </td>
                                     <td class="border-b border-slate-100 px-4 py-3 text-sm text-slate-600">
-                                        {{ customer.type === 'legal' ? t('operations.type_legal') : t('operations.type_physical') }}
+                                        {{ debtor.type === 'legal' ? t('operations.type_legal') : t('operations.type_physical') }}
                                     </td>
                                     <td class="border-b border-slate-100 px-4 py-3 text-sm text-slate-800">
-                                        {{ customerDisplayName(customer) }}
+                                        {{ debtorDisplayName(debtor) }}
                                         <span
-                                            v-if="customer.is_deleted"
+                                            v-if="debtor.is_deleted"
                                             class="ml-2 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500"
                                         >
-                                            {{ t('customers.deleted_badge') }}
+                                            {{ t('debtors.deleted_badge') }}
                                         </span>
                                     </td>
                                     <td class="border-b border-slate-100 px-4 py-3 text-sm text-slate-600">
-                                        {{ customerIdentifier(customer) }}
+                                        {{ debtorIdentifier(debtor) }}
                                     </td>
                                     <td class="border-b border-slate-100 px-4 py-3 text-sm text-slate-600">
-                                        {{ customer.phone || t('customers.none') }}
+                                        {{ debtor.phone || t('debtors.none') }}
                                     </td>
                                     <td class="border-b border-slate-100 px-4 py-3">
                                         <RouterLink
-                                            :to="{ name: 'customer', params: { district: districtUlid, customer: customer.ulid } }"
+                                            :to="{ name: 'debtor', params: { district: districtUlid, debtor: debtor.ulid } }"
                                             class="lex-button lex-button-secondary text-xs"
                                         >
-                                            {{ t('customers.view') }}
+                                            {{ t('debtors.view') }}
                                         </RouterLink>
                                     </td>
                                 </tr>
@@ -126,7 +126,7 @@
 
                     <div v-if="meta.last_page > 1" class="mt-6 flex items-center justify-between">
                         <p class="text-sm text-slate-500">
-                            {{ t('customers.page_info', { current: meta.current_page, total: meta.last_page }) }}
+                            {{ t('debtors.page_info', { current: meta.current_page, total: meta.last_page }) }}
                         </p>
                         <div class="flex gap-2">
                             <RouterLink
@@ -134,14 +134,14 @@
                                 class="lex-button lex-button-secondary text-sm"
                                 :class="{ 'pointer-events-none opacity-40': meta.current_page <= 1 }"
                             >
-                                {{ t('customers.previous') }}
+                                {{ t('debtors.previous') }}
                             </RouterLink>
                             <RouterLink
                                 :to="pageLink(meta.current_page + 1)"
                                 class="lex-button lex-button-secondary text-sm"
                                 :class="{ 'pointer-events-none opacity-40': meta.current_page >= meta.last_page }"
                             >
-                                {{ t('customers.next') }}
+                                {{ t('debtors.next') }}
                             </RouterLink>
                         </div>
                     </div>
@@ -159,7 +159,7 @@ import { z } from 'zod';
 import { useI18n } from 'vue-i18n';
 import { RouterLink, useRoute, useRouter } from 'vue-router';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { listCustomers, customerDisplayName, type Customer, type CustomerListMeta } from '@/api/customers';
+import { listDebtors, debtorDisplayName, type Debtor, type DebtorListMeta } from '@/api/debtors';
 import { fetchDistrictStats, type DistrictStats } from '@/api/districts';
 import { useBreadcrumbStore } from '@/stores/breadcrumb';
 
@@ -173,8 +173,8 @@ const currentPage = computed(() => Number(route.query.page ?? 1));
 
 const loading = ref(true);
 const loadError = ref('');
-const customers = ref<Customer[]>([]);
-const meta = ref<CustomerListMeta>({ current_page: 1, last_page: 1, total: 0, per_page: 25 });
+const debtors = ref<Debtor[]>([]);
+const meta = ref<DebtorListMeta>({ current_page: 1, last_page: 1, total: 0, per_page: 25 });
 const stats = ref<DistrictStats | null>(null);
 const typeFilter = ref(String(route.query.type ?? ''));
 
@@ -187,12 +187,12 @@ const [searchInput] = defineField('search');
 
 let searchDebounce: ReturnType<typeof setTimeout> | null = null;
 
-function customerIdentifier(customer: Customer): string {
-    if (customer.type === 'legal') {
-        return customer.registration_number || t('customers.none');
+function debtorIdentifier(debtor: Debtor): string {
+    if (debtor.type === 'legal') {
+        return debtor.registration_number || t('debtors.none');
     }
 
-    return customer.personal_code || t('customers.none');
+    return debtor.personal_code || t('debtors.none');
 }
 
 function pageLink(page: number): { name: string; params: { district: string }; query: Record<string, string> } {
@@ -210,7 +210,7 @@ function pageLink(page: number): { name: string; params: { district: string }; q
         query.type = typeFilter.value;
     }
 
-    return { name: 'customers', params: { district: districtUlid.value }, query };
+    return { name: 'debtors', params: { district: districtUlid.value }, query };
 }
 
 async function load(): Promise<void> {
@@ -232,11 +232,11 @@ async function load(): Promise<void> {
         }
 
         const [response, districtStats] = await Promise.all([
-            listCustomers(districtUlid.value, params),
+            listDebtors(districtUlid.value, params),
             stats.value === null ? fetchDistrictStats(districtUlid.value) : Promise.resolve(stats.value),
         ]);
 
-        customers.value = response.data;
+        debtors.value = response.data;
         meta.value = response.meta;
 
         if (districtStats) {
@@ -244,7 +244,7 @@ async function load(): Promise<void> {
             breadcrumbStore.districtLabel = t('district.number_label', { number: districtStats.district.number });
         }
     } catch {
-        loadError.value = t('customers.load_error');
+        loadError.value = t('debtors.load_error');
     } finally {
         loading.value = false;
     }

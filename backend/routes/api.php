@@ -6,7 +6,7 @@ use App\Http\Controllers\Api\V1\DistrictController;
 use App\Http\Controllers\Api\V1\DistrictUserController;
 use App\Http\Controllers\Api\V1\DebtController;
 use App\Http\Controllers\Api\V1\PaymentController;
-use App\Http\Controllers\Api\V1\CustomerController;
+use App\Http\Controllers\Api\V1\DebtorController;
 use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\Auth\AuthSessionController;
@@ -14,19 +14,19 @@ use App\Http\Controllers\Api\V1\Auth\CurrentUserController;
 use App\Http\Controllers\Api\V1\Auth\EmailVerificationController;
 use App\Http\Controllers\Api\V1\Auth\PasswordResetController;
 use App\Http\Controllers\Api\V1\Auth\RegistrationController;
-use App\Models\Customer;
+use App\Models\Debtor;
 use App\Models\Debt;
 use App\Models\District;
 use App\Models\Payment;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
-Route::bind('customer', static function (string $value): Customer {
+Route::bind('debtor', static function (string $value): Debtor {
     $district = request()->route('district');
     $district = is_string($district)
         ? District::query()->where('ulid', $district)->first()
         : $district;
-    $query = Customer::query()
+    $query = Debtor::query()
         ->where('ulid', $value);
 
     if ($district instanceof District) {
@@ -45,10 +45,10 @@ Route::bind('debt', static function (string $value): Debt {
     $district = is_string($district)
         ? District::query()->where('ulid', $district)->first()
         : $district;
-    $customer = request()->route('customer');
-    $customer = is_string($customer)
-        ? Customer::query()->where('ulid', $customer)->first()
-        : $customer;
+    $debtor = request()->route('debtor');
+    $debtor = is_string($debtor)
+        ? Debtor::query()->where('ulid', $debtor)->first()
+        : $debtor;
 
     $query = Debt::query()
         ->where('ulid', $value);
@@ -57,18 +57,18 @@ Route::bind('debt', static function (string $value): Debt {
         $query->where('district_id', $district->id);
     }
 
-    if ($customer instanceof Customer) {
-        $query->where('customer_id', $customer->id);
+    if ($debtor instanceof Debtor) {
+        $query->where('debtor_id', $debtor->id);
     }
 
     return $query->firstOrFail();
 });
 
 Route::bind('payment', static function (string $value): Payment {
-    $customer = request()->route('customer');
-    $customer = is_string($customer)
-        ? Customer::query()->where('ulid', $customer)->first()
-        : $customer;
+    $debtor = request()->route('debtor');
+    $debtor = is_string($debtor)
+        ? Debtor::query()->where('ulid', $debtor)->first()
+        : $debtor;
     $debt = request()->route('debt');
     $debt = is_string($debt)
         ? Debt::query()->where('ulid', $debt)->first()
@@ -77,8 +77,8 @@ Route::bind('payment', static function (string $value): Payment {
     $query = Payment::query()
         ->where('ulid', $value);
 
-    if ($customer instanceof Customer) {
-        $query->where('customer_id', $customer->id);
+    if ($debtor instanceof Debtor) {
+        $query->where('debtor_id', $debtor->id);
     }
 
     if ($debt instanceof Debt) {
@@ -96,7 +96,7 @@ Route::bind('user', static function (string $value): User {
     $routeName = request()->route()?->getName() ?? '';
 
     if ($district instanceof District && str_starts_with($routeName, 'api.v1.district-users.')) {
-        $query->whereHas('districts', static fn ($districtsQuery) => $districtsQuery->where('districts.id', $district->id));
+        $query->whereHas('districts', static fn($districtsQuery) => $districtsQuery->where('districts.id', $district->id));
     }
 
     return $query->firstOrFail();
@@ -184,49 +184,49 @@ Route::middleware(['auth:sanctum', 'district.scope'])->group(static function ():
     Route::delete('/districts/{district}/users/{user}', [DistrictUserController::class, 'destroy'])
         ->name('api.v1.district-users.destroy');
 
-    Route::get('/districts/{district}/customers', [CustomerController::class, 'index'])
-        ->name('api.v1.customers.index');
+    Route::get('/districts/{district}/debtors', [DebtorController::class, 'index'])
+        ->name('api.v1.debtors.index');
 
-    Route::post('/districts/{district}/customers', [CustomerController::class, 'store'])
-        ->name('api.v1.customers.store');
+    Route::post('/districts/{district}/debtors', [DebtorController::class, 'store'])
+        ->name('api.v1.debtors.store');
 
-    Route::get('/districts/{district}/customers/{customer}', [CustomerController::class, 'show'])
-        ->name('api.v1.customers.show');
+    Route::get('/districts/{district}/debtors/{debtor}', [DebtorController::class, 'show'])
+        ->name('api.v1.debtors.show');
 
-    Route::patch('/districts/{district}/customers/{customer}', [CustomerController::class, 'update'])
-        ->name('api.v1.customers.update');
+    Route::patch('/districts/{district}/debtors/{debtor}', [DebtorController::class, 'update'])
+        ->name('api.v1.debtors.update');
 
-    Route::delete('/districts/{district}/customers/{customer}', [CustomerController::class, 'destroy'])
-        ->name('api.v1.customers.destroy');
+    Route::delete('/districts/{district}/debtors/{debtor}', [DebtorController::class, 'destroy'])
+        ->name('api.v1.debtors.destroy');
 
-    Route::get('/districts/{district}/customers/{customer}/debts/{debt}/payments', [PaymentController::class, 'index'])
+    Route::get('/districts/{district}/debtors/{debtor}/debts/{debt}/payments', [PaymentController::class, 'index'])
         ->name('api.v1.payments.index');
 
-    Route::post('/districts/{district}/customers/{customer}/debts/{debt}/payments', [PaymentController::class, 'store'])
+    Route::post('/districts/{district}/debtors/{debtor}/debts/{debt}/payments', [PaymentController::class, 'store'])
         ->name('api.v1.payments.store');
 
-    Route::get('/districts/{district}/customers/{customer}/debts/{debt}/payments/{payment}', [PaymentController::class, 'show'])
+    Route::get('/districts/{district}/debtors/{debtor}/debts/{debt}/payments/{payment}', [PaymentController::class, 'show'])
         ->name('api.v1.payments.show');
 
-    Route::patch('/districts/{district}/customers/{customer}/debts/{debt}/payments/{payment}', [PaymentController::class, 'update'])
+    Route::patch('/districts/{district}/debtors/{debtor}/debts/{debt}/payments/{payment}', [PaymentController::class, 'update'])
         ->name('api.v1.payments.update');
 
-    Route::delete('/districts/{district}/customers/{customer}/debts/{debt}/payments/{payment}', [PaymentController::class, 'destroy'])
+    Route::delete('/districts/{district}/debtors/{debtor}/debts/{debt}/payments/{payment}', [PaymentController::class, 'destroy'])
         ->name('api.v1.payments.destroy');
 
-    Route::get('/districts/{district}/customers/{customer}/debts', [DebtController::class, 'index'])
+    Route::get('/districts/{district}/debtors/{debtor}/debts', [DebtController::class, 'index'])
         ->name('api.v1.debts.index');
 
-    Route::post('/districts/{district}/customers/{customer}/debts', [DebtController::class, 'store'])
+    Route::post('/districts/{district}/debtors/{debtor}/debts', [DebtController::class, 'store'])
         ->name('api.v1.debts.store');
 
-    Route::get('/districts/{district}/customers/{customer}/debts/{debt}', [DebtController::class, 'show'])
+    Route::get('/districts/{district}/debtors/{debtor}/debts/{debt}', [DebtController::class, 'show'])
         ->name('api.v1.debts.show');
 
-    Route::patch('/districts/{district}/customers/{customer}/debts/{debt}', [DebtController::class, 'update'])
+    Route::patch('/districts/{district}/debtors/{debtor}/debts/{debt}', [DebtController::class, 'update'])
         ->name('api.v1.debts.update');
 
-    Route::delete('/districts/{district}/customers/{customer}/debts/{debt}', [DebtController::class, 'destroy'])
+    Route::delete('/districts/{district}/debtors/{debtor}/debts/{debt}', [DebtController::class, 'destroy'])
         ->name('api.v1.debts.destroy');
 });
 

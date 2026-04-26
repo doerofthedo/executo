@@ -46,7 +46,7 @@
                                 <dt class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
                                     {{ t('debt_detail.remaining_principal') }}
                                 </dt>
-                                <dd class="font-mono text-sm text-slate-800">
+                                <dd class="text-sm text-slate-800">
                                     {{ formatAmount(totalRow.remaining_principal) }}
                                 </dd>
                             </div>
@@ -54,7 +54,7 @@
                                 <dt class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
                                     {{ t('debt_detail.remaining_interest') }}
                                 </dt>
-                                <dd class="font-mono text-sm text-slate-800">
+                                <dd class="text-sm text-slate-800">
                                     {{ formatAmount(totalRow.remaining_interest) }}
                                 </dd>
                             </div>
@@ -66,23 +66,23 @@
                                     {{ detail.debt.date ? formatDate(detail.debt.date) : t('debt_detail.none') }}
                                 </dd>
                             </div>
-                            <div v-if="customerName" class="space-y-1">
+                            <div v-if="debtorName" class="space-y-1">
                                 <dt class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
                                     {{ t('debt_detail.debtor') }}
                                 </dt>
-                                <dd class="text-sm text-slate-800">{{ customerName }}</dd>
+                                <dd class="text-sm text-slate-800">{{ debtorName }}</dd>
                             </div>
                         </dl>
 
                         <div class="flex flex-wrap gap-3">
                             <RouterLink
-                                :to="{ name: 'payments', params: { district: districtUlid, customer: customerUlid, debt: debtUlid } }"
+                                :to="{ name: 'payments', params: { district: districtUlid, debtor: debtorUlid, debt: debtUlid } }"
                                 class="lex-button lex-button-primary"
                             >
                                 {{ t('debt_detail.open_payments') }}
                             </RouterLink>
                             <RouterLink
-                                :to="{ name: 'customer', params: { district: districtUlid, customer: customerUlid } }"
+                                :to="{ name: 'debtor', params: { district: districtUlid, debtor: debtorUlid } }"
                                 class="lex-button lex-button-secondary"
                             >
                                 {{ t('debt_detail.back') }}
@@ -119,8 +119,8 @@
                                     <td
                                         v-for="col in detail.interest.columns"
                                         :key="col.key"
-                                        class="border-b border-slate-100 px-3 py-2 font-mono"
-                                        :class="[col.align === 'right' ? 'text-right' : 'text-left', col.key === 'payment_date' ? 'font-sans' : '']"
+                                        class="border-b border-slate-100 px-3 py-2"
+                                        :class="col.align === 'right' ? 'text-right' : 'text-left'"
                                     >
                                         {{ formatCell(col.key, row[col.key]) }}
                                     </td>
@@ -131,8 +131,8 @@
                                     <td
                                         v-for="col in detail.interest.columns"
                                         :key="col.key"
-                                        class="px-3 py-2.5 font-mono"
-                                        :class="[col.align === 'right' ? 'text-right' : 'text-left', col.key === 'payment_date' ? 'font-sans' : '']"
+                                        class="px-3 py-2.5"
+                                        :class="col.align === 'right' ? 'text-right' : 'text-left'"
                                     >
                                         {{ formatCell(col.key, totalRow[col.key]) }}
                                     </td>
@@ -152,7 +152,7 @@ import { useI18n } from 'vue-i18n';
 import { RouterLink, useRoute } from 'vue-router';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { fetchDebtDetail, type DebtDetail, type InterestRow } from '@/api/debts';
-import { fetchCustomer, customerDisplayName } from '@/api/customers';
+import { fetchDebtor, debtorDisplayName } from '@/api/debtors';
 import { fetchDistrictStats } from '@/api/districts';
 import { useBreadcrumbStore } from '@/stores/breadcrumb';
 import { useUserFormatting } from '@/composables/useUserFormatting';
@@ -175,13 +175,13 @@ const breadcrumbStore = useBreadcrumbStore();
 const { formatDate, formatAmount } = useUserFormatting();
 
 const districtUlid = computed(() => String(route.params.district ?? ''));
-const customerUlid = computed(() => String(route.params.customer ?? ''));
+const debtorUlid = computed(() => String(route.params.debtor ?? ''));
 const debtUlid = computed(() => String(route.params.debt ?? ''));
 
 const loading = ref(true);
 const loadError = ref(false);
 const detail = ref<DebtDetail | null>(null);
-const customerName = ref<string | null>(null);
+const debtorName = ref<string | null>(null);
 const caseNumber = ref<string | null>(null);
 
 const totalRow = computed(() => detail.value?.interest.total_row ?? null);
@@ -241,22 +241,22 @@ async function load(): Promise<void> {
     loadError.value = false;
 
     try {
-        const [debtDetail, customerData, statsData] = await Promise.all([
-            fetchDebtDetail(districtUlid.value, customerUlid.value, debtUlid.value),
-            fetchCustomer(districtUlid.value, customerUlid.value),
+        const [debtDetail, debtorData, statsData] = await Promise.all([
+            fetchDebtDetail(districtUlid.value, debtorUlid.value, debtUlid.value),
+            fetchDebtor(districtUlid.value, debtorUlid.value),
             fetchDistrictStats(districtUlid.value),
         ]);
 
         detail.value = debtDetail;
-        customerName.value = customerDisplayName(customerData);
-        caseNumber.value = customerData.case_number;
+        debtorName.value = debtorDisplayName(debtorData);
+        caseNumber.value = debtorData.case_number;
 
-        const debtBreadcrumb = customerData.case_number
-            ? t('debt_detail.title', { number: customerData.case_number })
+        const debtBreadcrumb = debtorData.case_number
+            ? t('debt_detail.title', { number: debtorData.case_number })
             : t('debt_detail.title_fallback');
 
         breadcrumbStore.districtLabel = t('district.number_label', { number: statsData.district.number });
-        breadcrumbStore.customerLabel = customerDisplayName(customerData);
+        breadcrumbStore.debtorLabel = debtorDisplayName(debtorData);
         breadcrumbStore.debtLabel = debtBreadcrumb;
     } catch {
         loadError.value = true;
@@ -268,7 +268,7 @@ async function load(): Promise<void> {
 onMounted(load);
 
 onUnmounted(() => {
-    breadcrumbStore.customerLabel = null;
+    breadcrumbStore.debtorLabel = null;
     breadcrumbStore.debtLabel = null;
     breadcrumbStore.districtLabel = null;
 });

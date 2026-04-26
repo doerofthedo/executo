@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Customer\Actions;
+namespace App\Domain\Debtor\Actions;
 
-use App\Models\Customer;
+use App\Models\Debtor;
 
-final readonly class DeleteCustomerAction
+final readonly class DeleteDebtorAction
 {
-    public function execute(Customer $customer, bool $forceDelete): void
+    public function execute(Debtor $debtor, bool $forceDelete): void
     {
         if ($forceDelete) {
-            $customer->forceDelete();
+            $debtor->forceDelete();
 
             return;
         }
 
-        $customer->delete();
+        $debtor->delete();
     }
 }

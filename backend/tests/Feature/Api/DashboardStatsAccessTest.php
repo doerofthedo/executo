@@ -73,7 +73,7 @@ test('district user can load dashboard stats for their district membership', fun
         ->assertJsonPath('districts_count', 1)
         ->assertJsonCount(1, 'data')
         ->assertJsonPath('data.0.district.ulid', $district->ulid)
-        ->assertJsonPath('data.0.can_create_customer', false)
+        ->assertJsonPath('data.0.can_create_debtor', false)
         ->assertJsonPath('data.0.can_create_debt', false)
         ->assertJsonPath('data.0.can_create_payment', false);
 });
@@ -93,7 +93,7 @@ test('district admin sees dashboard create permissions for their district member
         ->assertOk()
         ->assertJsonPath('districts_count', 1)
         ->assertJsonPath('data.0.district.ulid', $district->ulid)
-        ->assertJsonPath('data.0.can_create_customer', true)
+        ->assertJsonPath('data.0.can_create_debtor', true)
         ->assertJsonPath('data.0.can_create_debt', true)
         ->assertJsonPath('data.0.can_create_payment', true)
         ->assertJsonPath('data.0.can_manage_users', true);
