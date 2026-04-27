@@ -38,9 +38,10 @@ export interface DebtCase {
   date: string | null;
 }
 
-export async function fetchDistrictDebtCases(districtUlid: string): Promise<DebtCase[]> {
+export async function fetchDistrictDebtCases(districtUlid: string, perPage = 5): Promise<DebtCase[]> {
   const response = await apiClient.get<{ data: DebtCase[] }>(
     `/districts/${districtUlid}/debts`,
+    { params: { per_page: perPage } },
   );
 
   return response.data.data;

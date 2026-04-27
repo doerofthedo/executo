@@ -30,8 +30,28 @@ export async function fetchAccessibleDistricts(): Promise<DistrictSummary[]> {
   return 'data' in response.data ? response.data.data : response.data;
 }
 
+export interface DistrictRecentPayment {
+  ulid: string;
+  debtor_ulid: string | null;
+  debt_ulid: string | null;
+  debtor_name: string | null;
+  case_number: string | null;
+  amount: string;
+  date: string | null;
+  description: string | null;
+}
+
 export async function fetchDistrictStats(districtUlid: string): Promise<DistrictStats> {
   const response = await apiClient.get<DistrictStats>(`/districts/${districtUlid}/stats`);
 
   return response.data;
+}
+
+export async function fetchDistrictRecentPayments(districtUlid: string, limit = 5): Promise<DistrictRecentPayment[]> {
+  const response = await apiClient.get<{ data: DistrictRecentPayment[] }>(
+    `/districts/${districtUlid}/payments`,
+    { params: { per_page: limit } },
+  );
+
+  return response.data.data;
 }

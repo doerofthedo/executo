@@ -7,6 +7,7 @@ import DebtCreatePage from '@/pages/DebtCreatePage.vue';
 import DebtDetailPage from '@/pages/DebtDetailPage.vue';
 import DashboardPage from '@/pages/DashboardPage.vue';
 import DistrictPage from '@/pages/DistrictPage.vue';
+import DistrictPaymentsPage from '@/pages/DistrictPaymentsPage.vue';
 import DistrictUserCreatePage from '@/pages/DistrictUserCreatePage.vue';
 import PaymentCreatePage from '@/pages/PaymentCreatePage.vue';
 import PaymentEditPage from '@/pages/PaymentEditPage.vue';
@@ -44,6 +45,11 @@ export const appRouter = createRouter({
       path: '/districts/:district',
       name: 'district',
       component: DistrictPage,
+    },
+    {
+      path: '/districts/:district/payments',
+      name: 'district-payments',
+      component: DistrictPaymentsPage,
     },
     {
       path: '/districts/:district/debtors',

@@ -17,6 +17,7 @@ export interface Debtor {
   contact_person: string | null;
   is_deleted: boolean;
   deleted_at: string | null;
+  created_at: string | null;
 }
 
 export interface DebtorListMeta {

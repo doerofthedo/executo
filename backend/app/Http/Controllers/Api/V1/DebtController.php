@@ -36,16 +36,20 @@ final class DebtController extends Controller
     {
         $this->authorize('viewAny', Debt::class);
 
+        $limit = min((int) (request()->query('per_page', 5)), 100);
+
         $debts = Debt::query()
             ->where('district_id', $district->id)
             ->with('debtor')
-            ->orderBy('created_at')
+            ->orderByDesc('date')
+            ->orderByDesc('id')
+            ->limit($limit)
             ->get();
 
         $data = $debts->map(fn (Debt $debt): array => [
             'debt_ulid'    => $debt->ulid,
             'debtor_ulid'  => $debt->debtor?->ulid,
-            'debtor_name'  => $debt->debtor?->name,
+            'debtor_name'  => $this->debtorDisplayName($debt->debtor),
             'case_number'  => $debt->debtor?->case_number,
             'description'  => $debt->description,
             'amount'       => (string) $debt->amount,
@@ -53,6 +57,25 @@ final class DebtController extends Controller
         ]);
 
         return response()->json(['data' => $data]);
+    }
+
+    private function debtorDisplayName(?Debtor $debtor): ?string
+    {
+        if ($debtor === null) {
+            return null;
+        }
+
+        if ($debtor->company_name !== null && $debtor->company_name !== '') {
+            return $debtor->company_name;
+        }
+
+        $parts = array_filter([$debtor->first_name, $debtor->last_name]);
+
+        if (!empty($parts)) {
+            return implode(' ', $parts);
+        }
+
+        return $debtor->name;
     }
 
     public function index(District $district, Debtor $debtor): AnonymousResourceCollection

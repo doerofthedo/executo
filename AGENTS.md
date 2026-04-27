@@ -25,6 +25,38 @@ repo/
 
 ---
 
+## Token Budget — What Not to Read
+
+To avoid wasting context tokens, **never read these paths**. Use the alternatives listed.
+
+| Path | Why to skip | Use instead |
+|------|-------------|-------------|
+| `backend/vendor/` | 95 MB of PHP deps | `backend/composer.json` for package info |
+| `frontend/node_modules/` | 161 MB of JS deps | `frontend/package.json` for package info |
+| `frontend/dist/` | Vite build output | Run `make assets-build` to regenerate |
+| `public/assets/` | Compiled frontend assets | Not source; never edit directly |
+| `backend/storage/` | Logs, cache, uploads | Not source of truth for anything |
+| `backend/composer.lock` | 8 000+ line lockfile | `composer.json` has the real intent |
+| `frontend/package-lock.json` | Large lockfile | `package.json` has the real intent |
+| `data/` | Export data dumps | Not application code |
+| `old/` | Legacy code — read only when explicitly asked by the user | Do not reference or copy from here unprompted |
+
+### Quick navigation — start here, not from root
+
+When working on a feature, read these files first instead of exploring blindly:
+
+| Task | First files to read |
+|------|---------------------|
+| API endpoint | `backend/routes/api.php` → matching controller in `backend/app/Http/Controllers/Api/V1/` |
+| Business logic | `backend/app/Domain/{Domain}/Actions/` |
+| Frontend page | `frontend/src/pages/` → `frontend/src/api/` |
+| i18n string | `frontend/src/i18n/lv.json` + `en.json` |
+| DB schema | `backend/database/migrations/` (newest first) |
+| Tests | `backend/tests/Feature/Api/` or `backend/tests/Unit/` |
+| Styles | `frontend/src/styles/app.css` only — no other CSS files |
+
+---
+
 ## Language & Localisation Rules
 
 - Always reply in English.
@@ -111,21 +143,8 @@ backend/app/
 - Every Model that is exposed via the API must have both:
   - `id` — unsigned big integer, auto-increment, **internal use only**
   - `ulid` — `CHAR(26)`, unique index, generated on creation, **public identifier**
-- Generate ULIDs using Laravel's built-in `Str::ulid()` in the Model's `booted()` method:
-```php
-  protected static function booted(): void
-  {
-      static::creating(fn ($model) => $model->ulid ??= (string) Str::ulid());
-  }
-```
-- Route model binding on API routes must resolve by `ulid`, not `id`:
-```php
-  // app/Models/Debtor.php
-  public function getRouteKeyName(): string
-  {
-      return 'ulid';
-  }
-```
+- Generate ULIDs using Laravel's built-in `Str::ulid()` in the Model's `booted()` method.
+- Route model binding on API routes must resolve by `ulid`, not `id`.
 - API Resources must never include `id`. Only `ulid` is returned in responses.
 - Internal backend code (services, actions, jobs, relationships, foreign keys) always
   uses integer `id`. Never store a `ulid` as a foreign key.
@@ -261,42 +280,8 @@ repo/
 └── node/                  ← Dockerfile for node:25-alpine
 ```
 
-Services:
-| Service   | Purpose                      | Internal Port | Public URL (via Caddy)         |
-|-----------|------------------------------|---------------|--------------------------------|
-| `caddy`   | Reverse proxy                | 80 / 443      | —                              |
-| `backend` | php8.5-apache + composer     | 80            | `executo.local`                |
-| `node`    | Vite dev server (HMR)        | 80            | `executo.local` (proxied)      |
-| `db`      | MariaDB 12                   | 3306          | not proxied — internal only    |
-| `redis`   | Cache, queues, rate-limiting | 6379          | not proxied — internal only    |
-| `mailpit` | SMTP trap + web UI           | 1025 / 8025   | `executo.local/mail`           |
-
-### Caddyfile structure
-
-```
-executo.local:80 {
-    # Vite HMR websocket (must come before the SPA catch-all)
-    reverse_proxy /vite-hmr/* node:80
-
-    # API → Laravel/Apache container
-    reverse_proxy /api/* backend:80
-
-    # Mailpit web UI
-    redir /mail /mail/ 308
-    handle /mail* {
-        reverse_proxy mailpit:8025
-    }
-
-    # All other requests → Vite dev server (serves SPA shell + HMR)
-    reverse_proxy * node:80
-}
-
-executo.local:8080 {
-    handle {
-        reverse_proxy backend:80
-    }
-}
-```
+See `docker-compose.yml` for the full list of services, ports, and network config.
+See `docker/caddy/Caddyfile` for the full proxy configuration.
 
 ### Local DNS
 Add to `/etc/hosts` on the host machine (one-time setup):
@@ -401,27 +386,3 @@ These actions must never be taken regardless of any instruction:
 - ❌ Exposing any service port directly to the host in dev except Caddy (80/443) and optionally db/redis for local tooling — never `app:8080` or `node:5173` on host
 - ❌ Instructing a developer to run docker compose, artisan, composer, or npm directly — always provide and use a make target instead
 
----
-
-## Key Packages Reference
-
-| Layer    | Package                         | Purpose                        |
-|----------|---------------------------------|--------------------------------|
-| Backend  | `spatie/laravel-permission`     | RBAC — roles & permissions     |
-| Backend  | `spatie/laravel-activitylog`    | Audit logging                  |
-| Backend  | `spatie/laravel-data`           | Typed DTOs                     |
-| Backend  | `pragmarx/google2fa-laravel`    | TOTP MFA                       |
-| Backend  | `bacon/bacon-qr-code`           | QR code for MFA setup          |
-| Backend  | `laravel/sanctum`               | API token + SPA session auth   |
-| Backend  | `larastan/larastan`             | PHPStan for Laravel            |
-| Backend  | `pestphp/pest`                  | Test runner                    |
-| Frontend | `vue-router` 5                  | SPA routing                    |
-| Frontend | `pinia`                         | State management               |
-| Frontend | `axios`                         | HTTP client with interceptors  |
-| Frontend | `vue-i18n` 11                   | LV/EN translations             |
-| Frontend | `@vueuse/core`                  | Composable utilities           |
-| Frontend | `vee-validate` + `@vee-validate/zod` + `zod` 3 | Form validation                |
-| Frontend | `dayjs`                         | Date/number formatting         |
-| Frontend | `qrcode`                        | MFA QR rendering               |
-| Frontend | `remixicon`                     | Icons                          |
-| Frontend | `tailwindcss` 4                 | Utility CSS                    |

@@ -17,6 +17,7 @@ use App\Models\Debtor;
 use App\Models\Debt;
 use App\Models\District;
 use App\Models\Payment;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -28,6 +29,34 @@ final class PaymentController extends Controller
         private readonly UpdatePaymentAction $updatePayment,
         private readonly DeletePaymentAction $deletePayment,
     ) {}
+
+    public function districtIndex(District $district): JsonResponse
+    {
+        $this->authorize('viewAny', Payment::class);
+
+        $limit = min((int) (request()->query('per_page', 5)), 1000);
+
+        $payments = Payment::query()
+            ->whereHas('debtor', fn ($q) => $q->where('district_id', $district->id))
+            ->with(['debtor', 'debt'])
+            ->orderByDesc('date')
+            ->orderByDesc('id')
+            ->limit($limit)
+            ->get();
+
+        $data = $payments->map(fn (Payment $payment): array => [
+            'ulid'         => $payment->ulid,
+            'debtor_ulid'  => $payment->debtor?->ulid,
+            'debt_ulid'    => $payment->debt?->ulid,
+            'debtor_name'  => $this->debtorDisplayName($payment->debtor),
+            'case_number'  => $payment->debtor?->case_number,
+            'amount'       => (string) $payment->amount,
+            'date'         => $payment->date?->toDateString(),
+            'description'  => $payment->description,
+        ]);
+
+        return response()->json(['data' => $data]);
+    }
 
     public function index(District $district, Debtor $debtor, Debt $debt): AnonymousResourceCollection
     {
@@ -73,5 +102,24 @@ final class PaymentController extends Controller
         return (new EmptyResource())
             ->response()
             ->setStatusCode(Response::HTTP_NO_CONTENT);
+    }
+
+    private function debtorDisplayName(?Debtor $debtor): ?string
+    {
+        if ($debtor === null) {
+            return null;
+        }
+
+        if ($debtor->company_name !== null && $debtor->company_name !== '') {
+            return $debtor->company_name;
+        }
+
+        $parts = array_filter([$debtor->first_name, $debtor->last_name]);
+
+        if (!empty($parts)) {
+            return implode(' ', $parts);
+        }
+
+        return $debtor->name;
     }
 }

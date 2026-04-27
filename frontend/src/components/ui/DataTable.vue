@@ -26,6 +26,7 @@
                             :class="[
                                 col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : 'text-left',
                                 col.sortable ? 'lex-data-table-th-sortable' : '',
+                                col.thClass ?? '',
                             ]"
                             @click="col.sortable ? toggleSort(String(col.key)) : undefined"
                         >
@@ -66,7 +67,7 @@
                             v-for="col in columns"
                             :key="String(col.key)"
                             class="lex-data-table-td"
-                            :class="col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : ''"
+                            :class="[col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : '', col.tdClass ?? '']"
                         >
                             <slot :name="`cell-${String(col.key)}`" :row="row" :value="row[col.key]">
                                 {{ col.format ? col.format(row[col.key], row) : String(row[col.key] ?? '') }}
@@ -139,6 +140,8 @@ export interface TableColumn<TRow> {
     filterable?: boolean;
     align?: 'left' | 'right' | 'center';
     format?: (value: unknown, row: TRow) => string;
+    thClass?: string;
+    tdClass?: string;
 }
 
 const props = withDefaults(defineProps<{

@@ -5,8 +5,7 @@
         "signed_in_as": "Signed in as",
         "logout": "Sign out",
         "mailpit": "Mailpit",
-        "footer": "Executo workspace",
-        "mailpit_hint": "Development email is available in Mailpit"
+        "footer": "Executo workspace"
     },
     "navigation": {
         "home": "Dashboard",
@@ -257,7 +256,20 @@
         "open_debtors": "Debtors",
         "open_users": "User management",
         "create_debtor": "+ Add debtor",
-        "none": "—"
+        "none": "—",
+        "recent_cases": "Recent debts",
+        "recent_debtors": "Recent debtors",
+        "recent_payments": "Recent payments",
+        "col_case": "Case no.",
+        "col_debtor": "Debtor",
+        "col_amount": "Amount",
+        "col_date": "Date",
+        "col_type": "Type",
+        "col_latest_case": "Latest case no.",
+        "col_total_debt": "Total outstanding",
+        "all_payments": "All payments",
+        "payments_list_title": "Payment history",
+        "back": "Back to district"
     },
     "debtors": {
         "eyebrow": "Debtors",

@@ -13,10 +13,6 @@
                                 <i class="ri-home-line" aria-hidden="true" />
                                 {{ t('navigation.home') }}
                             </RouterLink>
-                            <a v-if="showMailpit" href="/mail/" class="lex-nav-btn">
-                                {{ t('app.mailpit') }}
-                            </a>
-
                             <div ref="districtsRoot" class="lex-nav-districts">
                                 <button
                                     type="button"
@@ -95,6 +91,7 @@
                                         role="menuitem"
                                         @click="navigateToAccountRoute('profile')"
                                     >
+                                        <i class="ri-user-line" aria-hidden="true" />
                                         {{ t('navigation.profile') }}
                                     </button>
                                     <button
@@ -103,8 +100,20 @@
                                         role="menuitem"
                                         @click="navigateToAccountRoute('preferences')"
                                     >
+                                        <i class="ri-equalizer-line" aria-hidden="true" />
                                         {{ t('navigation.preferences') }}
                                     </button>
+                                    <template v-if="showMailpit">
+                                        <div class="lex-app-account-dropdown-divider" />
+                                        <a
+                                            href="/mail/"
+                                            class="lex-app-account-dropdown-item"
+                                            role="menuitem"
+                                        >
+                                            <i class="ri-mail-line" aria-hidden="true" />
+                                            {{ t('app.mailpit') }}
+                                        </a>
+                                    </template>
                                     <div class="lex-app-account-dropdown-divider" />
                                     <button
                                         type="button"
@@ -112,6 +121,7 @@
                                         role="menuitem"
                                         @click="onSignOut"
                                     >
+                                        <i class="ri-logout-box-r-line" aria-hidden="true" />
                                         {{ t('app.logout') }}
                                     </button>
                                 </div>
@@ -150,8 +160,7 @@
 
         <footer class="lex-app-footer">
             <div class="lex-app-footer-inner">
-                <span>{{ t('app.footer') }}</span>
-                <span v-if="showMailpit">{{ t('app.mailpit_hint') }}</span>
+                <span>&copy; {{ t('app.name') }}</span>
             </div>
         </footer>
     </div>
@@ -320,9 +329,9 @@ onBeforeUnmount(() => {
     notificationsStore.stopPolling();
 });
 
-async function onSignOut(): Promise<void> {
+function onSignOut(): void {
     closeAccountMenu();
-    await authStore.signOut();
     window.location.assign('/login');
+    authStore.signOut().catch(() => undefined);
 }
 </script>

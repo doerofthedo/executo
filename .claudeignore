@@ -1,0 +1,22 @@
+# PHP / Composer dependencies
+backend/vendor/
+
+# JS / Node dependencies
+frontend/node_modules/
+
+# Vite build output (generated — not source)
+frontend/dist/
+public/assets/
+
+# Laravel runtime dirs (logs, cache, compiled views, uploads)
+backend/storage/
+
+# Lock files — large, rarely relevant to code changes
+backend/composer.lock
+frontend/package-lock.json
+
+# Data dump dirs
+data/
+
+# PHPStan cache
+backend/.phpstan.result.cache

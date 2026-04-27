@@ -61,6 +61,8 @@ body,
 
 html {
     overflow-y: scroll;
+    overflow-x: auto;
+    min-width: 80rem;
     scrollbar-gutter: stable;
 }
 
@@ -283,6 +285,7 @@ textarea {
 .lex-button-primary {
     min-height: 3rem;
     cursor: pointer;
+    border: 1px solid transparent;
     background: var(--lex-accent);
     padding: 0.75rem 1rem;
     color: white;
@@ -316,6 +319,27 @@ textarea {
     transform: translateY(-1px);
     background: var(--lex-bg-accent-hover);
     box-shadow: 0 12px 22px rgba(31, 42, 55, 0.1);
+}
+
+.lex-button-ghost {
+    min-height: 2.625rem;
+    cursor: pointer;
+    border: 1px solid var(--lex-border);
+    background: transparent;
+    padding: 0.625rem 1rem;
+    color: var(--lex-muted);
+    font-size: 0.875rem;
+}
+
+.lex-button-ghost:hover {
+    background: var(--lex-surface-muted);
+    color: var(--lex-text);
+}
+
+.lex-button-full {
+    width: 100%;
+    justify-content: flex-start;
+    text-align: left;
 }
 
 .lex-button-inline {
@@ -392,7 +416,7 @@ textarea {
 .lex-nav-btn-icon {
     width: 2.25rem;
     padding: 0;
-    font-size: 1.25rem;
+    font-size: 1rem;
 }
 
 body {
@@ -438,6 +462,7 @@ body {
 
 .lex-section-panel-title {
     margin: 0;
+    line-height: 1.1;
 }
 
 .lex-panel-header {
@@ -563,6 +588,7 @@ body {
     width: 100%;
     align-items: center;
     justify-content: flex-start;
+    gap: 0.625rem;
     padding: 0.75rem 1rem;
     background: white;
     color: var(--lex-text);
@@ -570,6 +596,7 @@ body {
     line-height: 1.25rem;
     font-weight: 400;
     text-align: left;
+    text-decoration: none;
     cursor: pointer;
 }
 
@@ -583,7 +610,17 @@ body {
     border-top: 1px solid var(--lex-border);
 }
 
+.lex-app-account-dropdown-item > i {
+    font-size: 1rem;
+    color: var(--lex-muted);
+    flex-shrink: 0;
+}
+
 .lex-app-account-dropdown-item-danger {
+    color: #8b2f2b;
+}
+
+.lex-app-account-dropdown-item-danger > i {
     color: #8b2f2b;
 }
 
@@ -983,7 +1020,7 @@ body {
 
 .lex-overview-title {
     margin-top: 1rem;
-    font-size: clamp(2rem, 4vw, 3rem);
+    font-size: 3rem;
     line-height: 1.05;
     font-weight: 600;
     color: white;
@@ -1134,25 +1171,9 @@ body {
     color: var(--lex-text);
 }
 
-.lex-dashboard-section {
-    padding: 2rem;
-}
-
 .lex-dashboard-main-grid {
     display: grid;
     gap: 1.5rem;
-}
-
-.lex-dashboard-section-header {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-}
-
-.lex-dashboard-section-title {
-    margin-top: 0;
 }
 
 .lex-dashboard-status {
@@ -1165,9 +1186,6 @@ body {
     color: var(--lex-muted);
 }
 
-.lex-dashboard-actions-panel {
-    padding: 2rem;
-}
 
 .lex-dashboard-actions-stack {
     margin-top: 1.5rem;
@@ -1175,9 +1193,22 @@ body {
     gap: 0.75rem;
 }
 
-.lex-dashboard-action-button {
-    justify-content: flex-start;
-    text-align: left;
+.lex-dashboard-actions-divider {
+    border-top: 1px solid var(--lex-border);
+    margin-block: 0.25rem;
+}
+
+.lex-actions-context {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.3rem 0.75rem;
+    border-radius: 9999px;
+    background: color-mix(in srgb, var(--lex-accent) 10%, transparent);
+    color: var(--lex-accent);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    line-height: 1;
 }
 
 .lex-district-card-grid {
@@ -1248,31 +1279,29 @@ body {
     font-size: 1.375rem;
 }
 
-@media (min-width: 768px) {
-    .lex-app-header-inner {
-        padding-inline: 2rem;
-    }
+.lex-app-header-inner {
+    padding-inline: 2rem;
+}
 
-    .lex-app-breadcrumb-inner,
-    .lex-app-main,
-    .lex-app-footer-inner {
-        padding-inline: 2rem;
-    }
+.lex-app-breadcrumb-inner,
+.lex-app-main,
+.lex-app-footer-inner {
+    padding-inline: 2rem;
+}
 
-    .lex-overview-metric-grid-dark,
-    .lex-overview-metric-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
+.lex-overview-metric-grid-dark,
+.lex-overview-metric-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
 
-    .lex-overview-hero-header {
-        grid-template-columns: minmax(0, 1.3fr) minmax(18rem, 0.9fr);
-        align-items: end;
-    }
+.lex-overview-hero-header {
+    grid-template-columns: minmax(0, 1.3fr) minmax(18rem, 0.9fr);
+    align-items: end;
+}
 
-    .lex-dashboard-main-grid {
-        grid-template-columns: minmax(0, 1.85fr) minmax(15.5rem, 0.65fr);
-        align-items: start;
-    }
+.lex-dashboard-main-grid {
+    grid-template-columns: minmax(0, 1.85fr) minmax(15.5rem, 0.65fr);
+    align-items: start;
 }
 
 .lex-notif-bell {
@@ -1419,15 +1448,12 @@ body {
     color: var(--lex-muted);
 }
 
-@media (min-width: 1024px) {
-    .lex-overview-hero-split {
-        grid-template-columns: minmax(0, 1.1fr) minmax(20rem, 0.9fr);
-    }
+.lex-overview-hero-split {
+    grid-template-columns: minmax(0, 1.1fr) minmax(20rem, 0.9fr);
+}
 
-    .lex-overview-metric-grid-dark {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-
+.lex-overview-metric-grid-dark {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 /* ── Combobox ─────────────────────────────────────────────────── */

@@ -5,8 +5,7 @@
         "signed_in_as": "Pieslēdzies kā",
         "logout": "Izrakstīties",
         "mailpit": "Pasts",
-        "footer": "Executo darba vide",
-        "mailpit_hint": "Izstrādes e-pasti ir pieejami Mailpit"
+        "footer": "Executo darba vide"
     },
     "navigation": {
         "home": "Sākums",
@@ -257,7 +256,20 @@
         "open_debtors": "Parādnieki",
         "open_users": "Lietotāju pārvaldība",
         "create_debtor": "+ Pievienot parādnieku",
-        "none": "—"
+        "none": "—",
+        "recent_cases": "Jaunākie parādi",
+        "recent_debtors": "Jaunākie parādnieki",
+        "recent_payments": "Jaunākie maksājumi",
+        "col_case": "Lietas Nr.",
+        "col_debtor": "Parādnieks",
+        "col_amount": "Summa",
+        "col_date": "Datums",
+        "col_type": "Tips",
+        "col_latest_case": "Jaunākās lietas Nr.",
+        "col_total_debt": "Parādu kopsumma",
+        "all_payments": "Visi maksājumi",
+        "payments_list_title": "Maksājumu vēsture",
+        "back": "Atpakaļ uz iecirkni"
     },
     "debtors": {
         "eyebrow": "Parādnieki",

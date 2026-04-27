@@ -51,7 +51,7 @@ final readonly class ListDebtorsAction
                         ->orWhere('registration_number', 'like', $like);
                 });
             })
-            ->orderByDesc('id')
+            ->orderByDesc('created_at')
             ->paginate($perPage);
     }
 }

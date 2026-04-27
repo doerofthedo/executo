@@ -31,6 +31,7 @@ final class DebtorResource extends JsonResource
             'contact_person' => $this->resource->contact_person,
             'is_deleted' => $this->resource->trashed(),
             'deleted_at' => $this->resource->deleted_at?->toAtomString(),
+            'created_at' => $this->resource->created_at?->toDateString(),
         ];
     }
 }

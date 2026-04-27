@@ -21,11 +21,7 @@
             <EmailVerificationBanner />
 
             <section class="lex-dashboard-main-grid">
-                <div class="lex-panel lex-dashboard-section">
-                    <div class="lex-dashboard-section-header">
-                        <h2 class="lex-page-title lex-dashboard-section-title">{{ t('dashboard.districts_title') }}</h2>
-                    </div>
-
+                <SectionPanel :title="t('dashboard.districts_title')">
                     <div v-if="loading" class="lex-dashboard-empty">
                         {{ t('dashboard.loading') }}
                     </div>
@@ -54,13 +50,13 @@
                                         </template>
                                     </p>
                                     <h2 class="lex-district-card-title">{{ districtTitle(card) }}</h2>
-                                    <RouterLink
+                                    <AppButton
                                         :to="{ name: 'district', params: { district: card.district.ulid } }"
-                                        class="lex-button lex-button-secondary lex-district-card-open"
+                                        icon="ri-login-circle-line"
+                                        class="lex-district-card-open"
                                     >
-                                        <i class="ri-login-circle-line" aria-hidden="true" />
                                         {{ t('dashboard.open_district') }}
-                                    </RouterLink>
+                                    </AppButton>
                                 </div>
 
                                 <dl class="lex-district-card-stats">
@@ -84,59 +80,57 @@
                             </div>
                         </article>
                     </div>
-                </div>
+                </SectionPanel>
 
-                <aside class="lex-panel lex-dashboard-actions-panel">
-                    <div class="lex-dashboard-section-header">
-                        <h2 class="lex-page-title lex-dashboard-section-title">{{ t('dashboard.quick_actions_title') }}</h2>
-                    </div>
-
+                <SectionPanel tag="aside" :title="t('dashboard.quick_actions_title')">
                     <div v-if="effectiveDefaultDistrict === null" class="lex-dashboard-empty">
                         {{ t('dashboard.no_districts') }}
                     </div>
 
                     <div v-else class="lex-dashboard-actions-stack">
-                        <p class="lex-key-value-label">{{ t('dashboard.quick_actions_context', { district: districtLabel(effectiveDefaultDistrict) }) }}</p>
+                        <div class="lex-actions-context">
+                            <i class="ri-map-pin-2-line" aria-hidden="true" />
+                            {{ districtLabel(effectiveDefaultDistrict) }}
+                        </div>
 
-                        <RouterLink
-                            v-if="effectiveDefaultDistrict.can_manage_users"
-                            :to="{ name: 'user-management', params: { district: effectiveDefaultDistrict.district.ulid } }"
-                            class="lex-button lex-button-primary lex-dashboard-action-button"
-                        >
-                            <i class="ri-team-line" aria-hidden="true" />
-                            {{ t('dashboard.manage_users') }}
-                        </RouterLink>
-
-                        <RouterLink
-                            v-if="effectiveDefaultDistrict.can_create_debtor"
-                            :to="{ name: 'debtor-create', params: { district: effectiveDefaultDistrict.district.ulid } }"
-                            class="lex-button lex-button-secondary lex-dashboard-action-button"
-                        >
-                            <i class="ri-user-add-line" aria-hidden="true" />
-                            {{ t('dashboard.add_debtor') }}
-                        </RouterLink>
-
-                        <RouterLink
-                            v-if="effectiveDefaultDistrict.can_create_debt"
-                            :to="{ name: 'debt-create', params: { district: effectiveDefaultDistrict.district.ulid } }"
-                            class="lex-button lex-button-secondary lex-dashboard-action-button"
-                        >
-                            <i class="ri-file-add-line" aria-hidden="true" />
-                            {{ t('dashboard.add_debt') }}
-                        </RouterLink>
-
-                        <RouterLink
+                        <AppButton
                             v-if="effectiveDefaultDistrict.can_create_payment"
                             :to="{ name: 'operation-create-payment', params: { district: effectiveDefaultDistrict.district.ulid } }"
-                            class="lex-button lex-button-secondary lex-dashboard-action-button"
+                            icon="ri-cash-line"
+                            full
                         >
-                            <i class="ri-cash-line" aria-hidden="true" />
                             {{ t('dashboard.add_payment') }}
-                        </RouterLink>
+                        </AppButton>
 
+                        <AppButton
+                            v-if="effectiveDefaultDistrict.can_create_debt"
+                            :to="{ name: 'debt-create', params: { district: effectiveDefaultDistrict.district.ulid } }"
+                            icon="ri-file-add-line"
+                            full
+                        >
+                            {{ t('dashboard.add_debt') }}
+                        </AppButton>
 
+                        <AppButton
+                            v-if="effectiveDefaultDistrict.can_create_debtor"
+                            :to="{ name: 'debtor-create', params: { district: effectiveDefaultDistrict.district.ulid } }"
+                            icon="ri-user-add-line"
+                            full
+                        >
+                            {{ t('dashboard.add_debtor') }}
+                        </AppButton>
+
+                        <AppButton
+                            v-if="effectiveDefaultDistrict.can_manage_users"
+                            :to="{ name: 'user-management', params: { district: effectiveDefaultDistrict.district.ulid } }"
+                            variant="primary"
+                            icon="ri-team-line"
+                            full
+                        >
+                            {{ t('dashboard.manage_users') }}
+                        </AppButton>
                     </div>
-                </aside>
+                </SectionPanel>
             </section>
         </div>
     </AppLayout>
@@ -148,12 +142,13 @@ import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { RouterLink } from 'vue-router';
 import type { DashboardDistrictCard, DashboardStats } from '@/api/dashboard';
 import { getDashboardStats } from '@/api/dashboard';
 import { saveDefaultDistrict } from '@/api/users';
 import AppLayout from '@/layouts/AppLayout.vue';
 import EmailVerificationBanner from '@/components/domain/EmailVerificationBanner.vue';
+import SectionPanel from '@/components/ui/SectionPanel.vue';
+import AppButton from '@/components/ui/AppButton.vue';
 import { useAuthStore } from '@/stores/auth';
 import { usePreferencesStore } from '@/stores/preferences';
 import { formatLatvianVocativeFirstName } from '@/utils/latvianNameDeclension';
