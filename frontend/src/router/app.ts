@@ -9,13 +9,16 @@ import DashboardPage from '@/pages/DashboardPage.vue';
 import DistrictPage from '@/pages/DistrictPage.vue';
 import DistrictUserCreatePage from '@/pages/DistrictUserCreatePage.vue';
 import PaymentCreatePage from '@/pages/PaymentCreatePage.vue';
+import PaymentEditPage from '@/pages/PaymentEditPage.vue';
 import PaymentListPage from '@/pages/PaymentListPage.vue';
+import PaymentShowPage from '@/pages/PaymentShowPage.vue';
 import PreferencesPage from '@/pages/PreferencesPage.vue';
 import ProfilePage from '@/pages/ProfilePage.vue';
 import UserManagementPage from '@/pages/UserManagementPage.vue';
 import { fetchAccessibleDistricts } from '@/api/districts';
 import { getDashboardStats } from '@/api/dashboard';
 import { useAuthStore } from '@/stores/auth';
+import { useBreadcrumbStore } from '@/stores/breadcrumb';
 
 const ShellBoundary: Component = () => null;
 
@@ -68,13 +71,28 @@ export const appRouter = createRouter({
       component: PaymentListPage,
     },
     {
+      path: '/districts/:district/debtors/:debtor/debts/:debt/payments/create',
+      name: 'payment-create',
+      component: PaymentCreatePage,
+    },
+    {
+      path: '/districts/:district/debtors/:debtor/debts/:debt/payments/:payment',
+      name: 'payment-show',
+      component: PaymentShowPage,
+    },
+    {
+      path: '/districts/:district/debtors/:debtor/debts/:debt/payments/:payment/edit',
+      name: 'payment-edit',
+      component: PaymentEditPage,
+    },
+    {
       path: '/districts/:district/debts/create',
       name: 'debt-create',
       component: DebtCreatePage,
     },
     {
       path: '/districts/:district/payments/create',
-      name: 'payment-create',
+      name: 'operation-create-payment',
       component: PaymentCreatePage,
     },
     {
@@ -137,15 +155,19 @@ appRouter.beforeEach(async (to) => {
   }
 
   const districtParam = typeof to.params.district === 'string' ? to.params.district : null;
+  const breadcrumbStore = useBreadcrumbStore();
 
   if (districtParam !== null) {
     try {
       const accessibleDistricts = await fetchAccessibleDistricts();
-      const hasDistrictAccess = accessibleDistricts.some((district) => district.ulid === districtParam);
+      const matchedDistrict = accessibleDistricts.find((district) => district.ulid === districtParam);
 
-      if (!hasDistrictAccess) {
+      if (!matchedDistrict) {
+        breadcrumbStore.districtNumber = null;
         return { name: 'dashboard' };
       }
+
+      breadcrumbStore.districtNumber = matchedDistrict.number;
 
       if (to.meta.requiresManageUsers === true) {
         const stats = await getDashboardStats();
@@ -159,6 +181,8 @@ appRouter.beforeEach(async (to) => {
     } catch {
       return { name: 'dashboard' };
     }
+  } else {
+    breadcrumbStore.districtNumber = null;
   }
 
   return true;

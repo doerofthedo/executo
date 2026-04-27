@@ -58,6 +58,7 @@ final class DebtDetailResource extends JsonResource
     {
         return [
             'payment_date' => $row->paymentDate,
+            'payment_ulid' => $row->paymentUlid,
             'payment_amount' => $row->paymentAmount,
             'days_since_last_payment' => $row->daysSinceLastPayment,
             'interest_per_day' => $row->interestPerDay,

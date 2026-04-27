@@ -25,7 +25,7 @@ final class UpdateUserRequest extends FormRequest
             'name' => ['sometimes', 'string', 'max:255'],
             'surname' => ['sometimes', 'string', 'max:255'],
             'email' => ['sometimes', 'string', 'email:rfc', 'max:255'],
-            'password' => ['sometimes', 'string', 'confirmed', Password::min(8)],
+            'password' => ['sometimes', 'string', 'confirmed', Password::min(10)->mixedCase()->numbers()],
             'disabled' => ['sometimes', 'boolean'],
             'locale' => ['sometimes', 'string', 'in:lv,en'],
             'timezone' => ['sometimes', 'string', Rule::in([

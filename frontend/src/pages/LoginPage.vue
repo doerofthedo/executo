@@ -1,16 +1,11 @@
 <template>
     <AuthLayout>
         <div class="lex-auth-inner">
-            <div class="lex-form-header">
-                <RouterLink
-                    :to="{ name: 'login' }"
-                    class="lex-brand"
-                >
-                    {{ t('app.name') }}
-                </RouterLink>
-                <div class="lex-form-heading-group">
-                    <h1 class="lex-form-title">{{ t('auth.login.title') }}</h1>
-                </div>
+            <RouterLink :to="{ name: 'login' }" class="lex-brand">
+                {{ t('app.name') }}
+            </RouterLink>
+            <div class="lex-form-heading-group">
+                <h1 class="lex-form-title">{{ t('auth.login.title') }}</h1>
             </div>
 
             <form class="lex-form" @submit.prevent="onSubmit">

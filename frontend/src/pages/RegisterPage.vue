@@ -1,18 +1,13 @@
 <template>
     <AuthLayout>
         <div class="lex-auth-inner">
-            <div class="lex-form-header">
-                <RouterLink
-                    :to="{ name: 'login' }"
-                    class="lex-brand"
-                >
-                    {{ t('app.name') }}
-                </RouterLink>
-                <div class="lex-form-heading-group">
-                    <h1 class="lex-form-title">
-                        {{ verifyMode ? t('auth.register.verify_title') : t('auth.register.title') }}
-                    </h1>
-                </div>
+            <RouterLink :to="{ name: 'login' }" class="lex-brand">
+                {{ t('app.name') }}
+            </RouterLink>
+            <div class="lex-form-heading-group">
+                <h1 class="lex-form-title">
+                    {{ verifyMode ? t('auth.register.verify_title') : t('auth.register.title') }}
+                </h1>
             </div>
 
             <form v-if="!verifyMode && !registrationComplete" class="lex-form" @submit.prevent="onRegister">

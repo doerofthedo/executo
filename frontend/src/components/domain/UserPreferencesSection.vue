@@ -210,6 +210,7 @@ const onSubmit = handleSubmit(async (values) => {
         preferencesStore.dateFormat = updatedProfile.preferences.date_format ?? 'DD.MM.YYYY.';
         preferencesStore.decimalSeparator = updatedProfile.preferences.decimal_separator ?? ',';
         preferencesStore.thousandSeparator = updatedProfile.preferences.thousand_separator ?? ' ';
+        preferencesStore.tablePageSize = updatedProfile.preferences.table_page_size ?? 25;
         if (authStore.user !== null) {
             authStore.user.default_district_ulid = updatedProfile.preferences.default_district_ulid;
             authStore.user.timezone = updatedProfile.preferences.timezone ?? 'Europe/Riga';

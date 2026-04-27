@@ -21,7 +21,7 @@ final class UpdatePaymentRequest extends FormRequest
         return [
             'amount' => ['sometimes', 'decimal:0,4', 'min:0.0001'],
             'date' => ['sometimes', 'date'],
-            'description' => ['sometimes', 'nullable', 'string'],
+            'description' => ['sometimes', 'nullable', 'string', 'max:2000'],
         ];
     }
 }

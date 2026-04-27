@@ -214,6 +214,9 @@ Route::middleware(['auth:sanctum', 'district.scope'])->group(static function ():
     Route::delete('/districts/{district}/debtors/{debtor}/debts/{debt}/payments/{payment}', [PaymentController::class, 'destroy'])
         ->name('api.v1.payments.destroy');
 
+    Route::get('/districts/{district}/debts', [DebtController::class, 'districtIndex'])
+        ->name('api.v1.district.debts.index');
+
     Route::get('/districts/{district}/debtors/{debtor}/debts', [DebtController::class, 'index'])
         ->name('api.v1.debts.index');
 

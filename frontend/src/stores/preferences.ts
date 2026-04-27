@@ -6,6 +6,7 @@ interface PreferencesState {
     dateFormat: string;
     decimalSeparator: string;
     thousandSeparator: string;
+    tablePageSize: number;
 }
 
 export const usePreferencesStore = defineStore('preferences', {
@@ -15,5 +16,6 @@ export const usePreferencesStore = defineStore('preferences', {
         dateFormat: 'DD.MM.YYYY.',
         decimalSeparator: ',',
         thousandSeparator: ' ',
+        tablePageSize: 25,
     }),
 });

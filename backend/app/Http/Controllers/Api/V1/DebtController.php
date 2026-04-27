@@ -18,6 +18,7 @@ use App\Http\Resources\EmptyResource;
 use App\Models\Debtor;
 use App\Models\Debt;
 use App\Models\District;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -30,6 +31,29 @@ final class DebtController extends Controller
         private readonly UpdateDebtAction $updateDebt,
         private readonly DeleteDebtAction $deleteDebt,
     ) {}
+
+    public function districtIndex(District $district): JsonResponse
+    {
+        $this->authorize('viewAny', Debt::class);
+
+        $debts = Debt::query()
+            ->where('district_id', $district->id)
+            ->with('debtor')
+            ->orderBy('created_at')
+            ->get();
+
+        $data = $debts->map(fn (Debt $debt): array => [
+            'debt_ulid'    => $debt->ulid,
+            'debtor_ulid'  => $debt->debtor?->ulid,
+            'debtor_name'  => $debt->debtor?->name,
+            'case_number'  => $debt->debtor?->case_number,
+            'description'  => $debt->description,
+            'amount'       => (string) $debt->amount,
+            'date'         => $debt->date?->toDateString(),
+        ]);
+
+        return response()->json(['data' => $data]);
+    }
 
     public function index(District $district, Debtor $debtor): AnonymousResourceCollection
     {

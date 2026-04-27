@@ -16,11 +16,11 @@
                 '/reset-password',
             ]);
 
-            const entry = authPaths.has(window.location.pathname)
-                ? '/src/entries/login.ts'
-                : '/src/entries/app.ts';
-
-            await import(entry);
+            if (authPaths.has(window.location.pathname)) {
+                await import('/src/entries/login.ts');
+            } else {
+                await import('/src/entries/app.ts');
+            }
         </script>
     </body>
 </html>

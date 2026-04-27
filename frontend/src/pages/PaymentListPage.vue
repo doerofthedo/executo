@@ -29,122 +29,59 @@
             </div>
 
             <template v-else>
-                <section v-if="canCreatePayment" class="lex-panel p-8">
-                    <h2 class="mb-5 text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
-                        {{ mode === 'edit' ? t('payment_list.edit_title') : t('payment_list.create_title') }}
-                    </h2>
+                <SectionPanel :title="t('payment_list.list_title')">
+                    <template v-if="canCreatePayment" #actions>
+                        <RouterLink
+                            :to="{ name: 'payment-create', params: { district: districtUlid, debtor: debtorUlid, debt: debtUlid } }"
+                            class="lex-button lex-button-primary"
+                        >
+                            {{ t('payment_list.new_payment') }}
+                        </RouterLink>
+                    </template>
 
-                    <form class="lex-form" @submit.prevent="onSubmit">
-                        <div class="lex-settings-grid">
-                            <label class="lex-form-field">
-                                <span class="lex-input-label">{{ t('payment_list.amount') }}</span>
-                                <input
-                                    v-model="formAmount"
-                                    type="number"
-                                    step="0.0001"
-                                    min="0.0001"
-                                    class="lex-input"
-                                />
-                                <p v-if="errors.amount" class="lex-input-error-message">{{ errors.amount }}</p>
-                            </label>
-
-                            <label class="lex-form-field">
-                                <span class="lex-input-label">{{ t('payment_list.date') }}</span>
-                                <input v-model="formDate" type="date" class="lex-input" />
-                                <p v-if="errors.date" class="lex-input-error-message">{{ errors.date }}</p>
-                            </label>
-
-                            <label class="lex-form-field">
-                                <span class="lex-input-label">{{ t('payment_list.description') }}</span>
-                                <input v-model="formDescription" type="text" class="lex-input" />
-                            </label>
-                        </div>
-
-                        <div class="lex-section-actions">
-                            <button type="submit" class="lex-button lex-button-primary" :disabled="isSubmitting">
-                                {{ isSubmitting ? t('payment_list.submitting') : (mode === 'edit' ? t('payment_list.save') : t('payment_list.submit')) }}
-                            </button>
-                            <button
-                                v-if="mode === 'edit'"
-                                type="button"
-                                class="lex-button lex-button-secondary"
-                                :disabled="isSubmitting"
-                                @click="cancelEdit"
-                            >
-                                {{ t('payment_list.cancel') }}
-                            </button>
-                            <p v-if="formSuccess" class="lex-form-message lex-form-message-success">{{ formSuccess }}</p>
-                            <p v-if="formError" class="lex-form-message lex-form-message-error">{{ formError }}</p>
-                        </div>
-                    </form>
-                </section>
-
-                <section class="lex-panel p-8">
-                    <h2 class="mb-5 text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
-                        {{ t('payment_list.list_title') }}
-                    </h2>
-
-                    <div v-if="payments.length === 0" class="lex-dashboard-empty">
-                        {{ t('payment_list.no_payments') }}
-                    </div>
-
-                    <div v-else class="overflow-x-auto">
-                        <table class="min-w-full border-separate border-spacing-0">
-                            <thead>
-                                <tr class="text-left">
-                                    <th class="border-b border-slate-200 px-4 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-                                        {{ t('payment_list.columns.date') }}
-                                    </th>
-                                    <th class="border-b border-slate-200 px-4 py-3 text-right text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-                                        {{ t('payment_list.columns.amount') }}
-                                    </th>
-                                    <th class="border-b border-slate-200 px-4 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-                                        {{ t('payment_list.columns.description') }}
-                                    </th>
-                                    <th v-if="canCreatePayment" class="border-b border-slate-200 px-4 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-                                        {{ t('payment_list.columns.actions') }}
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr
-                                    v-for="payment in payments"
-                                    :key="payment.ulid"
-                                    class="hover:bg-slate-50"
-                                    :class="{ 'bg-blue-50': editingUlid === payment.ulid }"
+                    <DataTable
+                        :columns="paymentColumns"
+                        :rows="payments"
+                        row-key="ulid"
+                        row-id="ulid"
+                    >
+                        <template #cell-date="{ row }">
+                            {{ row.date ? formatDate(row.date) : t('payment_list.none') }}
+                        </template>
+                        <template #cell-amount="{ row }">
+                            {{ formatAmount(row.amount) }}
+                        </template>
+                        <template #cell-description="{ row }">
+                            {{ row.description || t('payment_list.none') }}
+                        </template>
+                        <template #actions="{ row }">
+                            <div class="flex gap-2">
+                                <RouterLink
+                                    :to="{ name: 'payment-show', params: { district: districtUlid, debtor: debtorUlid, debt: debtUlid, payment: row.ulid } }"
+                                    class="lex-button lex-button-secondary"
                                 >
-                                    <td class="border-b border-slate-100 px-4 py-3 text-sm text-slate-600">
-                                        {{ payment.date ? formatDate(payment.date) : t('payment_list.none') }}
-                                    </td>
-                                    <td class="border-b border-slate-100 px-4 py-3 text-right text-sm font-medium text-slate-800">
-                                        {{ formatAmount(payment.amount) }}
-                                    </td>
-                                    <td class="border-b border-slate-100 px-4 py-3 text-sm text-slate-600">
-                                        {{ payment.description || t('payment_list.none') }}
-                                    </td>
-                                    <td v-if="canCreatePayment" class="border-b border-slate-100 px-4 py-3">
-                                        <div class="flex gap-2">
-                                            <button
-                                                type="button"
-                                                class="lex-button lex-button-secondary text-xs"
-                                                @click="startEdit(payment)"
-                                            >
-                                                {{ t('payment_list.edit') }}
-                                            </button>
-                                            <button
-                                                type="button"
-                                                class="rounded px-2.5 py-1 text-xs font-medium text-red-600 hover:bg-red-50"
-                                                @click="requestDelete(payment)"
-                                            >
-                                                {{ t('payment_list.delete') }}
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
+                                    {{ t('payment_list.view') }}
+                                </RouterLink>
+                                <RouterLink
+                                    v-if="canCreatePayment"
+                                    :to="{ name: 'payment-edit', params: { district: districtUlid, debtor: debtorUlid, debt: debtUlid, payment: row.ulid } }"
+                                    class="lex-button lex-button-secondary"
+                                >
+                                    {{ t('payment_list.edit') }}
+                                </RouterLink>
+                                <button
+                                    v-if="canCreatePayment"
+                                    type="button"
+                                    class="lex-button lex-button-inline lex-button-inline-danger"
+                                    @click="requestDelete(row)"
+                                >
+                                    {{ t('payment_list.delete') }}
+                                </button>
+                            </div>
+                        </template>
+                        <template #empty>{{ t('payment_list.no_payments') }}</template>
+                    </DataTable>
+                </SectionPanel>
             </template>
         </div>
 
@@ -165,20 +102,14 @@
 
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue';
-import { useForm } from 'vee-validate';
-import { toTypedSchema } from '@vee-validate/zod';
-import { z } from 'zod';
 import { useI18n } from 'vue-i18n';
 import { RouterLink, useRoute } from 'vue-router';
 import AppLayout from '@/layouts/AppLayout.vue';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog.vue';
-import {
-    listPayments,
-    createPayment,
-    updatePayment,
-    deletePayment,
-    type Payment,
-} from '@/api/payments';
+import DataTable from '@/components/ui/DataTable.vue';
+import type { TableColumn } from '@/components/ui/DataTable.vue';
+import SectionPanel from '@/components/ui/SectionPanel.vue';
+import { listPayments, deletePayment, type Payment } from '@/api/payments';
 import { fetchDebtor, debtorDisplayName } from '@/api/debtors';
 import { fetchDebtDetail } from '@/api/debts';
 import { fetchDistrictStats } from '@/api/districts';
@@ -189,6 +120,12 @@ const { t } = useI18n();
 const route = useRoute();
 const breadcrumbStore = useBreadcrumbStore();
 const { formatDate, formatAmount } = useUserFormatting();
+
+const paymentColumns = computed((): TableColumn<Payment>[] => [
+    { key: 'date', label: t('payment_list.columns.date'), sortable: true, filterable: true },
+    { key: 'amount', label: t('payment_list.columns.amount'), sortable: true, align: 'right' },
+    { key: 'description', label: t('payment_list.columns.description'), filterable: true },
+]);
 
 const districtUlid = computed(() => String(route.params.district ?? ''));
 const debtorUlid = computed(() => String(route.params.debtor ?? ''));
@@ -201,33 +138,6 @@ const debtorName = ref<string | null>(null);
 const debtDescription = ref<string | null>(null);
 const caseNumber = ref<string | null>(null);
 const canCreatePayment = ref(false);
-
-const mode = ref<'create' | 'edit'>('create');
-const editingUlid = ref<string | null>(null);
-const formSuccess = ref('');
-const formError = ref('');
-
-const paymentSchema = computed(() => toTypedSchema(z.object({
-    amount: z.string().trim().min(1, t('auth.validation.field_required')),
-    date: z.string().trim().min(1, t('auth.validation.field_required')),
-    description: z.string().optional(),
-})));
-
-const {
-    errors,
-    defineField,
-    handleSubmit,
-    isSubmitting,
-    setValues,
-    resetForm,
-} = useForm<{ amount: string; date: string; description: string | undefined }>({
-    validationSchema: paymentSchema,
-    initialValues: { amount: '', date: '', description: '' },
-});
-
-const [formAmount] = defineField('amount');
-const [formDate] = defineField('date');
-const [formDescription] = defineField('description');
 
 const pendingDeleteUlid = ref<string | null>(null);
 const deleting = ref(false);
@@ -254,50 +164,6 @@ function sortPayments(list: Payment[]): Payment[] {
     });
 }
 
-function startEdit(payment: Payment): void {
-    mode.value = 'edit';
-    editingUlid.value = payment.ulid;
-    setValues({ amount: payment.amount, date: payment.date ?? '', description: payment.description ?? '' });
-    formSuccess.value = '';
-    formError.value = '';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function cancelEdit(): void {
-    mode.value = 'create';
-    editingUlid.value = null;
-    formSuccess.value = '';
-    formError.value = '';
-    resetForm();
-}
-
-const onSubmit = handleSubmit(async (values) => {
-    formSuccess.value = '';
-    formError.value = '';
-
-    try {
-        const input = {
-            amount: values.amount,
-            date: values.date,
-            description: values.description || null,
-        };
-
-        if (mode.value === 'edit' && editingUlid.value !== null) {
-            const updated = await updatePayment(districtUlid.value, debtorUlid.value, debtUlid.value, editingUlid.value, input);
-            payments.value = sortPayments(payments.value.map((p) => (p.ulid === updated.ulid ? updated : p)));
-            formSuccess.value = t('payment_list.updated');
-            cancelEdit();
-        } else {
-            const created = await createPayment(districtUlid.value, debtorUlid.value, debtUlid.value, input);
-            payments.value = sortPayments([created, ...payments.value]);
-            formSuccess.value = t('payment_list.created');
-            resetForm();
-        }
-    } catch {
-        formError.value = mode.value === 'edit' ? t('payment_list.update_error') : t('payment_list.create_error');
-    }
-});
-
 function requestDelete(payment: Payment): void {
     pendingDeleteUlid.value = payment.ulid;
 }
@@ -312,11 +178,6 @@ async function confirmDelete(): Promise<void> {
     try {
         await deletePayment(districtUlid.value, debtorUlid.value, debtUlid.value, pendingDeleteUlid.value);
         payments.value = payments.value.filter((p) => p.ulid !== pendingDeleteUlid.value);
-
-        if (editingUlid.value === pendingDeleteUlid.value) {
-            cancelEdit();
-        }
-
         pendingDeleteUlid.value = null;
     } catch {
         pendingDeleteUlid.value = null;

@@ -10,6 +10,7 @@ final class InterestScheduleRowData extends Data
 {
     public function __construct(
         public string $paymentDate,
+        public ?string $paymentUlid,
         public ?string $paymentAmount,
         public ?int $daysSinceLastPayment,
         public ?string $interestPerDay,

@@ -23,7 +23,7 @@ final class RegisterRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'surname' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email:rfc', 'max:255'],
-            'password' => ['required', 'string', 'confirmed', Password::min(8)],
+            'password' => ['required', 'string', 'confirmed', Password::min(10)->mixedCase()->numbers()],
             'locale' => ['sometimes', 'string', 'in:lv,en'],
         ];
     }

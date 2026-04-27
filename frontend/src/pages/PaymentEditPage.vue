@@ -4,11 +4,14 @@
             <section class="lex-panel lex-panel-header p-8">
                 <div class="flex flex-wrap items-start justify-between gap-4">
                     <div class="space-y-2">
-                        <p class="lex-page-eyebrow">{{ t('payment.create_eyebrow') }}</p>
-                        <h1 class="lex-page-title">{{ t('payment.create_title') }}</h1>
+                        <p class="lex-page-eyebrow">{{ t('payment.eyebrow') }}</p>
+                        <h1 class="lex-page-title">{{ t('payment_list.edit_title') }}</h1>
                     </div>
 
-                    <RouterLink :to="backRoute" class="lex-button lex-button-secondary">
+                    <RouterLink
+                        :to="{ name: 'payment-show', params: { district: districtUlid, debtor: debtorUlid, debt: debtUlid, payment: paymentUlid } }"
+                        class="lex-button lex-button-secondary"
+                    >
                         {{ t('payment.back') }}
                     </RouterLink>
                 </div>
@@ -23,19 +26,9 @@
             </div>
 
             <template v-else>
-                <SectionPanel :title="t('payment.create_title')">
+                <SectionPanel :title="t('payment_list.edit_title')">
                     <form class="lex-form" @submit.prevent="onSubmit">
                         <div class="lex-settings-grid">
-                            <label v-if="!hasDebtContext" class="lex-form-field">
-                                <span class="lex-input-label">{{ t('payment.debt_case') }}</span>
-                                <DebtCaseCombobox
-                                    v-model="selectedDebtCase"
-                                    :options="debtCases"
-                                    :placeholder="t('debt_case_combobox.placeholder')"
-                                />
-                                <p v-if="debtCaseError" class="lex-input-error-message">{{ debtCaseError }}</p>
-                            </label>
-
                             <label class="lex-form-field">
                                 <span class="lex-input-label">{{ t('payment.amount') }}</span>
                                 <input
@@ -62,9 +55,12 @@
 
                         <div class="lex-section-actions">
                             <button type="submit" class="lex-button lex-button-primary" :disabled="isSubmitting">
-                                {{ isSubmitting ? t('payment.submitting') : t('payment.submit') }}
+                                {{ isSubmitting ? t('payment.submitting') : t('payment.save') }}
                             </button>
-                            <RouterLink :to="backRoute" class="lex-button lex-button-secondary">
+                            <RouterLink
+                                :to="{ name: 'payment-show', params: { district: districtUlid, debtor: debtorUlid, debt: debtUlid, payment: paymentUlid } }"
+                                class="lex-button lex-button-secondary"
+                            >
                                 {{ t('payment.cancel') }}
                             </RouterLink>
                             <p v-if="formError" class="lex-form-message lex-form-message-error">{{ formError }}</p>
@@ -85,35 +81,27 @@ import { useI18n } from 'vue-i18n';
 import { RouterLink, useRoute, useRouter } from 'vue-router';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SectionPanel from '@/components/ui/SectionPanel.vue';
-import DebtCaseCombobox from '@/components/ui/DebtCaseCombobox.vue';
-import { createPayment } from '@/api/payments';
-import { fetchDistrictDebtCases, fetchDebtDetail, type DebtCase } from '@/api/debts';
+import { fetchPayment, updatePayment } from '@/api/payments';
 import { fetchDebtor, debtorDisplayName } from '@/api/debtors';
+import { fetchDebtDetail } from '@/api/debts';
 import { fetchDistrictStats } from '@/api/districts';
 import { useBreadcrumbStore } from '@/stores/breadcrumb';
+import { useUserFormatting } from '@/composables/useUserFormatting';
 
 const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
 const breadcrumbStore = useBreadcrumbStore();
+const { formatAmount } = useUserFormatting();
 
 const districtUlid = computed(() => String(route.params.district ?? ''));
 const debtorUlid = computed(() => String(route.params.debtor ?? ''));
 const debtUlid = computed(() => String(route.params.debt ?? ''));
-const hasDebtContext = computed(() => Boolean(route.params.debtor && route.params.debt));
-
-const backRoute = computed(() =>
-    hasDebtContext.value
-        ? { name: 'payments', params: { district: districtUlid.value, debtor: debtorUlid.value, debt: debtUlid.value } }
-        : { name: 'dashboard' },
-);
+const paymentUlid = computed(() => String(route.params.payment ?? ''));
 
 const loading = ref(true);
 const loadError = ref(false);
 const formError = ref('');
-const debtCases = ref<DebtCase[]>([]);
-const selectedDebtCase = ref<DebtCase | null>(null);
-const debtCaseError = ref('');
 
 const paymentSchema = computed(() => toTypedSchema(z.object({
     amount: z.string().trim().min(1, t('auth.validation.field_required')),
@@ -126,6 +114,7 @@ const {
     defineField,
     handleSubmit,
     isSubmitting,
+    setValues,
 } = useForm<{ amount: string; date: string; description: string | undefined }>({
     validationSchema: paymentSchema,
     initialValues: { amount: '', date: '', description: '' },
@@ -137,33 +126,16 @@ const [formDescription] = defineField('description');
 
 const onSubmit = handleSubmit(async (values) => {
     formError.value = '';
-    debtCaseError.value = '';
-
-    let resolvedDebtorUlid = debtorUlid.value;
-    let resolvedDebtUlid = debtUlid.value;
-
-    if (!hasDebtContext.value) {
-        if (!selectedDebtCase.value) {
-            debtCaseError.value = t('auth.validation.field_required');
-            return;
-        }
-
-        resolvedDebtorUlid = selectedDebtCase.value.debtor_ulid;
-        resolvedDebtUlid = selectedDebtCase.value.debt_ulid;
-    }
 
     try {
-        const created = await createPayment(districtUlid.value, resolvedDebtorUlid, resolvedDebtUlid, {
+        await updatePayment(districtUlid.value, debtorUlid.value, debtUlid.value, paymentUlid.value, {
             amount: values.amount,
             date: values.date,
             description: values.description || null,
         });
-        await router.push({
-            name: 'payment-show',
-            params: { district: districtUlid.value, debtor: resolvedDebtorUlid, debt: resolvedDebtUlid, payment: created.ulid },
-        });
+        await router.push({ name: 'payment-show', params: { district: districtUlid.value, debtor: debtorUlid.value, debt: debtUlid.value, payment: paymentUlid.value } });
     } catch {
-        formError.value = t('payment.create_error');
+        formError.value = t('payment.update_error');
     }
 });
 
@@ -172,29 +144,23 @@ async function load(): Promise<void> {
     loadError.value = false;
 
     try {
-        if (hasDebtContext.value) {
-            const [debtorData, debtDetail, statsData] = await Promise.all([
-                fetchDebtor(districtUlid.value, debtorUlid.value),
-                fetchDebtDetail(districtUlid.value, debtorUlid.value, debtUlid.value),
-                fetchDistrictStats(districtUlid.value),
-            ]);
+        const [paymentData, debtorData, debtDetail, statsData] = await Promise.all([
+            fetchPayment(districtUlid.value, debtorUlid.value, debtUlid.value, paymentUlid.value),
+            fetchDebtor(districtUlid.value, debtorUlid.value),
+            fetchDebtDetail(districtUlid.value, debtorUlid.value, debtUlid.value),
+            fetchDistrictStats(districtUlid.value),
+        ]);
 
-            const debtBreadcrumb = debtorData.case_number
-                ? t('debt_detail.title', { number: debtorData.case_number })
-                : debtDetail.debt.description || t('debt_detail.title_fallback');
+        setValues({ amount: paymentData.amount, date: paymentData.date ?? '', description: paymentData.description ?? '' });
 
-            breadcrumbStore.districtLabel = t('district.number_label', { number: statsData.district.number });
-            breadcrumbStore.debtorLabel = debtorDisplayName(debtorData);
-            breadcrumbStore.debtLabel = debtBreadcrumb;
-        } else {
-            const [cases, statsData] = await Promise.all([
-                fetchDistrictDebtCases(districtUlid.value),
-                fetchDistrictStats(districtUlid.value),
-            ]);
+        const debtBreadcrumb = debtorData.case_number
+            ? t('debt_detail.title', { number: debtorData.case_number })
+            : debtDetail.debt.description || t('debt_detail.title_fallback');
 
-            debtCases.value = cases;
-            breadcrumbStore.districtLabel = t('district.number_label', { number: statsData.district.number });
-        }
+        breadcrumbStore.districtLabel = t('district.number_label', { number: statsData.district.number });
+        breadcrumbStore.debtorLabel = debtorDisplayName(debtorData);
+        breadcrumbStore.debtLabel = debtBreadcrumb;
+        breadcrumbStore.paymentLabel = formatAmount(paymentData.amount);
     } catch {
         loadError.value = true;
     } finally {
@@ -208,5 +174,6 @@ onUnmounted(() => {
     breadcrumbStore.debtorLabel = null;
     breadcrumbStore.debtLabel = null;
     breadcrumbStore.districtLabel = null;
+    breadcrumbStore.paymentLabel = null;
 });
 </script>

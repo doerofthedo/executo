@@ -11,6 +11,7 @@
     "navigation": {
         "home": "Dashboard",
         "dashboard": "Dashboard",
+        "districts": "Districts",
         "profile": "Profile",
         "preferences": "Preferences",
         "user_management": "User management",
@@ -104,6 +105,11 @@
         "hours_ago": "{n}h ago",
         "days_ago": "{n}d ago"
     },
+    "table": {
+        "filter_placeholder": "Filter...",
+        "no_results": "No results found.",
+        "page_info": "{from}–{to} of {total}"
+    },
     "dashboard": {
         "greeting": "Welcome, {name}!",
         "fallback": "Welcome!",
@@ -115,7 +121,7 @@
         "fallback_evening": "Good evening!",
         "districts_title": "Districts",
         "district_label": "District {number}",
-        "open_district": "Open district",
+        "open_district": "Open",
         "open_mailpit": "Open Mailpit",
         "quick_actions_title": "Quick actions",
         "quick_actions_context": "Actions for district: {district}",
@@ -359,6 +365,8 @@
         },
         "edit": "Edit",
         "delete": "Delete",
+        "view": "View",
+        "new_payment": "Record payment",
         "back": "Back to debt",
         "none": "—",
         "confirm_delete_eyebrow": "Confirm deletion",
@@ -366,6 +374,47 @@
         "confirm_delete_message": "Remove this payment? This cannot be undone.",
         "confirm_delete": "Delete payment",
         "cancel_label": "Cancel"
+    },
+    "debt_case_combobox": {
+        "debtor": "Debtor",
+        "case_number": "Case №",
+        "date": "Date",
+        "description": "Debt",
+        "amount": "Amount",
+        "none": "—",
+        "no_results": "No matching debt cases found.",
+        "placeholder": "Search by debtor name or case number…"
+    },
+    "payment": {
+        "eyebrow": "Payment",
+        "loading": "Loading payment...",
+        "load_error": "Payment could not be loaded.",
+        "back": "Back to payments",
+        "none": "—",
+        "amount_label": "Amount",
+        "date_label": "Date",
+        "description_label": "Description",
+        "edit": "Edit payment",
+        "delete": "Delete payment",
+        "updated": "Payment updated.",
+        "update_error": "The payment could not be updated.",
+        "submitting": "Saving...",
+        "save": "Save changes",
+        "cancel": "Cancel",
+        "create_eyebrow": "New payment",
+        "create_title": "Record payment",
+        "submit": "Record payment",
+        "created": "Payment recorded.",
+        "create_error": "The payment could not be saved.",
+        "confirm_delete_eyebrow": "Confirm deletion",
+        "confirm_delete_title": "Delete payment",
+        "confirm_delete_message": "Remove this payment? This cannot be undone.",
+        "confirm_delete": "Delete payment",
+        "cancel_label": "Cancel",
+        "amount": "Amount",
+        "date": "Date",
+        "description": "Description",
+        "debt_case": "Debt case"
     },
     "debt": {
         "interest_breakdown": {

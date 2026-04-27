@@ -91,56 +91,27 @@
                     </div>
                 </section>
 
-                <section class="lex-panel p-8">
-                    <h2 class="mb-5 text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
-                        {{ t('debt_detail.breakdown_title') }}
-                    </h2>
-
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full border-separate border-spacing-0 text-xs">
-                            <thead>
-                                <tr>
-                                    <th
-                                        v-for="col in detail.interest.columns"
-                                        :key="col.key"
-                                        class="border-b border-slate-200 px-3 py-2.5 font-semibold uppercase tracking-[0.16em] text-slate-500"
-                                        :class="col.align === 'right' ? 'text-right' : 'text-left'"
-                                    >
-                                        {{ t(col.label_key) }}
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr
-                                    v-for="(row, idx) in detail.interest.rows"
-                                    :key="idx"
-                                    :class="rowClass(row)"
-                                >
-                                    <td
-                                        v-for="col in detail.interest.columns"
-                                        :key="col.key"
-                                        class="border-b border-slate-100 px-3 py-2"
-                                        :class="col.align === 'right' ? 'text-right' : 'text-left'"
-                                    >
-                                        {{ formatCell(col.key, row[col.key]) }}
-                                    </td>
-                                </tr>
-                            </tbody>
-                            <tfoot v-if="totalRow">
-                                <tr class="bg-slate-800 font-semibold text-white">
-                                    <td
-                                        v-for="col in detail.interest.columns"
-                                        :key="col.key"
-                                        class="px-3 py-2.5"
-                                        :class="col.align === 'right' ? 'text-right' : 'text-left'"
-                                    >
-                                        {{ formatCell(col.key, totalRow[col.key]) }}
-                                    </td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                </section>
+                <SectionPanel :title="t('debt_detail.breakdown_title')">
+                    <DataTable
+                        :columns="interestColumns"
+                        :rows="detail.interest.rows"
+                        :footer-row="detail.interest.total_row"
+                        :row-class="interestRowClass"
+                        :paginate="false"
+                        compact
+                    >
+                        <template #cell-payment_amount="{ row, value }">
+                            <RouterLink
+                                v-if="row.payment_ulid"
+                                :to="{ name: 'payments', params: { district: districtUlid, debtor: debtorUlid, debt: debtUlid }, hash: `#${row.payment_ulid}` }"
+                                class="lex-data-table-link"
+                            >
+                                {{ formatCell('payment_amount', value as string | number | null) }}
+                            </RouterLink>
+                            <template v-else>{{ formatCell('payment_amount', value as string | number | null) }}</template>
+                        </template>
+                    </DataTable>
+                </SectionPanel>
             </template>
         </div>
     </AppLayout>
@@ -151,6 +122,9 @@ import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { RouterLink, useRoute } from 'vue-router';
 import AppLayout from '@/layouts/AppLayout.vue';
+import DataTable from '@/components/ui/DataTable.vue';
+import type { TableColumn } from '@/components/ui/DataTable.vue';
+import SectionPanel from '@/components/ui/SectionPanel.vue';
 import { fetchDebtDetail, type DebtDetail, type InterestRow } from '@/api/debts';
 import { fetchDebtor, debtorDisplayName } from '@/api/debtors';
 import { fetchDistrictStats } from '@/api/districts';
@@ -186,6 +160,23 @@ const caseNumber = ref<string | null>(null);
 
 const totalRow = computed(() => detail.value?.interest.total_row ?? null);
 
+const interestColumns = computed((): TableColumn<InterestRow>[] => {
+    if (!detail.value) return [];
+    return detail.value.interest.columns.map((col) => ({
+        key: col.key,
+        label: t(col.label_key),
+        align: col.align,
+        format: (value) => formatCell(col.key, value as string | number | null),
+    }));
+});
+
+function interestRowClass(row: InterestRow, index: number, total: number): string {
+    const rc = String(row.row_class ?? '');
+    if (rc === 'table-danger' || rc === 'bg-red-100') return 'lex-data-table-row-danger';
+    if (index === 0 || index === total - 1) return 'lex-data-table-row-muted';
+    return '';
+}
+
 const heroTitle = computed(() => {
     if (!detail.value) {
         return t('debt_detail.eyebrow');
@@ -195,16 +186,6 @@ const heroTitle = computed(() => {
         ? t('debt_detail.title', { number: caseNumber.value })
         : t('debt_detail.title_fallback');
 });
-
-function rowClass(row: InterestRow): string {
-    const rc = String(row.row_class ?? '');
-
-    if (rc === 'table-danger' || rc === 'bg-red-100') {
-        return 'bg-red-50';
-    }
-
-    return '';
-}
 
 function formatCell(key: string, value: string | number | null | undefined): string {
     if (value === null || value === undefined) {

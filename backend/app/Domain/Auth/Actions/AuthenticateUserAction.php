@@ -19,7 +19,7 @@ final readonly class AuthenticateUserAction
     {
         $rawLogin = $credentials['login'];
         $password = $credentials['password'];
-        $login = $rawLogin === 'admin'
+        $login = (app()->environment('local') && $rawLogin === 'admin')
             ? 'admin@executo.local'
             : $rawLogin;
 

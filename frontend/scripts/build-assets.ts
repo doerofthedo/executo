@@ -66,5 +66,5 @@ await runViteBuild('login', false);
 const loginManifest = await readManifest();
 
 await writeFile(manifestPath, `${JSON.stringify({ ...appManifest, ...loginManifest }, null, 2)}\n`, 'utf8');
-await stripCssBanner();
 await copyAssetsToPublic();
+await stripCssBanner();

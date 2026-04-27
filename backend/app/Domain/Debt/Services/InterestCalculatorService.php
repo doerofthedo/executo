@@ -55,6 +55,7 @@ final readonly class InterestCalculatorService
 
         $rows[] = new InterestScheduleRowData(
             paymentDate: $debtDate->toDateString(),
+            paymentUlid: null,
             paymentAmount: null,
             daysSinceLastPayment: null,
             interestPerDay: null,
@@ -112,6 +113,7 @@ final readonly class InterestCalculatorService
 
             $rows[] = new InterestScheduleRowData(
                 paymentDate: $paymentDate->toDateString(),
+                paymentUlid: $payment->ulid,
                 paymentAmount: $this->formatScheduleMoney($paymentAmount),
                 daysSinceLastPayment: $daysSinceLastPayment,
                 interestPerDay: $interestPerDay,
@@ -145,6 +147,7 @@ final readonly class InterestCalculatorService
 
         $rows[] = new InterestScheduleRowData(
             paymentDate: $asOfDate->toDateString(),
+            paymentUlid: null,
             paymentAmount: null,
             daysSinceLastPayment: $daysSinceLastPayment,
             interestPerDay: $interestPerDay,
@@ -165,6 +168,7 @@ final readonly class InterestCalculatorService
             rows: $rows,
             totalRow: new InterestScheduleRowData(
                 paymentDate: 'Total',
+                paymentUlid: null,
                 paymentAmount: $totalPayments,
                 daysSinceLastPayment: (int) $debtDate->diffInDays($asOfDate),
                 interestPerDay: null,

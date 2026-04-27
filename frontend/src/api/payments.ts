@@ -52,6 +52,19 @@ export async function updatePayment(
   return response.data.data;
 }
 
+export async function fetchPayment(
+  districtUlid: string,
+  debtorUlid: string,
+  debtUlid: string,
+  paymentUlid: string,
+): Promise<Payment> {
+  const response = await apiClient.get<{ data: Payment }>(
+    `/districts/${districtUlid}/debtors/${debtorUlid}/debts/${debtUlid}/payments/${paymentUlid}`,
+  );
+
+  return response.data.data;
+}
+
 export async function deletePayment(
   districtUlid: string,
   debtorUlid: string,

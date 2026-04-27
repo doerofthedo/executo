@@ -28,6 +28,24 @@ export interface DebtDetail {
   };
 }
 
+export interface DebtCase {
+  debt_ulid: string;
+  debtor_ulid: string;
+  debtor_name: string | null;
+  case_number: string | null;
+  description: string | null;
+  amount: string;
+  date: string | null;
+}
+
+export async function fetchDistrictDebtCases(districtUlid: string): Promise<DebtCase[]> {
+  const response = await apiClient.get<{ data: DebtCase[] }>(
+    `/districts/${districtUlid}/debts`,
+  );
+
+  return response.data.data;
+}
+
 export async function listDebts(districtUlid: string, debtorUlid: string): Promise<Debt[]> {
   const response = await apiClient.get<{ data: Debt[] }>(
     `/districts/${districtUlid}/debtors/${debtorUlid}/debts`,

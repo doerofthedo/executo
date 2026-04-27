@@ -9,17 +9,47 @@
 
                     <div class="lex-app-account">
                         <div class="lex-app-account-actions">
-                            <RouterLink :to="{ name: 'dashboard' }" class="lex-button lex-button-secondary">
-                                {{ t('navigation.dashboard') }}
+                            <RouterLink :to="{ name: 'dashboard' }" class="lex-nav-btn">
+                                <i class="ri-home-line" aria-hidden="true" />
+                                {{ t('navigation.home') }}
                             </RouterLink>
-                            <a v-if="showMailpit" href="/mail/" class="lex-button lex-button-secondary">
+                            <a v-if="showMailpit" href="/mail/" class="lex-nav-btn">
                                 {{ t('app.mailpit') }}
                             </a>
 
+                            <div ref="districtsRoot" class="lex-nav-districts">
+                                <button
+                                    type="button"
+                                    class="lex-nav-btn"
+                                    :aria-expanded="isDistrictsOpen ? 'true' : 'false'"
+                                    @click="toggleDistrictsMenu"
+                                >
+                                    <i class="ri-map-pin-2-line" aria-hidden="true" />
+                                    {{ t('navigation.districts') }}
+                                    <i class="ri-arrow-down-s-line lex-app-account-trigger-icon" aria-hidden="true" />
+                                </button>
+                                <div v-if="isDistrictsOpen" class="lex-app-account-dropdown">
+                                    <RouterLink
+                                        v-for="district in navDistricts"
+                                        :key="district.ulid"
+                                        :to="{ name: 'district', params: { district: district.ulid } }"
+                                        class="lex-app-account-dropdown-item"
+                                        @click="isDistrictsOpen = false"
+                                    >
+                                        {{ t('district.number_label', { number: district.number }) }}
+                                    </RouterLink>
+                                    <div v-if="navDistricts.length === 0" class="lex-app-account-dropdown-empty">
+                                        {{ t('dashboard.no_districts') }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="lex-app-account-identity">
                             <div ref="notifRoot" class="lex-notif-bell">
                                 <button
                                     type="button"
-                                    class="lex-button lex-button-secondary lex-notif-trigger"
+                                    class="lex-nav-btn lex-nav-btn-icon lex-notif-trigger"
                                     :aria-label="t('notifications.menu_label')"
                                     :aria-expanded="isNotifOpen ? 'true' : 'false'"
                                     @click="toggleNotifDropdown"
@@ -35,57 +65,56 @@
                                     @close="isNotifOpen = false"
                                 />
                             </div>
-                        </div>
-                        <div ref="accountMenuRoot" class="lex-app-account-menu">
-                            <button
-                                ref="menuTrigger"
-                                type="button"
-                                class="lex-app-account-trigger"
-                                :aria-label="t('app.account_menu')"
-                                aria-haspopup="true"
-                                :aria-expanded="isAccountMenuOpen ? 'true' : 'false'"
-                                @click="toggleAccountMenu"
-                            >
-                                <div class="lex-app-account-copy" v-if="displayName !== ''">
-                                    <p class="lex-app-account-label">{{ t('app.signed_in_as') }}</p>
-                                    <p class="lex-app-account-name">{{ displayName }}</p>
-                                </div>
-                                <i class="ri-arrow-down-s-line lex-app-account-trigger-icon" aria-hidden="true" />
-                            </button>
 
-                            <div
-                                v-if="isAccountMenuOpen"
-                                class="lex-app-account-dropdown"
-                                role="menu"
-                                :aria-label="t('app.account_menu')"
-                                @keydown.esc.prevent="closeAccountMenuAndFocusTrigger"
-                            >
+                            <div ref="accountMenuRoot" class="lex-app-account-menu">
                                 <button
-                                    ref="firstMenuItem"
+                                    ref="menuTrigger"
                                     type="button"
-                                    class="lex-app-account-dropdown-item"
-                                    role="menuitem"
-                                    @click="navigateToAccountRoute('profile')"
+                                    class="lex-nav-btn lex-app-account-trigger"
+                                    :aria-label="t('app.account_menu')"
+                                    aria-haspopup="true"
+                                    :aria-expanded="isAccountMenuOpen ? 'true' : 'false'"
+                                    @click="toggleAccountMenu"
                                 >
-                                    {{ t('navigation.profile') }}
+                                    <i class="ri-user-line lex-app-account-user-icon" aria-hidden="true" />
+                                    <span v-if="displayName !== ''" class="lex-app-account-name">{{ displayName }}</span>
+                                    <i class="ri-arrow-down-s-line lex-app-account-trigger-icon" aria-hidden="true" />
                                 </button>
-                                <button
-                                    type="button"
-                                    class="lex-app-account-dropdown-item"
-                                    role="menuitem"
-                                    @click="navigateToAccountRoute('preferences')"
+
+                                <div
+                                    v-if="isAccountMenuOpen"
+                                    class="lex-app-account-dropdown"
+                                    role="menu"
+                                    :aria-label="t('app.account_menu')"
+                                    @keydown.esc.prevent="closeAccountMenuAndFocusTrigger"
                                 >
-                                    {{ t('navigation.preferences') }}
-                                </button>
-                                <div class="lex-app-account-dropdown-divider" />
-                                <button
-                                    type="button"
-                                    class="lex-app-account-dropdown-item lex-app-account-dropdown-item-danger"
-                                    role="menuitem"
-                                    @click="onSignOut"
-                                >
-                                    {{ t('app.logout') }}
-                                </button>
+                                    <button
+                                        ref="firstMenuItem"
+                                        type="button"
+                                        class="lex-app-account-dropdown-item"
+                                        role="menuitem"
+                                        @click="navigateToAccountRoute('profile')"
+                                    >
+                                        {{ t('navigation.profile') }}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        class="lex-app-account-dropdown-item"
+                                        role="menuitem"
+                                        @click="navigateToAccountRoute('preferences')"
+                                    >
+                                        {{ t('navigation.preferences') }}
+                                    </button>
+                                    <div class="lex-app-account-dropdown-divider" />
+                                    <button
+                                        type="button"
+                                        class="lex-app-account-dropdown-item lex-app-account-dropdown-item-danger"
+                                        role="menuitem"
+                                        @click="onSignOut"
+                                    >
+                                        {{ t('app.logout') }}
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -132,6 +161,8 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watchEffect } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { RouterLink, useRoute, useRouter } from 'vue-router';
+import type { DistrictSummary } from '@/api/districts';
+import { fetchAccessibleDistricts } from '@/api/districts';
 import { useAuthStore } from '@/stores/auth';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useBreadcrumbStore } from '@/stores/breadcrumb';
@@ -150,6 +181,12 @@ const notificationsStore = useNotificationsStore();
 const breadcrumbStore = useBreadcrumbStore();
 const isNotifOpen = ref(false);
 const notifRoot = ref<HTMLElement | null>(null);
+const isDistrictsOpen = ref(false);
+const districtsRoot = ref<HTMLElement | null>(null);
+const navDistrictsRaw = ref<DistrictSummary[]>([]);
+const navDistricts = computed(() =>
+    navDistrictsRaw.value.filter((d) => !d.disabled).sort((a, b) => a.number - b.number),
+);
 
 const displayName = computed(() => [authStore.user?.name, authStore.user?.surname].filter((value): value is string => typeof value === 'string' && value !== '').join(' '));
 
@@ -158,7 +195,8 @@ type BreadcrumbItem = { label: string; to?: object; icon?: string };
 const breadcrumbs = computed((): BreadcrumbItem[] => {
     const items: BreadcrumbItem[] = [{ label: t('navigation.home'), to: { name: 'dashboard' }, icon: 'ri-home-line' }];
     const districtParam = String(route.params.district ?? '');
-    const districtLabel = breadcrumbStore.districtLabel ?? '...';
+    const districtLabel = breadcrumbStore.districtLabel
+        ?? (breadcrumbStore.districtNumber !== null ? t('district.number_label', { number: breadcrumbStore.districtNumber }) : '...');
 
     if (route.name === 'profile') {
         items.push({ label: t('navigation.profile') });
@@ -179,7 +217,7 @@ const breadcrumbs = computed((): BreadcrumbItem[] => {
         items.push({ label: t('navigation.debtors'), to: { name: 'debtors', params: { district: districtParam } } });
         items.push({ label: breadcrumbStore.debtorLabel ?? '...', to: { name: 'debtor', params: { district: districtParam, debtor: debtorParam } } });
         items.push({ label: breadcrumbStore.debtLabel ?? t('navigation.debt') });
-    } else if (route.name === 'payments') {
+    } else if (route.name === 'payments' || route.name === 'payment-create') {
         const debtorParam = String(route.params.debtor ?? '');
         const debtParam = String(route.params.debt ?? '');
         items.push({ label: districtLabel, to: { name: 'district', params: { district: districtParam } } });
@@ -187,6 +225,15 @@ const breadcrumbs = computed((): BreadcrumbItem[] => {
         items.push({ label: breadcrumbStore.debtorLabel ?? '...', to: { name: 'debtor', params: { district: districtParam, debtor: debtorParam } } });
         items.push({ label: breadcrumbStore.debtLabel ?? t('navigation.debt'), to: { name: 'debt', params: { district: districtParam, debtor: debtorParam, debt: debtParam } } });
         items.push({ label: t('navigation.payments') });
+    } else if (route.name === 'payment-show' || route.name === 'payment-edit') {
+        const debtorParam = String(route.params.debtor ?? '');
+        const debtParam = String(route.params.debt ?? '');
+        items.push({ label: districtLabel, to: { name: 'district', params: { district: districtParam } } });
+        items.push({ label: t('navigation.debtors'), to: { name: 'debtors', params: { district: districtParam } } });
+        items.push({ label: breadcrumbStore.debtorLabel ?? '...', to: { name: 'debtor', params: { district: districtParam, debtor: debtorParam } } });
+        items.push({ label: breadcrumbStore.debtLabel ?? t('navigation.debt'), to: { name: 'debt', params: { district: districtParam, debtor: debtorParam, debt: debtParam } } });
+        items.push({ label: t('navigation.payments'), to: { name: 'payments', params: { district: districtParam, debtor: debtorParam, debt: debtParam } } });
+        items.push({ label: breadcrumbStore.paymentLabel ?? '...' });
     } else if (route.name === 'user-management') {
         items.push({ label: districtLabel, to: { name: 'district', params: { district: districtParam } } });
         items.push({ label: t('navigation.user_management') });
@@ -233,6 +280,10 @@ function toggleNotifDropdown(): void {
     isNotifOpen.value = !isNotifOpen.value;
 }
 
+function toggleDistrictsMenu(): void {
+    isDistrictsOpen.value = !isDistrictsOpen.value;
+}
+
 function onDocumentPointerDown(event: MouseEvent): void {
     const target = event.target;
 
@@ -247,11 +298,21 @@ function onDocumentPointerDown(event: MouseEvent): void {
     if (notifRoot.value?.contains(target) !== true) {
         isNotifOpen.value = false;
     }
+
+    if (districtsRoot.value?.contains(target) !== true) {
+        isDistrictsOpen.value = false;
+    }
 }
 
-onMounted(() => {
+onMounted(async () => {
     document.addEventListener('mousedown', onDocumentPointerDown);
     notificationsStore.startPolling();
+
+    try {
+        navDistrictsRaw.value = await fetchAccessibleDistricts();
+    } catch {
+        // silent — nav will show empty state
+    }
 });
 
 onBeforeUnmount(() => {

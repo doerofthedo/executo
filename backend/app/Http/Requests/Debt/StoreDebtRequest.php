@@ -21,7 +21,7 @@ final class StoreDebtRequest extends FormRequest
         return [
             'amount' => ['required', 'decimal:0,4', 'min:0.0001'],
             'date' => ['required', 'date'],
-            'description' => ['nullable', 'string'],
+            'description' => ['nullable', 'string', 'max:2000'],
         ];
     }
 }

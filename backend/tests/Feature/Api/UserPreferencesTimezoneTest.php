@@ -21,8 +21,8 @@ test('newly registered users receive europe riga timezone preference by default'
         'name' => 'Timezone',
         'surname' => 'Default',
         'email' => 'timezone-default@executo.local',
-        'password' => 'secret123',
-        'password_confirmation' => 'secret123',
+        'password' => 'Secret123abc',
+        'password_confirmation' => 'Secret123abc',
         'locale' => 'lv',
     ]);
 

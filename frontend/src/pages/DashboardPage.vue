@@ -44,48 +44,43 @@
                             :key="card.district.ulid"
                             class="lex-district-card"
                         >
-                            <div class="lex-district-card-header">
-                                <div class="lex-section-header">
-                                    <p class="lex-district-card-label">{{ districtLabel(card) }}</p>
-                                    <h3 class="lex-district-card-title">{{ districtTitle(card) }}</h3>
-                                    <p v-if="card.district.court" class="lex-district-card-copy">{{ card.district.court }}</p>
+                            <div class="lex-district-card-inner">
+                                <div class="lex-district-card-main">
+                                    <p class="lex-district-card-eyebrow">
+                                        {{ districtLabel(card) }}
+                                        <template v-if="card.district.court">
+                                            <span class="lex-district-card-eyebrow-sep">·</span>
+                                            {{ card.district.court }}
+                                        </template>
+                                    </p>
+                                    <h2 class="lex-district-card-title">{{ districtTitle(card) }}</h2>
+                                    <RouterLink
+                                        :to="{ name: 'district', params: { district: card.district.ulid } }"
+                                        class="lex-button lex-button-secondary lex-district-card-open"
+                                    >
+                                        <i class="ri-login-circle-line" aria-hidden="true" />
+                                        {{ t('dashboard.open_district') }}
+                                    </RouterLink>
                                 </div>
-                            </div>
 
-                            <dl class="lex-overview-metric-grid lex-district-card-metrics">
-                                <div v-if="card.can_view_users_count" class="lex-overview-metric-card">
-                                    <dt class="lex-overview-metric-label">{{ t('dashboard.stats_users') }}</dt>
-                                    <dd class="lex-overview-metric-value">{{ card.users_count ?? 0 }}</dd>
-                                </div>
-                                <div class="lex-overview-metric-card">
-                                    <dt class="lex-overview-metric-label">{{ t('dashboard.stats_debtors') }}</dt>
-                                    <dd class="lex-overview-metric-value">{{ card.debtors_count }}</dd>
-                                </div>
-                                <div class="lex-overview-metric-card">
-                                    <dt class="lex-overview-metric-label">{{ t('dashboard.stats_debts') }}</dt>
-                                    <dd class="lex-overview-metric-value">{{ card.debts_count }}</dd>
-                                </div>
-                                <div class="lex-overview-metric-card">
-                                    <dt class="lex-overview-metric-label">{{ t('dashboard.stats_payments') }}</dt>
-                                    <dd class="lex-overview-metric-value">{{ card.payments_count }}</dd>
-                                </div>
-                            </dl>
-
-                            <div class="mt-5 flex flex-wrap gap-3">
-                                <RouterLink
-                                    :to="{ name: 'district', params: { district: card.district.ulid } }"
-                                    class="lex-button lex-button-inline"
-                                >
-                                    {{ t('dashboard.open_district') }}
-                                </RouterLink>
-
-                                <RouterLink
-                                    v-if="card.can_manage_users"
-                                    :to="{ name: 'user-management', params: { district: card.district.ulid } }"
-                                    class="lex-button lex-button-secondary"
-                                >
-                                    {{ t('dashboard.manage_users') }}
-                                </RouterLink>
+                                <dl class="lex-district-card-stats">
+                                    <div v-if="card.can_view_users_count" class="lex-overview-metric-card">
+                                        <dt class="lex-overview-metric-label">{{ t('dashboard.stats_users') }}</dt>
+                                        <dd class="lex-overview-metric-value">{{ card.users_count ?? 0 }}</dd>
+                                    </div>
+                                    <div class="lex-overview-metric-card">
+                                        <dt class="lex-overview-metric-label">{{ t('dashboard.stats_debtors') }}</dt>
+                                        <dd class="lex-overview-metric-value">{{ card.debtors_count }}</dd>
+                                    </div>
+                                    <div class="lex-overview-metric-card">
+                                        <dt class="lex-overview-metric-label">{{ t('dashboard.stats_debts') }}</dt>
+                                        <dd class="lex-overview-metric-value">{{ card.debts_count }}</dd>
+                                    </div>
+                                    <div class="lex-overview-metric-card">
+                                        <dt class="lex-overview-metric-label">{{ t('dashboard.stats_payments') }}</dt>
+                                        <dd class="lex-overview-metric-value">{{ card.payments_count }}</dd>
+                                    </div>
+                                </dl>
                             </div>
                         </article>
                     </div>
@@ -108,6 +103,7 @@
                             :to="{ name: 'user-management', params: { district: effectiveDefaultDistrict.district.ulid } }"
                             class="lex-button lex-button-primary lex-dashboard-action-button"
                         >
+                            <i class="ri-team-line" aria-hidden="true" />
                             {{ t('dashboard.manage_users') }}
                         </RouterLink>
 
@@ -116,6 +112,7 @@
                             :to="{ name: 'debtor-create', params: { district: effectiveDefaultDistrict.district.ulid } }"
                             class="lex-button lex-button-secondary lex-dashboard-action-button"
                         >
+                            <i class="ri-user-add-line" aria-hidden="true" />
                             {{ t('dashboard.add_debtor') }}
                         </RouterLink>
 
@@ -124,14 +121,16 @@
                             :to="{ name: 'debt-create', params: { district: effectiveDefaultDistrict.district.ulid } }"
                             class="lex-button lex-button-secondary lex-dashboard-action-button"
                         >
+                            <i class="ri-file-add-line" aria-hidden="true" />
                             {{ t('dashboard.add_debt') }}
                         </RouterLink>
 
                         <RouterLink
                             v-if="effectiveDefaultDistrict.can_create_payment"
-                            :to="{ name: 'payment-create', params: { district: effectiveDefaultDistrict.district.ulid } }"
+                            :to="{ name: 'operation-create-payment', params: { district: effectiveDefaultDistrict.district.ulid } }"
                             class="lex-button lex-button-secondary lex-dashboard-action-button"
                         >
+                            <i class="ri-cash-line" aria-hidden="true" />
                             {{ t('dashboard.add_payment') }}
                         </RouterLink>
 
